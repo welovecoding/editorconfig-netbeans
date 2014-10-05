@@ -22,31 +22,35 @@ public class EditorConfigParser {
   public EditorConfigParser() {
   }
 
-  public Map<String, List<EditorConfigProperty>> parseConfig(URL resource) {
+  public Map<String, List<EditorConfigProperty>> parseConfig(URL resource) throws EditorConfigParserException {
     result = new HashMap<>();
     String section = null;
+    if (resource != null) {
 
-    File file = new File(resource.getFile());
-    String line;
+      File file = new File(resource.getFile());
+      String line;
 
-    try (
-            FileInputStream fis = new FileInputStream(file);
-            InputStreamReader isr = new InputStreamReader(fis, "UTF-8");
-            BufferedReader br = new BufferedReader(isr)) {
-      while ((line = br.readLine()) != null) {
-        boolean isInteresting = !(line.startsWith("#") || line.isEmpty());
+      try (
+              FileInputStream fis = new FileInputStream(file);
+              InputStreamReader isr = new InputStreamReader(fis, "UTF-8");
+              BufferedReader br = new BufferedReader(isr)) {
+        while ((line = br.readLine()) != null) {
+          boolean isInteresting = !(line.startsWith("#") || line.isEmpty());
 
-        if (isInteresting) {
-          if (line.startsWith("[")) {
-            section = parseSection(line);
-          } else if (section != null) {
-            EditorConfigProperty property = parseProperty(line);
-            addProperty(section, property);
+          if (isInteresting) {
+            if (line.startsWith("[")) {
+              section = parseSection(line);
+            } else if (section != null) {
+              EditorConfigProperty property = parseProperty(line);
+              addProperty(section, property);
+            }
           }
         }
+      } catch (IOException ex) {
+        LOG.log(Level.SEVERE, "Error reading file: {0}", ex.getMessage());
       }
-    } catch (IOException ex) {
-      LOG.log(Level.SEVERE, "Error reading file: {0}", ex.getMessage());
+    } else {
+      throw new EditorConfigParserException("Given file cannot be found.");
     }
 
     return result;
