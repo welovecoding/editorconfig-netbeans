@@ -1,8 +1,13 @@
 package com.welovecoding.nbeditorconfig.netbeans;
 
+import java.net.URL;
+import java.util.List;
+import java.util.Map;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import javax.swing.text.StyledDocument;
+import org.editorconfig.netbeans.model.EditorConfigProperty;
+import org.editorconfig.netbeans.parser.EditorConfigParser;
 import org.netbeans.api.editor.settings.SimpleValueNames;
 import org.netbeans.api.project.Project;
 import org.netbeans.editor.BaseDocument;
@@ -34,6 +39,8 @@ import org.openide.util.lookup.Lookups;
 )
 public class ECProjectOpenedHook implements LookupProvider {
 
+	private boolean ecFound = false;
+
 	@Override
 	public Lookup createAdditionalLookup(Lookup lookup) {
 		System.out.println("CREATE ADDITIONAL LOOKUP");
@@ -41,22 +48,61 @@ public class ECProjectOpenedHook implements LookupProvider {
 		return Lookups.fixed(new ProjectOpenedHook() {
 			@Override
 			protected void projectOpened() {
-				System.out.println("PROJECT OPENED");
+				System.out.println("PROJECT " + p.getProjectDirectory().getName() + " OPENED");
 				FileObject projFo = p.getProjectDirectory();
 
-				projFo.addRecursiveListener(new ECChangeListener());
+				attachListeners(projFo, p);
 
 				ECProjectPreferences.setLineEnding(BaseDocument.LS_CRLF, p);
 			}
 
 			@Override
 			protected void projectClosed() {
-				System.out.println("PROJECT CLOSED");
+				System.out.println("PROJECT " + p.getProjectDirectory().getName() + " CLOSED");
 			}
 		});
 	}
 
+	/**
+	 * recursively attaches recursive listeners to folders containing a .editorconfig file.
+	 * <p>
+	 * @param root
+	 * @param p
+	 */
+	private void attachListeners(FileObject root, Project p) {
+		for (FileObject file : root.getChildren()) {
+			if (file.isFolder()) {
+				attachListeners(file, p);
+			} else if (file.getExt().equals(".editorconfig")) {
+				file.getParent().addRecursiveListener(new ECChangeListener(p, file));
+			}
+		}
+	}
+
 	private class ECChangeListener extends FileChangeAdapter {
+
+		private Project p;
+		private FileObject ecFile;
+
+		public ECChangeListener(Project p, FileObject ecFile) {
+			this.p = p;
+			this.ecFile = ecFile;
+
+			ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+			URL resource = classLoader.getResource(ecFile.getPath());
+
+			EditorConfigParser parser = new EditorConfigParser();
+			Map<String, List<EditorConfigProperty>> config = parser.parseConfig(resource);
+
+			for (Map.Entry<String, List<EditorConfigProperty>> entry : config.entrySet()) {
+				String key = entry.getKey();
+				List<EditorConfigProperty> value = entry.getValue();
+				System.out.println("Key: " + key);
+				for (EditorConfigProperty editorConfigProperty : value) {
+					System.out.println(editorConfigProperty.getKey() + " : " + editorConfigProperty.getValue());
+				}
+			}
+		}
 
 		@Override
 		public void fileAttributeChanged(FileAttributeEvent fe) {
@@ -81,9 +127,8 @@ public class ECProjectOpenedHook implements LookupProvider {
 		@Override
 		public void fileDataCreated(FileEvent fe) {
 			super.fileDataCreated(fe);
-			System.out.println("FILE DATA CREATED");
 			FileObject file = fe.getFile();
-
+			System.out.println("FILE DATA CREATED IN PROJECT " + p.getProjectDirectory().getName());
 			System.out.println("FILE-Name: " + file.getName());
 			DataObject dobj;
 			try {
@@ -120,6 +165,7 @@ public class ECProjectOpenedHook implements LookupProvider {
 		@Override
 		public void fileFolderCreated(FileEvent fe) {
 			super.fileFolderCreated(fe);
+			//TODO search for editor-configs and attach listeners
 		}
 
 		private void applyEditorConfigToFolder(DataFolder dof) {
