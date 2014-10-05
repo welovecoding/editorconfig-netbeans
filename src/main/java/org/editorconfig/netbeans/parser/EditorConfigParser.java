@@ -1,6 +1,5 @@
 package org.editorconfig.netbeans.parser;
 
-import org.editorconfig.netbeans.model.EditorConfigProperty;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.editorconfig.netbeans.model.EditorConfigProperty;
 
 public class EditorConfigParser {
 
@@ -21,30 +21,34 @@ public class EditorConfigParser {
   public EditorConfigParser() {
   }
 
-  public Map<String, List<EditorConfigProperty>> parseConfig(File file) {
+  public Map<String, List<EditorConfigProperty>> parseConfig(File file) throws EditorConfigParserException {
     result = new HashMap<>();
     String section = null;
+    if (file != null) {
 
-    String line;
+      String line;
 
-    try (
-            FileInputStream fis = new FileInputStream(file);
-            InputStreamReader isr = new InputStreamReader(fis, "UTF-8");
-            BufferedReader br = new BufferedReader(isr)) {
-      while ((line = br.readLine()) != null) {
-        boolean isInteresting = !(line.startsWith("#") || line.isEmpty());
+      try (
+              FileInputStream fis = new FileInputStream(file);
+              InputStreamReader isr = new InputStreamReader(fis, "UTF-8");
+              BufferedReader br = new BufferedReader(isr)) {
+        while ((line = br.readLine()) != null) {
+          boolean isInteresting = !(line.startsWith("#") || line.isEmpty());
 
-        if (isInteresting) {
-          if (line.startsWith("[")) {
-            section = parseSection(line);
-          } else if (section != null) {
-            EditorConfigProperty property = parseProperty(line);
-            addProperty(section, property);
+          if (isInteresting) {
+            if (line.startsWith("[")) {
+              section = parseSection(line);
+            } else if (section != null) {
+              EditorConfigProperty property = parseProperty(line);
+              addProperty(section, property);
+            }
           }
         }
+      } catch (IOException ex) {
+        LOG.log(Level.SEVERE, "Error reading file: {0}", ex.getMessage());
       }
-    } catch (IOException ex) {
-      LOG.log(Level.SEVERE, "Error reading file: {0}", ex.getMessage());
+    } else {
+      throw new EditorConfigParserException("Given file cannot be found.");
     }
 
     return result;
@@ -74,9 +78,17 @@ public class EditorConfigParser {
     String javaRegEx = regex;
     String temp;
 
-    if (regex.startsWith("*.")) {
+    if (regex.equals("*")) {
+      javaRegEx = ".*";
+    } else if (regex.startsWith("*.")) {
+      // TODO: Implement difference between "*.js" and "lib/**.js"
       temp = regex.substring(2, regex.length());
       javaRegEx = "^(.*)\\." + temp + "$";
+    } else if (regex.startsWith("{")) {
+      temp = regex.substring(1, regex.length() - 1);
+      String[] fileNames = temp.split(",");
+      String names = String.join("|", fileNames);
+      javaRegEx = "(" + names + ")";
     }
 
     return javaRegEx;

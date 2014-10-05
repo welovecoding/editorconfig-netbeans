@@ -8,14 +8,20 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
-import org.editorconfig.netbeans.parser.EditorConfigParser;
 import org.editorconfig.netbeans.model.EditorConfigProperty;
+import org.editorconfig.netbeans.parser.EditorConfigParser;
+import org.editorconfig.netbeans.parser.EditorConfigParserException;
 
 public class MainClass {
 
   private static final Logger LOG = Logger.getLogger(MainClass.class.getName());
 
-  public static void main(String[] args) throws URISyntaxException {
+  public static void main(String[] args) throws URISyntaxException, EditorConfigParserException {
+    // RegEx test
+    Pattern pattern1 = Pattern.compile("(package.json|.travis.yml)");
+    Matcher matcher1 = pattern1.matcher("package.json");
+    System.out.println("Matches: " + matcher1.matches());
+
     // Get test file
     String testFilePath = "org/editorconfig/example/editorconfig-test.ini";
     ClassLoader classLoader = Thread.currentThread().getContextClassLoader();

@@ -33,13 +33,33 @@ public class EditorConfigParserTest {
   }
 
   @Test
-  public void testParseConfig() throws URISyntaxException {
+  public void testParseConfig() throws URISyntaxException, EditorConfigParserException {
     ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
     URL resource = classLoader.getResource(testFilePath);
     Map<String, List<EditorConfigProperty>> config = parser.parseConfig(resource);
 
     assertNotNull("it can find the test file", resource);
     assertEquals("it parses the correct number of sections", config.size(), 5);
+  }
+
+  @Test
+  public void testWildCardRegEx() {
+    String regEx = "*";
+
+    String file = "DocumentHandler";
+    String jsFile = "src/main/webapp/resources/js/wlc/DocumentHandler.js";
+    String pyFile = "src/main/webapp/resources/js/wlc/DocumentHandler.py";
+
+    String javaRegEx = parser.convertRegEx(regEx);
+    Pattern pattern = Pattern.compile(javaRegEx);
+
+    Matcher fileMatch = pattern.matcher(file);
+    Matcher jsMatch = pattern.matcher(jsFile);
+    Matcher pyMatch = pattern.matcher(pyFile);
+
+    assertEquals(fileMatch.matches(), true);
+    assertEquals(jsMatch.matches(), true);
+    assertEquals(pyMatch.matches(), true);
   }
 
   @Test
