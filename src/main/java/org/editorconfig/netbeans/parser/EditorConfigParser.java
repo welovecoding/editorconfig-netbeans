@@ -36,24 +36,11 @@ public class EditorConfigParser {
 
         if (isInteresting) {
           if (line.startsWith("[")) {
-            // RegEx
-            String regex = line.substring(1, line.lastIndexOf("]"));
-            // TODO: Convert RegEx to Java compliant RegEx
-            section = regex;
+            section = parseSection(line);
           } else if (section != null) {
-            // Key / Value
-            String[] splitted = line.split("=");
-            String key = splitted[0].trim();
-            String value = splitted[1].trim();
-            // TODO: Save Key / Value pairs together with RegEx in result set
-            List<EditorConfigProperty> properties = result.get(section);
-
-            if (properties == null) {
-              properties = new ArrayList<>();
-              result.put(section, properties);
-            }
-
-            properties.add(new EditorConfigProperty(key, value));
+            EditorConfigProperty property = parseProperty(line);
+            List<EditorConfigProperty> properties = getProperties(result, section);
+            properties.add(property);
           }
         }
       }
@@ -62,6 +49,30 @@ public class EditorConfigParser {
     }
 
     return result;
+  }
+
+  private List<EditorConfigProperty> getProperties(Map<String, List<EditorConfigProperty>> result, String section) {
+    List<EditorConfigProperty> properties = result.get(section);
+    if (properties == null) {
+      properties = new ArrayList<>();
+      result.put(section, properties);
+    }
+
+    return properties;
+  }
+
+  private String parseSection(String line) {
+    String regex = line.substring(1, line.lastIndexOf("]"));
+    // TODO: Convert RegEx to Java compliant RegEx
+    return regex;
+  }
+
+  private EditorConfigProperty parseProperty(String line) {
+    String[] splitted = line.split("=");
+    String key = splitted[0].trim();
+    String value = splitted[1].trim();
+
+    return new EditorConfigProperty(key, value);
   }
 
   public void printConfig(Map<String, List<EditorConfigProperty>> config) {
