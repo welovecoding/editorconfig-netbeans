@@ -14,6 +14,9 @@ public class EditorConfigParserTest {
   private static final Logger LOG = Logger.getLogger(EditorConfigParserTest.class.getName());
 
   private final EditorConfigParser parser;
+
+  private final String testFilePath = "org/editorconfig/example/editorconfig-test.ini";
+
   private final String[] sampleFiles = new String[]{
     "src/main/webapp/categories.xhtml",
     "src/main/webapp/resources/js/wlc/DocumentHandler.js",
@@ -29,14 +32,12 @@ public class EditorConfigParserTest {
 
   @Test
   public void testParseConfig() throws URISyntaxException {
-    String testFilePath = "org/editorconfig/example/editorconfig-test.ini";
     ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
     URL resource = classLoader.getResource(testFilePath);
-
     Map<String, List<EditorConfigProperty>> config = parser.parseConfig(resource);
 
-    // Test number of sections
-    assertEquals(config.size(), 5);
+    assertNotNull("it can find the test file", resource);
+    assertEquals("it parses the correct number of sections", config.size(), 5);
   }
 
 }
