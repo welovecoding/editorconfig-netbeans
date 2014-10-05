@@ -1,5 +1,6 @@
 package org.editorconfig.netbeans.parser;
 
+import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
@@ -19,6 +20,8 @@ public class EditorConfigParserTest {
 
   private final String testFilePath = "org/editorconfig/example/editorconfig-test.ini";
 
+  private final File testFile;
+
   private final String[] sampleFiles = new String[]{
     "src/main/webapp/categories.xhtml",
     "src/main/webapp/resources/js/wlc/DocumentHandler.js",
@@ -30,15 +33,14 @@ public class EditorConfigParserTest {
 
   public EditorConfigParserTest() {
     parser = new EditorConfigParser();
+    ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+    URL resource = classLoader.getResource(testFilePath);
+    testFile = new File(resource.getFile());
   }
 
   @Test
   public void testParseConfig() throws URISyntaxException, EditorConfigParserException {
-    ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-    URL resource = classLoader.getResource(testFilePath);
-    Map<String, List<EditorConfigProperty>> config = parser.parseConfig(resource);
-
-    assertNotNull("it can find the test file", resource);
+    Map<String, List<EditorConfigProperty>> config = parser.parseConfig(testFile);
     assertEquals("it parses the correct number of sections", config.size(), 5);
   }
 

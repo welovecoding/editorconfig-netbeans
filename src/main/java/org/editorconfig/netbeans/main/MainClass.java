@@ -1,5 +1,6 @@
 package org.editorconfig.netbeans.main;
 
+import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
@@ -26,9 +27,11 @@ public class MainClass {
     String testFilePath = "org/editorconfig/example/editorconfig-test.ini";
     ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
     URL resource = classLoader.getResource(testFilePath);
+    String resourceFilePath = resource.getFile();
+    File file = new File(resourceFilePath);
 
     EditorConfigParser parser = new EditorConfigParser();
-    Map<String, List<EditorConfigProperty>> config = parser.parseConfig(resource);
+    Map<String, List<EditorConfigProperty>> config = parser.parseConfig(file);
     // EditorConfigPrinter.printConfig(config);
 
     String[] sampleFiles = new String[]{
