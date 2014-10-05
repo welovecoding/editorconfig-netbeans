@@ -5,6 +5,8 @@ import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.editorconfig.netbeans.model.EditorConfigProperty;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -38,6 +40,22 @@ public class EditorConfigParserTest {
 
     assertNotNull("it can find the test file", resource);
     assertEquals("it parses the correct number of sections", config.size(), 5);
+  }
+
+  @Test
+  public void testFileEndingRegEx() {
+    String regEx = "*.js";
+    String jsFile = "src/main/webapp/resources/js/wlc/DocumentHandler.js";
+    String pyFile = "src/main/webapp/resources/js/wlc/DocumentHandler.py";
+
+    String javaRegEx = parser.convertRegEx(regEx);
+    Pattern pattern = Pattern.compile(javaRegEx);
+
+    Matcher jsMatch = pattern.matcher(jsFile);
+    Matcher pyMatch = pattern.matcher(pyFile);
+
+    assertEquals(jsMatch.matches(), true);
+    assertEquals(pyMatch.matches(), false);
   }
 
 }

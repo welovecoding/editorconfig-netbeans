@@ -72,7 +72,7 @@ public class EditorConfigParser {
     return convertRegEx(regex);
   }
 
-  private String convertRegEx(String regex) {
+  protected String convertRegEx(String regex) {
     String javaRegEx = regex;
     String temp;
 
