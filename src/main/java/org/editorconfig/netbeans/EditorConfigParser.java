@@ -7,12 +7,12 @@ import java.io.InputStreamReader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class Parser {
+public class EditorConfigParser {
 
-  private static final Logger LOG = Logger.getLogger(Parser.class.getName());
+  private static final Logger LOG = Logger.getLogger(EditorConfigParser.class.getName());
 
   // https://github.com/editorconfig/editorconfig-core-java/blob/master/src/org/editorconfig/core/EditorConfig.java
-  public Parser() {
+  public EditorConfigParser() {
   }
 
   public String parseResource(String filePath) {
