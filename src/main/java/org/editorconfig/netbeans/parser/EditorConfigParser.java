@@ -16,12 +16,13 @@ import java.util.logging.Logger;
 public class EditorConfigParser {
 
   private static final Logger LOG = Logger.getLogger(EditorConfigParser.class.getName());
+  private Map<String, List<EditorConfigProperty>> result;
 
   public EditorConfigParser() {
   }
 
   public Map<String, List<EditorConfigProperty>> parseConfig(URL resource) {
-    Map<String, List<EditorConfigProperty>> result = new HashMap<>();
+    result = new HashMap<>();
     String section = null;
 
     File file = new File(resource.getFile());
@@ -39,8 +40,7 @@ public class EditorConfigParser {
             section = parseSection(line);
           } else if (section != null) {
             EditorConfigProperty property = parseProperty(line);
-            List<EditorConfigProperty> properties = getProperties(result, section);
-            properties.add(property);
+            addProperty(section, property);
           }
         }
       }
@@ -51,7 +51,12 @@ public class EditorConfigParser {
     return result;
   }
 
-  private List<EditorConfigProperty> getProperties(Map<String, List<EditorConfigProperty>> result, String section) {
+  private void addProperty(String section, EditorConfigProperty property) {
+    List<EditorConfigProperty> properties = getProperties(section);
+    properties.add(property);
+  }
+
+  private List<EditorConfigProperty> getProperties(String section) {
     List<EditorConfigProperty> properties = result.get(section);
     if (properties == null) {
       properties = new ArrayList<>();
@@ -73,16 +78,5 @@ public class EditorConfigParser {
     String value = splitted[1].trim();
 
     return new EditorConfigProperty(key, value);
-  }
-
-  public void printConfig(Map<String, List<EditorConfigProperty>> config) {
-    for (String section : config.keySet()) {
-      System.out.println("Section: " + section);
-      List<EditorConfigProperty> properties = config.get(section);
-      for (EditorConfigProperty property : properties) {
-        String output = String.format("\t%s: %s", property.getKey(), property.getValue());
-        System.out.println(output);
-      }
-    }
   }
 }
