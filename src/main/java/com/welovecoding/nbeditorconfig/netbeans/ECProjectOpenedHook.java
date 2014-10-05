@@ -22,7 +22,7 @@ import org.openide.util.lookup.Lookups;
 
 /**
  *
- * @author MacYser
+ * @author Michael Koppen
  */
 @LookupProvider.Registration(projectType = {
 	"org-netbeans-modules-java-j2seproject",
@@ -33,7 +33,7 @@ import org.openide.util.lookup.Lookups;
 	"org-netbeans-modules-apisupport-project"}
 )
 public class ECProjectOpenedHook implements LookupProvider {
-	
+
 	@Override
 	public Lookup createAdditionalLookup(Lookup lookup) {
 		System.out.println("CREATE ADDITIONAL LOOKUP");
@@ -43,56 +43,57 @@ public class ECProjectOpenedHook implements LookupProvider {
 			protected void projectOpened() {
 				System.out.println("PROJECT OPENED");
 				FileObject projFo = p.getProjectDirectory();
-				
+
 				projFo.addRecursiveListener(new ECChangeListener());
-				
+
 				ECProjectPreferences.setLineEnding(BaseDocument.LS_CRLF, p);
 			}
-			
+
 			@Override
 			protected void projectClosed() {
+				System.out.println("PROJECT CLOSED");
 			}
 		});
 	}
-	
+
 	private class ECChangeListener extends FileChangeAdapter {
-		
+
 		@Override
 		public void fileAttributeChanged(FileAttributeEvent fe) {
 			super.fileAttributeChanged(fe);
 		}
-		
+
 		@Override
 		public void fileRenamed(FileRenameEvent fe) {
 			super.fileRenamed(fe);
 		}
-		
+
 		@Override
 		public void fileDeleted(FileEvent fe) {
 			super.fileDeleted(fe);
 		}
-		
+
 		@Override
 		public void fileChanged(FileEvent fe) {
 			super.fileChanged(fe);
 		}
-		
+
 		@Override
 		public void fileDataCreated(FileEvent fe) {
 			super.fileDataCreated(fe);
 			System.out.println("FILE DATA CREATED");
 			FileObject file = fe.getFile();
-			
+
 			System.out.println("FILE-Name: " + file.getName());
 			DataObject dobj;
 			try {
 				dobj = DataObject.find(file);
 				StyledDocument doc = NbDocument.getDocument(dobj);
 				doc.putProperty(BaseDocument.READ_LINE_SEPARATOR_PROP, "");
-				
+
 				System.out.println("DOBJ-Name: " + dobj.getPrimaryFile().getName());
 				final DataFolder dof = dobj.getFolder();
-				
+
 				if (file.getNameExt().equals(".editorconfig")) {
 					file.addFileChangeListener(new FileChangeAdapter() {
 						@Override
@@ -115,18 +116,18 @@ public class ECProjectOpenedHook implements LookupProvider {
 				Exceptions.printStackTrace(ex);
 			}
 		}
-		
+
 		@Override
 		public void fileFolderCreated(FileEvent fe) {
 			super.fileFolderCreated(fe);
 		}
-		
+
 		private void applyEditorConfigToFolder(DataFolder dof) {
 			for (DataObject dobj : dof.getChildren()) {
 				applyEditorConfigToFile(dobj);
 			}
 		}
-		
+
 		private void applyEditorConfigToFile(DataObject dobj) throws NumberFormatException {
 			System.out.println("APPLY");
 
@@ -149,7 +150,7 @@ public class ECProjectOpenedHook implements LookupProvider {
 //			}
 		}
 		public static final String indentSize = SimpleValueNames.INDENT_SHIFT_WIDTH;
-		
+
 		private void doIndentSize(FileObject file, int value) {
 			Preferences prefs = CodeStylePreferences.get(file, file.getMIMEType()).getPreferences();
 			prefs.putInt(indentSize, value);
@@ -159,6 +160,6 @@ public class ECProjectOpenedHook implements LookupProvider {
 				Exceptions.printStackTrace(ex);
 			}
 		}
-		
+
 	}
 }
