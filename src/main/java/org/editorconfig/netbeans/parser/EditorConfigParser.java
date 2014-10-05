@@ -79,8 +79,14 @@ public class EditorConfigParser {
     if (regex.equals("*")) {
       javaRegEx = ".*";
     } else if (regex.startsWith("*.")) {
+      // TODO: Implement difference between "*.js" and "lib/**.js"
       temp = regex.substring(2, regex.length());
       javaRegEx = "^(.*)\\." + temp + "$";
+    } else if (regex.startsWith("{")) {
+      temp = regex.substring(1, regex.length() - 1);
+      String[] fileNames = temp.split(",");
+      String names = String.join("|", fileNames);
+      javaRegEx = "(" + names + ")";
     }
 
     return javaRegEx;
