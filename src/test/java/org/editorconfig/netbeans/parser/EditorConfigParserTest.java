@@ -37,22 +37,30 @@ public class EditorConfigParserTest {
   }
 
   @Test
-  public void testParseConfig() throws URISyntaxException, EditorConfigParserException {
+  public void parsesConfig() throws URISyntaxException, EditorConfigParserException {
     Map<String, List<EditorConfigProperty>> config = parser.parseConfig(testFile);
     assertEquals("it parses the correct number of sections", config.size(), 5);
   }
 
   @Test
-  public void testWildCardRegEx() {
+  public void matchesEverything() {
     assertEquals(true, parser.matches("*", "DocumentHandler"));
     assertEquals(true, parser.matches("*", "src/main/webapp/resources/js/wlc/DocumentHandler.js"));
     assertEquals(true, parser.matches("*", "src/main/webapp/resources/js/wlc/DocumentHandler.py"));
   }
 
   @Test
-  public void testFileEndingRegEx() {
+  public void matchesFileEndings() {
     assertEquals(true, parser.matches("*.js", "src/main/webapp/resources/js/wlc/DocumentHandler.js"));
     assertEquals(false, parser.matches("*.js", "src/main/webapp/resources/js/wlc/DocumentHandler.py"));
+  }
+
+  @Test
+  public void matchesGivenStrings() {
+    assertEquals(true, parser.matches("{package.json,.travis.yml}", "package.json"));
+    assertEquals(true, parser.matches("{package.json,.travis.yml}", ".travis.yml"));
+    assertEquals(false, parser.matches("{package.json,.travis.yml}", "travis.yml"));
+    assertEquals(false, parser.matches("{package.json,.travis.yml}", "src/package.json"));
   }
 
 }
