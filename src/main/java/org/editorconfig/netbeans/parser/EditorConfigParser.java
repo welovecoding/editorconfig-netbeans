@@ -38,8 +38,8 @@ public class EditorConfigParser {
           } else {
             // Key / Value
             String[] splitted = line.split("=");
-            System.out.println("Key: " + splitted[0]);
-            System.out.println("Value: " + splitted[1]);
+            System.out.println("Key: " + splitted[0].trim());
+            System.out.println("Value: " + splitted[1].trim());
             // TODO: Save Key / Value pairs together with RegEx in result set
           }
         }
