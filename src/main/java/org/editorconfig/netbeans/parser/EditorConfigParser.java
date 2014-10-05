@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.editorconfig.netbeans.model.EditorConfigProperty;
 
 public class EditorConfigParser {
@@ -74,7 +76,7 @@ public class EditorConfigParser {
     return convertRegEx(regex);
   }
 
-  protected String convertRegEx(String regex) {
+  private String convertRegEx(String regex) {
     String javaRegEx = regex;
     String temp;
 
@@ -92,6 +94,15 @@ public class EditorConfigParser {
     }
 
     return javaRegEx;
+  }
+
+  public boolean matches(String regEx, String filePath) {
+    String javaRegEx = convertRegEx(regEx);
+
+    Pattern pattern = Pattern.compile(javaRegEx);
+    Matcher matcher = pattern.matcher(filePath);
+
+    return matcher.matches();
   }
 
   private EditorConfigProperty parseProperty(String line) {

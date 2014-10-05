@@ -6,8 +6,6 @@ import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import org.editorconfig.netbeans.model.EditorConfigProperty;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -46,38 +44,15 @@ public class EditorConfigParserTest {
 
   @Test
   public void testWildCardRegEx() {
-    String regEx = "*";
-
-    String file = "DocumentHandler";
-    String jsFile = "src/main/webapp/resources/js/wlc/DocumentHandler.js";
-    String pyFile = "src/main/webapp/resources/js/wlc/DocumentHandler.py";
-
-    String javaRegEx = parser.convertRegEx(regEx);
-    Pattern pattern = Pattern.compile(javaRegEx);
-
-    Matcher fileMatch = pattern.matcher(file);
-    Matcher jsMatch = pattern.matcher(jsFile);
-    Matcher pyMatch = pattern.matcher(pyFile);
-
-    assertEquals(fileMatch.matches(), true);
-    assertEquals(jsMatch.matches(), true);
-    assertEquals(pyMatch.matches(), true);
+    assertEquals(true, parser.matches("*", "DocumentHandler"));
+    assertEquals(true, parser.matches("*", "src/main/webapp/resources/js/wlc/DocumentHandler.js"));
+    assertEquals(true, parser.matches("*", "src/main/webapp/resources/js/wlc/DocumentHandler.py"));
   }
 
   @Test
   public void testFileEndingRegEx() {
-    String regEx = "*.js";
-    String jsFile = "src/main/webapp/resources/js/wlc/DocumentHandler.js";
-    String pyFile = "src/main/webapp/resources/js/wlc/DocumentHandler.py";
-
-    String javaRegEx = parser.convertRegEx(regEx);
-    Pattern pattern = Pattern.compile(javaRegEx);
-
-    Matcher jsMatch = pattern.matcher(jsFile);
-    Matcher pyMatch = pattern.matcher(pyFile);
-
-    assertEquals(jsMatch.matches(), true);
-    assertEquals(pyMatch.matches(), false);
+    assertEquals(true, parser.matches("*.js", "src/main/webapp/resources/js/wlc/DocumentHandler.js"));
+    assertEquals(false, parser.matches("*.js", "src/main/webapp/resources/js/wlc/DocumentHandler.py"));
   }
 
 }
