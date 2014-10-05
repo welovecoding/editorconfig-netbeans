@@ -8,6 +8,7 @@ import java.util.prefs.Preferences;
 import javax.swing.text.StyledDocument;
 import org.editorconfig.netbeans.model.EditorConfigProperty;
 import org.editorconfig.netbeans.parser.EditorConfigParser;
+import org.editorconfig.netbeans.parser.EditorConfigParserException;
 import org.netbeans.api.editor.settings.SimpleValueNames;
 import org.netbeans.api.project.Project;
 import org.netbeans.editor.BaseDocument;
@@ -105,7 +106,12 @@ public class ECProjectOpenedHook implements LookupProvider {
 
 			if (ecFile != null) {
 				EditorConfigParser parser = new EditorConfigParser();
-				Map<String, List<EditorConfigProperty>> config = parser.parseConfig(FileUtil.toFile(ecFile));
+				Map<String, List<EditorConfigProperty>> config = null;
+				try {
+					config = parser.parseConfig(FileUtil.toFile(ecFile));
+				} catch (EditorConfigParserException ex) {
+					Exceptions.printStackTrace(ex);
+				}
 
 				for (Map.Entry<String, List<EditorConfigProperty>> entry : config.entrySet()) {
 					String key = entry.getKey();
@@ -115,7 +121,7 @@ public class ECProjectOpenedHook implements LookupProvider {
 						System.out.println(editorConfigProperty.getKey() + " : " + editorConfigProperty.getValue());
 					}
 				}
-			}//TODO remove line
+			}
 
 		}
 
