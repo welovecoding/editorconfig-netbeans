@@ -1,6 +1,8 @@
 package org.editorconfig.netbeans.test;
 
 import java.io.File;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -13,7 +15,7 @@ public class MainClass {
 
   private static final Logger LOG = Logger.getLogger(MainClass.class.getName());
 
-  public static void main(String[] args) {
+  public static void main(String[] args) throws URISyntaxException {
     /*
      EditorConfigParser parser = new EditorConfigParser();
      String result = parser.parseResource("editorconfig-test.ini");
@@ -25,12 +27,13 @@ public class MainClass {
     // Get test file
     String testFilePath = "org/editorconfig/example/editorconfig-test.ini";
     ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-    String path = classLoader.getResource(testFilePath).getPath();
-    
-    filePaths.add(path);
+    // Absolute Path with forward slashes
+    URL resource = classLoader.getResource(testFilePath);
+    File testFile = new File(resource.getFile());
+    filePaths.add(resource.getPath());
 
     for (String filePath : filePaths) {
-      EditorConfig editorConfig = new EditorConfig("editorconfig-test.ini", EditorConfig.VERSION);
+      EditorConfig editorConfig = new EditorConfig(testFile.getName(), EditorConfig.VERSION);
       try {
         List<OutPair> properties = editorConfig.getProperties(filePath);
 

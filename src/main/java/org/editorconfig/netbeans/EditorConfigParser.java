@@ -1,9 +1,12 @@
 package org.editorconfig.netbeans;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -13,6 +16,25 @@ public class EditorConfigParser {
 
   // https://github.com/editorconfig/editorconfig-core-java/blob/master/src/org/editorconfig/core/EditorConfig.java
   public EditorConfigParser() {
+  }
+
+  public void parseConfig(URL resource) {
+    File file = new File(resource.getFile());
+    StringBuilder sb = new StringBuilder();
+    String line;
+
+    try (
+            FileInputStream fis = new FileInputStream(file);
+            InputStreamReader isr = new InputStreamReader(fis, "UTF-8");
+            BufferedReader br = new BufferedReader(isr)) {
+      while ((line = br.readLine()) != null) {
+        sb.append(line);
+      }
+    } catch (IOException ex) {
+      //
+    } finally {
+      System.out.println(sb.toString());
+    }
   }
 
   public String parseResource(String filePath) {
