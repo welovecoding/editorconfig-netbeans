@@ -6,7 +6,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -22,11 +21,10 @@ public class EditorConfigParser {
   public EditorConfigParser() {
   }
 
-  public Map<String, List<EditorConfigProperty>> parseConfig(URL resource) {
+  public Map<String, List<EditorConfigProperty>> parseConfig(File file) {
     result = new HashMap<>();
     String section = null;
 
-    File file = new File(resource.getFile());
     String line;
 
     try (
