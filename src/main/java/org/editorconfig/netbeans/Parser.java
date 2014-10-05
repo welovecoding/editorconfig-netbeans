@@ -11,6 +11,7 @@ public class Parser {
 
   private static final Logger LOG = Logger.getLogger(Parser.class.getName());
 
+  // https://github.com/editorconfig/editorconfig-core-java/blob/master/src/org/editorconfig/core/EditorConfig.java
   public Parser() {
   }
 
