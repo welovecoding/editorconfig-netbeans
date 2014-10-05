@@ -76,7 +76,9 @@ public class EditorConfigParser {
     String javaRegEx = regex;
     String temp;
 
-    if (regex.startsWith("*.")) {
+    if (regex.equals("*")) {
+      javaRegEx = ".*";
+    } else if (regex.startsWith("*.")) {
       temp = regex.substring(2, regex.length());
       javaRegEx = "^(.*)\\." + temp + "$";
     }

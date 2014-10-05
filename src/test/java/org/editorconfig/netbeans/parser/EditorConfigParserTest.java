@@ -43,6 +43,26 @@ public class EditorConfigParserTest {
   }
 
   @Test
+  public void testWildCardRegEx() {
+    String regEx = "*";
+
+    String file = "DocumentHandler";
+    String jsFile = "src/main/webapp/resources/js/wlc/DocumentHandler.js";
+    String pyFile = "src/main/webapp/resources/js/wlc/DocumentHandler.py";
+
+    String javaRegEx = parser.convertRegEx(regEx);
+    Pattern pattern = Pattern.compile(javaRegEx);
+
+    Matcher fileMatch = pattern.matcher(file);
+    Matcher jsMatch = pattern.matcher(jsFile);
+    Matcher pyMatch = pattern.matcher(pyFile);
+
+    assertEquals(fileMatch.matches(), true);
+    assertEquals(jsMatch.matches(), true);
+    assertEquals(pyMatch.matches(), true);
+  }
+
+  @Test
   public void testFileEndingRegEx() {
     String regEx = "*.js";
     String jsFile = "src/main/webapp/resources/js/wlc/DocumentHandler.js";
