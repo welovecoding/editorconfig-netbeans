@@ -33,7 +33,7 @@ public class EditorConfigParserTest {
   }
 
   @Test
-  public void testParseConfig() throws URISyntaxException {
+  public void testParseConfig() throws URISyntaxException, EditorConfigParserException {
     ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
     URL resource = classLoader.getResource(testFilePath);
     Map<String, List<EditorConfigProperty>> config = parser.parseConfig(resource);
