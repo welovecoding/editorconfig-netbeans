@@ -1,4 +1,4 @@
-package org.editorconfig.netbeans.config;
+package org.editorconfig.netbeans.model;
 
 public enum EditorConfigKey {
 

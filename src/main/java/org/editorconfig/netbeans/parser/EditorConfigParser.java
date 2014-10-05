@@ -1,5 +1,6 @@
 package org.editorconfig.netbeans.parser;
 
+import org.editorconfig.netbeans.model.EditorConfigProperty;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;

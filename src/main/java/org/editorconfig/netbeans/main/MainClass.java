@@ -1,4 +1,4 @@
-package org.editorconfig.netbeans.test;
+package org.editorconfig.netbeans.main;
 
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -7,9 +7,9 @@ import java.util.Map;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.editorconfig.netbeans.EditorConfigPrinter;
+import org.editorconfig.netbeans.printer.EditorConfigPrinter;
 import org.editorconfig.netbeans.parser.EditorConfigParser;
-import org.editorconfig.netbeans.parser.EditorConfigProperty;
+import org.editorconfig.netbeans.model.EditorConfigProperty;
 
 public class MainClass {
   

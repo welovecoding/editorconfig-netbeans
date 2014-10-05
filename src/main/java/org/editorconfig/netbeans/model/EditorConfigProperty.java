@@ -1,4 +1,4 @@
-package org.editorconfig.netbeans.parser;
+package org.editorconfig.netbeans.model;
 
 public class EditorConfigProperty {
 
