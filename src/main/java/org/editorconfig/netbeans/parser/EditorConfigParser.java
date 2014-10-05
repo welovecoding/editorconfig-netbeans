@@ -69,8 +69,19 @@ public class EditorConfigParser {
 
   private String parseSection(String line) {
     String regex = line.substring(1, line.lastIndexOf("]"));
-    // TODO: Convert RegEx to Java compliant RegEx
-    return regex;
+    return convertRegEx(regex);
+  }
+
+  private String convertRegEx(String regex) {
+    String javaRegEx = regex;
+    String temp;
+
+    if (regex.startsWith("*.")) {
+      temp = regex.substring(2, regex.length());
+      javaRegEx = "^(.*)\\." + temp + "$";
+    }
+
+    return javaRegEx;
   }
 
   private EditorConfigProperty parseProperty(String line) {
