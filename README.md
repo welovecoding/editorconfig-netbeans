@@ -1,11 +1,17 @@
 # EditorConfig NetBeans Plugin
 
 
-A NetBeans IDE plugin supporting the EditorConfig standard. 
+A NetBeans IDE plugin supporting the [EditorConfig][] standard. 
 
-An EditorConfig file consists of a file named `.editorconfig` which is usually stored in the root directory of a project. The EditorConfig file defines coding styles across different IDEs (ex. NetBeans IDE, IntelliJ IDEA, Visual Studio, Sublime Text, etc.). 
 
-Read more about EditorConfig at http://editorconfig.org/.
+## EditorConfig Project
+
+EditorConfig makes it easy to maintain the correct coding style when switching
+between different text editors and between different projects.  The
+EditorConfig project maintains a file format and plugins for various text
+editors which allow this file format to be read and used by those editors.  For
+information on the file format and supported text editors, see the
+[EditorConfig website][EditorConfig].
 
 ## Example file
 
@@ -39,3 +45,5 @@ indent_size = 2
 indent_style = space
 indent_size = 2
 ```
+
+[EditorConfig]: http://editorconfig.org
