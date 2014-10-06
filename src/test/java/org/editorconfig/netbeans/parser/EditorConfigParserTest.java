@@ -59,23 +59,29 @@ public class EditorConfigParserTest {
 
   @Test
   public void matchesEverything() {
-    assertEquals(true, parser.matches("*", "DocumentHandler"));
-    assertEquals(true, parser.matches("*", "src/main/webapp/resources/js/wlc/DocumentHandler.js"));
-    assertEquals(true, parser.matches("*", "src/main/webapp/resources/js/wlc/DocumentHandler.py"));
+    String pattern = "*";
+
+    assertEquals(true, parser.matches(pattern, "DocumentHandler"));
+    assertEquals(true, parser.matches(pattern, "src/main/webapp/resources/js/wlc/DocumentHandler.js"));
+    assertEquals(true, parser.matches(pattern, "src/main/webapp/resources/js/wlc/DocumentHandler.py"));
   }
 
   @Test
   public void matchesFileEndings() {
-    assertEquals(true, parser.matches("*.js", "src/main/webapp/resources/js/wlc/DocumentHandler.js"));
-    assertEquals(false, parser.matches("*.js", "src/main/webapp/resources/js/wlc/DocumentHandler.py"));
+    String pattern = "*.js";
+
+    assertEquals(true, parser.matches(pattern, "src/main/webapp/resources/js/wlc/DocumentHandler.js"));
+    assertEquals(false, parser.matches(pattern, "src/main/webapp/resources/js/wlc/DocumentHandler.py"));
   }
 
   @Test
   public void matchesGivenStrings() {
-    assertEquals(true, parser.matches("{package.json,.travis.yml}", "package.json"));
-    assertEquals(true, parser.matches("{package.json,.travis.yml}", ".travis.yml"));
-    assertEquals(false, parser.matches("{package.json,.travis.yml}", "travis.yml"));
-    assertEquals(false, parser.matches("{package.json,.travis.yml}", "src/package.json"));
+    String pattern = "{package.json,.travis.yml}";
+
+    assertEquals(true, parser.matches(pattern, "package.json"));
+    assertEquals(true, parser.matches(pattern, ".travis.yml"));
+    assertEquals(false, parser.matches(pattern, "travis.yml"));
+    assertEquals(false, parser.matches(pattern, "src/package.json"));
   }
 
 }
