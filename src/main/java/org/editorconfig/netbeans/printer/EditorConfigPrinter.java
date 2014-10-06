@@ -6,14 +6,23 @@ import org.editorconfig.netbeans.model.EditorConfigProperty;
 
 public class EditorConfigPrinter {
 
-  public static void printConfig(Map<String, List<EditorConfigProperty>> config) {
+  public static String logConfig(Map<String, List<EditorConfigProperty>> config) {
+    StringBuilder sb = new StringBuilder();
+
     for (String section : config.keySet()) {
-      System.out.println("Section: " + section);
+      sb.append("Section: ").append(section).append("\r\n");
       List<EditorConfigProperty> properties = config.get(section);
       for (EditorConfigProperty property : properties) {
-        String output = String.format("\t%s: %s", property.getKey(), property.getValue());
-        System.out.println(output);
+        String text = String.format("\t%s: %s\r\n", property.getKey(), property.getValue());
+        sb.append(text);
       }
     }
+
+    return sb.toString();
+  }
+
+  public static void printConfig(Map<String, List<EditorConfigProperty>> config) {
+    String configLog = logConfig(config);
+    System.out.println(configLog);
   }
 }
