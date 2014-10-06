@@ -92,7 +92,7 @@ public class EditorConfigParser {
 
       expression = template;
     } else if (regEx.indexOf(CASE_2) > 0) {
-      template = "({0})(.*?)\\.{1}$";
+      template = "(.*)({0})(.*?)\\.{1}$";
 
       String startsWith = regEx.substring(0, regEx.indexOf(CASE_2));
       String endsWith = regEx.substring(startsWith.length() + CASE_2.length());
@@ -100,9 +100,6 @@ public class EditorConfigParser {
       expression = MessageFormat.format(template, new Object[]{
         startsWith, endsWith
       });
-
-      // TODO:
-      System.out.println("RegEx: " + expression);
     } else if (regEx.startsWith(CASE_3)) {
       template = "^(.*)\\.{0}$";
 
