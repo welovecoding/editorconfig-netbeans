@@ -3,6 +3,8 @@ package com.welovecoding.nbeditorconfig.netbeans;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import javax.swing.text.StyledDocument;
@@ -29,185 +31,190 @@ import org.openide.util.lookup.Lookups;
  * @author Michael Koppen
  */
 @LookupProvider.Registration(projectType = {
-	"org-netbeans-modules-java-j2seproject",
-	"org-netbeans-modules-web-project",
-	"org.netbeans.modules.web.clientproject",
-	"org-netbeans-modules-web-clientproject",
-	"org-netbeans-modules-maven",
-	"org-netbeans-modules-apisupport-project"}
+  "org-netbeans-modules-java-j2seproject",
+  "org-netbeans-modules-web-project",
+  "org.netbeans.modules.web.clientproject",
+  "org-netbeans-modules-web-clientproject",
+  "org-netbeans-modules-maven",
+  "org-netbeans-modules-apisupport-project"}
 )
 /**
  * Listener for newly opened Projects.
  */
 public class ECProjectOpenedHook implements LookupProvider {
 
-	private Map<FileObject, ECChangeListener> listeners = new HashMap<>();
+  private static final Logger LOG = Logger.getLogger(ECProjectOpenedHook.class.getName());
+  private Map<FileObject, ECChangeListener> listeners = new HashMap<>();
 
-	@Override
-	public Lookup createAdditionalLookup(Lookup lookup) {
-		System.out.println("CREATE ADDITIONAL LOOKUP");
-		final Project p = lookup.lookup(Project.class);
-		return Lookups.fixed(new ProjectOpenedHook() {
-			@Override
-			protected void projectOpened() {
-				System.out.println("PROJECT " + p.getProjectDirectory().getName() + " OPENED");
-				FileObject projFo = p.getProjectDirectory();
+  @Override
+  public Lookup createAdditionalLookup(Lookup lookup) {
+    System.out.println("CREATE ADDITIONAL LOOKUP");
+    final Project p = lookup.lookup(Project.class);
+    return Lookups.fixed(new ProjectOpenedHook() {
+      @Override
+      protected void projectOpened() {
+        LOG.log(Level.INFO, "Opened project: {0}", p.getProjectDirectory().getName());
+        FileObject projFo = p.getProjectDirectory();
 
-				attachListeners(projFo, p);
+        attachListeners(projFo, p);
 
-				ECProjectPreferences.setLineEnding(BaseDocument.LS_CRLF, p);
-			}
+        ECProjectPreferences.setLineEnding(BaseDocument.LS_CRLF, p);
+      }
 
-			@Override
-			protected void projectClosed() {
-				System.out.println("PROJECT " + p.getProjectDirectory().getName() + " CLOSED");
-			}
-		});
-	}
+      @Override
+      protected void projectClosed() {
+        System.out.println("PROJECT " + p.getProjectDirectory().getName() + " CLOSED");
+      }
+    });
+  }
 
-	/**
-	 * recursively attaches recursive listeners to folders containing a .editorconfig file.
-	 * <p>
-	 * @param root
-	 * @param p
-	 */
-	private void attachListeners(FileObject root, Project p) {
-		if (p.getProjectDirectory().equals(root)) {
-			System.out.println("ALWAYS ATTACHING LISTENER TO PROJECT ROOT");
-			ECChangeListener rootListener = new ECChangeListener(p, null);
-			root.addRecursiveListener(rootListener);
-			listeners.put(root, rootListener);
-		}
-		for (FileObject file : root.getChildren()) {
-			System.out.println("INSPECTING FILE " + file.getPath());
-			if (file.isFolder()) {
-				attachListeners(file, p);
-			} else if (file.getName().equals(".editorconfig")) {
-				System.out.println("FOUND EDITORCONFIG " + file.getPath());
-				ECChangeListener newListener = new ECChangeListener(p, file);
-				file.getParent().addRecursiveListener(newListener);
-				listeners.put(file.getParent(), newListener);
-				System.out.println("ATTACHED LISTENER TO " + file.getParent().getPath());
-			}
-		}
-	}
+  /**
+   * recursively attaches recursive listeners to folders containing a
+   * .editorconfig file.
+   * <p>
+   * @param root
+   * @param p
+   */
+  private void attachListeners(FileObject root, Project p) {
+    if (p.getProjectDirectory().equals(root)) {
+      System.out.println("ALWAYS ATTACHING LISTENER TO PROJECT ROOT");
+      ECChangeListener rootListener = new ECChangeListener(p, null);
+      root.addRecursiveListener(rootListener);
+      listeners.put(root, rootListener);
+    }
 
-	private class ECChangeListener extends FileChangeAdapter {
+    for (FileObject file : root.getChildren()) {
+      LOG.log(Level.INFO, "Inspecting file: {0}", file.getPath());
+      if (file.isFolder()) {
+        attachListeners(file, p);
+      } else if (file.getName().equals(".editorconfig")) {
+        LOG.log(Level.INFO, "Found .editorconfig file: {0}", file.getPath());
 
-		private Project p;
-		private Map<String, List<EditorConfigProperty>> ec = new HashMap<>();
+        ECChangeListener newListener = new ECChangeListener(p, file);
+        file.getParent().addRecursiveListener(newListener);
+        listeners.put(file.getParent(), newListener);
+        System.out.println("ATTACHED LISTENER TO " + file.getParent().getPath());
+      }
+    }
+  }
 
-		public ECChangeListener(Project p, FileObject ecFile) {
-			this.p = p;
+  private class ECChangeListener extends FileChangeAdapter {
 
-			if (ecFile != null) {
-				EditorConfigParser parser = new EditorConfigParser();
-				try {
-					ec = parser.parseConfig(FileUtil.toFile(ecFile));
-				} catch (EditorConfigParserException ex) {
-					Exceptions.printStackTrace(ex);
-				}
+    private Project p;
+    private Map<String, List<EditorConfigProperty>> ec = new HashMap<>();
 
-				for (Map.Entry<String, List<EditorConfigProperty>> entry : ec.entrySet()) {
-					String key = entry.getKey();
-					List<EditorConfigProperty> value = entry.getValue();
-					System.out.println("Key: " + key);
-					for (EditorConfigProperty editorConfigProperty : value) {
-						System.out.println(editorConfigProperty.getKey() + " : " + editorConfigProperty.getValue());
-					}
-				}
-			}
+    public ECChangeListener(Project p, FileObject ecFile) {
+      this.p = p;
 
-		}
+      if (ecFile != null) {
+        EditorConfigParser parser = new EditorConfigParser();
+        try {
+          ec = parser.parseConfig(FileUtil.toFile(ecFile));
+        } catch (EditorConfigParserException ex) {
+          Exceptions.printStackTrace(ex);
+        }
 
-		@Override
-		public void fileAttributeChanged(FileAttributeEvent fe) {
-			super.fileAttributeChanged(fe);
-			System.out.println("ECChangeListener :: fileAttributeChanged \n" + fe.getFile().getPath());
-		}
+        for (Map.Entry<String, List<EditorConfigProperty>> entry : ec.entrySet()) {
+          String key = entry.getKey();
+          List<EditorConfigProperty> value = entry.getValue();
+          System.out.println("Key: " + key);
+          for (EditorConfigProperty editorConfigProperty : value) {
+            System.out.println(editorConfigProperty.getKey() + " : " + editorConfigProperty.getValue());
+          }
+        }
+      }
 
-		@Override
-		public void fileRenamed(FileRenameEvent fe) {
-			super.fileRenamed(fe);
-			System.out.println("ECChangeListener :: fileRenamed \n" + fe.getFile().getPath());
-		}
+    }
 
-		@Override
-		public void fileDeleted(FileEvent fe) {
-			super.fileDeleted(fe);
-			System.out.println("ECChangeListener :: fileDeleted \n" + fe.getFile().getPath());
-			//TODO processDeletedEditorConfig
-			//TODO processDeletedFolderWhichMayContainsFoldersWithListeners -> remove them
-		}
+    @Override
+    public void fileAttributeChanged(FileAttributeEvent fe) {
+      super.fileAttributeChanged(fe);
+      System.out.println("ECChangeListener :: fileAttributeChanged \n" + fe.getFile().getPath());
+    }
 
-		private void processDeletedEditorConfig() {
+    @Override
+    public void fileRenamed(FileRenameEvent fe) {
+      super.fileRenamed(fe);
+      System.out.println("ECChangeListener :: fileRenamed \n" + fe.getFile().getPath());
+    }
 
-		}
+    @Override
+    public void fileDeleted(FileEvent fe) {
+      super.fileDeleted(fe);
+      System.out.println("ECChangeListener :: fileDeleted \n" + fe.getFile().getPath());
+      //TODO processDeletedEditorConfig
+      //TODO processDeletedFolderWhichMayContainsFoldersWithListeners -> remove them
+    }
 
-		/**
-		 * method is triggered when content has changed
-		 * <p>
-		 * @param fe
-		 */
-		@Override
-		public void fileChanged(FileEvent fe) {
-			super.fileChanged(fe);
-			System.out.println("ECChangeListener :: fileChanged \n" + fe.getFile().getPath());
-		}
+    private void processDeletedEditorConfig() {
 
-		/**
-		 * Method is triggered when content has changed and its possible to display content in netbeans. Method is also
-		 * triggered when project will be opened.
-		 * <p>
-		 * @param fe
-		 */
-		@Override
-		public void fileDataCreated(FileEvent fe) {
-			super.fileDataCreated(fe);
-			System.out.println("ECChangeListener :: fileDataCreated \n" + fe.getFile().getPath());
+    }
 
-			FileObject file = fe.getFile();
-			DataObject dobj;
-			try {
-				dobj = DataObject.find(file);
+    /**
+     * method is triggered when content has changed
+     * <p>
+     * @param fe
+     */
+    @Override
+    public void fileChanged(FileEvent fe) {
+      super.fileChanged(fe);
+      System.out.println("ECChangeListener :: fileChanged \n" + fe.getFile().getPath());
+    }
 
-				for (Map.Entry<String, List<EditorConfigProperty>> entry : ec.entrySet()) {
-					List<EditorConfigProperty> list = entry.getValue();
+    /**
+     * Method is triggered when content has changed and its possible to display
+     * content in netbeans. Method is also triggered when project will be
+     * opened.
+     * <p>
+     * @param fe
+     */
+    @Override
+    public void fileDataCreated(FileEvent fe) {
+      super.fileDataCreated(fe);
+      System.out.println("ECChangeListener :: fileDataCreated \n" + fe.getFile().getPath());
 
-					if (file.getPath().matches(entry.getKey())) {
+      FileObject file = fe.getFile();
+      DataObject dobj;
+      try {
+        dobj = DataObject.find(file);
 
-						for (EditorConfigProperty editorConfigProperty : list) {
-							switch (editorConfigProperty.getKey()) {
-								case EditorConfigProperty.END_OF_LINE:
-									StyledDocument doc = NbDocument.getDocument(dobj);
-									if (doc != null) {
-										switch (editorConfigProperty.getValue()) {
+        for (Map.Entry<String, List<EditorConfigProperty>> entry : ec.entrySet()) {
+          List<EditorConfigProperty> list = entry.getValue();
 
-											case "lf":
-												doc.putProperty(BaseDocument.READ_LINE_SEPARATOR_PROP, BaseDocument.LS_LF);
-												break;
-											case "cr":
-												doc.putProperty(BaseDocument.READ_LINE_SEPARATOR_PROP, BaseDocument.LS_CR);
-												break;
-											case "crlf":
-												doc.putProperty(BaseDocument.READ_LINE_SEPARATOR_PROP, BaseDocument.LS_CRLF);
-												break;
-										}
+          if (file.getPath().matches(entry.getKey())) {
 
-									} else {
-										System.out.println("ERROR ->> DOC IS NULL :/");
-									}
-									break;
-							}
-						}
+            for (EditorConfigProperty editorConfigProperty : list) {
+              switch (editorConfigProperty.getKey()) {
+                case EditorConfigProperty.END_OF_LINE:
+                  StyledDocument doc = NbDocument.getDocument(dobj);
+                  if (doc != null) {
+                    switch (editorConfigProperty.getValue()) {
 
-					}
+                      case "lf":
+                        doc.putProperty(BaseDocument.READ_LINE_SEPARATOR_PROP, BaseDocument.LS_LF);
+                        break;
+                      case "cr":
+                        doc.putProperty(BaseDocument.READ_LINE_SEPARATOR_PROP, BaseDocument.LS_CR);
+                        break;
+                      case "crlf":
+                        doc.putProperty(BaseDocument.READ_LINE_SEPARATOR_PROP, BaseDocument.LS_CRLF);
+                        break;
+                    }
 
-				}
+                  } else {
+                    System.out.println("ERROR ->> DOC IS NULL :/");
+                  }
+                  break;
+              }
+            }
 
-				final DataFolder dof = dobj.getFolder();
+          }
 
-				if (file.getNameExt().equals(".editorconfig")) {
+        }
+
+        final DataFolder dof = dobj.getFolder();
+
+        if (file.getNameExt().equals(".editorconfig")) {
 //					file.addFileChangeListener(new FileChangeAdapter() {
 //						@Override
 //						public void fileChanged(FileEvent fe) {
@@ -220,31 +227,31 @@ public class ECProjectOpenedHook implements LookupProvider {
 //						"Affected folder: " + dof.getName(),
 //						null);
 //					applyEditorConfigToFolder(dof);
-				} else {
-					// if it isn't an editorconfig that's been added,
-					// apply the editorconfig file to it:
+        } else {
+          // if it isn't an editorconfig that's been added,
+          // apply the editorconfig file to it:
 //					applyEditorConfigToFile(dobj);
-				}
-			} catch (DataObjectNotFoundException ex) {
-				Exceptions.printStackTrace(ex);
-			}
-		}
+        }
+      } catch (DataObjectNotFoundException ex) {
+        Exceptions.printStackTrace(ex);
+      }
+    }
 
-		@Override
-		public void fileFolderCreated(FileEvent fe) {
-			super.fileFolderCreated(fe);
-			System.out.println("ECChangeListener :: fileFolderCreated \n" + fe.getFile().getPath());
-			//TODO search for editor-configs and attach listeners
-		}
+    @Override
+    public void fileFolderCreated(FileEvent fe) {
+      super.fileFolderCreated(fe);
+      System.out.println("ECChangeListener :: fileFolderCreated \n" + fe.getFile().getPath());
+      //TODO search for editor-configs and attach listeners
+    }
 
-		private void applyEditorConfigToFolder(DataFolder dof) {
-			for (DataObject dobj : dof.getChildren()) {
-				applyEditorConfigToFile(dobj);
-			}
-		}
+    private void applyEditorConfigToFolder(DataFolder dof) {
+      for (DataObject dobj : dof.getChildren()) {
+        applyEditorConfigToFile(dobj);
+      }
+    }
 
-		private void applyEditorConfigToFile(DataObject dobj) throws NumberFormatException {
-			System.out.println("APPLY");
+    private void applyEditorConfigToFile(DataObject dobj) throws NumberFormatException {
+      System.out.println("APPLY");
 
 //			EditorConfig ec;
 //			try {
@@ -263,18 +270,18 @@ public class ECProjectOpenedHook implements LookupProvider {
 //			} catch (EditorConfigException ex) {
 //				Exceptions.printStackTrace(ex);
 //			}
-		}
-		public static final String indentSize = SimpleValueNames.INDENT_SHIFT_WIDTH;
+    }
+    public static final String indentSize = SimpleValueNames.INDENT_SHIFT_WIDTH;
 
-		private void doIndentSize(FileObject file, int value) {
-			Preferences prefs = CodeStylePreferences.get(file, file.getMIMEType()).getPreferences();
-			prefs.putInt(indentSize, value);
-			try {
-				prefs.flush();
-			} catch (BackingStoreException ex) {
-				Exceptions.printStackTrace(ex);
-			}
-		}
+    private void doIndentSize(FileObject file, int value) {
+      Preferences prefs = CodeStylePreferences.get(file, file.getMIMEType()).getPreferences();
+      prefs.putInt(indentSize, value);
+      try {
+        prefs.flush();
+      } catch (BackingStoreException ex) {
+        Exceptions.printStackTrace(ex);
+      }
+    }
 
-	}
+  }
 }
