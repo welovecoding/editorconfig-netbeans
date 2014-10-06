@@ -2,10 +2,13 @@ package org.editorconfig.netbeans.parser;
 
 import java.io.File;
 import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 import org.editorconfig.netbeans.model.EditorConfigProperty;
+import static org.junit.Assert.assertEquals;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 public class EditorConfigParserTest {
 
