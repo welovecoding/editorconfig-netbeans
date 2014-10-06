@@ -41,7 +41,6 @@ import org.openide.util.lookup.Lookups;
  */
 public class ECProjectOpenedHook implements LookupProvider {
 
-	private boolean ecFound = false;
 	private Map<FileObject, ECChangeListener> listeners = new HashMap<>();
 
 	@Override
@@ -81,8 +80,6 @@ public class ECProjectOpenedHook implements LookupProvider {
 		}
 		for (FileObject file : root.getChildren()) {
 			System.out.println("INSPECTING FILE " + file.getPath());
-			System.out.println("NAME " + file.getName());
-			System.out.println("EXT " + file.getExt());
 			if (file.isFolder()) {
 				attachListeners(file, p);
 			} else if (file.getName().equals(".editorconfig")) {
@@ -98,22 +95,20 @@ public class ECProjectOpenedHook implements LookupProvider {
 	private class ECChangeListener extends FileChangeAdapter {
 
 		private Project p;
-		private FileObject ecFile;
+		private Map<String, List<EditorConfigProperty>> ec = new HashMap<>();
 
 		public ECChangeListener(Project p, FileObject ecFile) {
 			this.p = p;
-			this.ecFile = ecFile;
 
 			if (ecFile != null) {
 				EditorConfigParser parser = new EditorConfigParser();
-				Map<String, List<EditorConfigProperty>> config = null;
 				try {
-					config = parser.parseConfig(FileUtil.toFile(ecFile));
+					ec = parser.parseConfig(FileUtil.toFile(ecFile));
 				} catch (EditorConfigParserException ex) {
 					Exceptions.printStackTrace(ex);
 				}
 
-				for (Map.Entry<String, List<EditorConfigProperty>> entry : config.entrySet()) {
+				for (Map.Entry<String, List<EditorConfigProperty>> entry : ec.entrySet()) {
 					String key = entry.getKey();
 					List<EditorConfigProperty> value = entry.getValue();
 					System.out.println("Key: " + key);
@@ -175,12 +170,40 @@ public class ECProjectOpenedHook implements LookupProvider {
 			DataObject dobj;
 			try {
 				dobj = DataObject.find(file);
-				StyledDocument doc = NbDocument.getDocument(dobj);
-//				if (doc != null) {
-//					doc.putProperty(BaseDocument.READ_LINE_SEPARATOR_PROP, BaseDocument.LS_CRLF);
-//				} else {
-//					System.out.println("DOC IS NULL :/");
-//				}
+
+				for (Map.Entry<String, List<EditorConfigProperty>> entry : ec.entrySet()) {
+					List<EditorConfigProperty> list = entry.getValue();
+
+					if (file.getPath().matches(entry.getKey())) {
+
+						for (EditorConfigProperty editorConfigProperty : list) {
+							switch (editorConfigProperty.getKey()) {
+								case EditorConfigProperty.END_OF_LINE:
+									StyledDocument doc = NbDocument.getDocument(dobj);
+									if (doc != null) {
+										switch (editorConfigProperty.getValue()) {
+
+											case "lf":
+												doc.putProperty(BaseDocument.READ_LINE_SEPARATOR_PROP, BaseDocument.LS_LF);
+												break;
+											case "cr":
+												doc.putProperty(BaseDocument.READ_LINE_SEPARATOR_PROP, BaseDocument.LS_CR);
+												break;
+											case "crlf":
+												doc.putProperty(BaseDocument.READ_LINE_SEPARATOR_PROP, BaseDocument.LS_CRLF);
+												break;
+										}
+
+									} else {
+										System.out.println("ERROR ->> DOC IS NULL :/");
+									}
+									break;
+							}
+						}
+
+					}
+
+				}
 
 				final DataFolder dof = dobj.getFolder();
 
