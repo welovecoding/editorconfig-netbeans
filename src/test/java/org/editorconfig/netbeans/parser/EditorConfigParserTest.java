@@ -5,10 +5,13 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.editorconfig.netbeans.model.EditorConfigProperty;
-import static org.junit.Assert.assertEquals;
+import org.editorconfig.netbeans.printer.EditorConfigPrinter;
 import org.junit.Test;
+import static org.junit.Assert.*;
+import org.junit.Before;
 
 public class EditorConfigParserTest {
 
@@ -19,6 +22,8 @@ public class EditorConfigParserTest {
   private final String testFilePath = "org/editorconfig/example/editorconfig-test.ini";
 
   private final File testFile;
+
+  Map<String, List<EditorConfigProperty>> config;
 
   private final String[] sampleFiles = new String[]{
     "src/main/webapp/categories.xhtml",
@@ -36,10 +41,20 @@ public class EditorConfigParserTest {
     testFile = new File(resource.getFile());
   }
 
+  @Before
+  public void initConfig() {
+    try {
+      config = parser.parseConfig(testFile);
+      LOG.log(Level.INFO, "\r\n{0}", EditorConfigPrinter.logConfig(config));
+    } catch (EditorConfigParserException ex) {
+      LOG.log(Level.SEVERE, ex.getMessage());
+    }
+  }
+
   @Test
   public void parsesConfig() throws URISyntaxException, EditorConfigParserException {
-    Map<String, List<EditorConfigProperty>> config = parser.parseConfig(testFile);
     assertEquals("it parses the correct number of sections", config.size(), 5);
+    assertEquals("it parses the correct number of properties per section", config.get(".*").size(), 2);
   }
 
   @Test
