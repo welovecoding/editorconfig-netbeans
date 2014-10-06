@@ -117,4 +117,19 @@ public class EditorConfigParserTest {
     parser.parseProperty(line);
   }
 
+  @Test
+  public void skipsInvalidLines() {
+    assertEquals(false, parser.isInterestingLine("; top-most EditorConfig file"));
+    assertEquals(false, parser.isInterestingLine(" ; top-most EditorConfig file"));
+    assertEquals(false, parser.isInterestingLine("; top-most EditorConfig file"));
+    assertEquals(false, parser.isInterestingLine("# top-most EditorConfig file"));
+    assertEquals(false, parser.isInterestingLine(" # top-most EditorConfig file"));
+    assertEquals(false, parser.isInterestingLine("# top-most EditorConfig file"));
+    assertEquals(false, parser.isInterestingLine(""));
+    assertEquals(false, parser.isInterestingLine(" "));
+    assertEquals(false, parser.isInterestingLine("  "));
+    assertEquals(true, parser.isInterestingLine("end_of_line = lf"));
+    assertEquals(true, parser.isInterestingLine("unknown_config = hello"));
+  }
+
 }

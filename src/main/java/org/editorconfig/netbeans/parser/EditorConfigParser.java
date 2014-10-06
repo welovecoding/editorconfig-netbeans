@@ -59,7 +59,7 @@ public class EditorConfigParser {
     return result;
   }
 
-  private boolean isInterestingLine(String line) {
+  protected boolean isInterestingLine(String line) {
     boolean isInteresting = true;
     line = line.trim();
 
