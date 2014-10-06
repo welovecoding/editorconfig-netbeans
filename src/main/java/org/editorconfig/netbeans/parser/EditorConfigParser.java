@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -76,24 +77,49 @@ public class EditorConfigParser {
     return convertRegEx(regex);
   }
 
-  private String convertRegEx(String regex) {
-    String javaRegEx = regex;
-    String temp;
+  private String convertRegEx(String regEx) {
+    final String CASE_1 = "*";
+    final String CASE_2 = "**.";
+    final String CASE_3 = "*.";
+    final String CASE_4 = "{";
 
-    if (regex.equals("*")) {
-      javaRegEx = ".*";
-    } else if (regex.startsWith("*.")) {
-      // TODO: Implement difference between "*.js" and "lib/**.js"
-      temp = regex.substring(2, regex.length());
-      javaRegEx = "^(.*)\\." + temp + "$";
-    } else if (regex.startsWith("{")) {
-      temp = regex.substring(1, regex.length() - 1);
-      String[] fileNames = temp.split(",");
+    String expression = regEx;
+    String template;
+    String value;
+
+    if (regEx.equals(CASE_1)) {
+      template = ".*";
+
+      expression = template;
+    } else if (regEx.indexOf(CASE_2) > 0) {
+      template = "({0})(.*?)\\.{1}$";
+
+      String startsWith = regEx.substring(0, regEx.indexOf(CASE_2));
+      String endsWith = regEx.substring(startsWith.length() + CASE_2.length());
+
+      expression = MessageFormat.format(template, new Object[]{
+        startsWith, endsWith
+      });
+
+      // TODO:
+      System.out.println("RegEx: " + expression);
+    } else if (regEx.startsWith(CASE_3)) {
+      template = "^(.*)\\.{0}$";
+
+      value = regEx.substring(CASE_3.length(), regEx.length());
+
+      expression = MessageFormat.format(template, value);
+    } else if (regEx.startsWith(CASE_4)) {
+      template = "({0})";
+
+      value = regEx.substring(1, regEx.length() - 1);
+      String[] fileNames = value.split(",");
       String names = String.join("|", fileNames);
-      javaRegEx = "(" + names + ")";
+
+      expression = MessageFormat.format(template, names);
     }
 
-    return javaRegEx;
+    return expression;
   }
 
   public boolean matches(String regEx, String filePath) {

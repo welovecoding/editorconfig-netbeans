@@ -75,6 +75,15 @@ public class EditorConfigParserTest {
   }
 
   @Test
+  public void matchesFileEndingsInSpecifiedDirectories() {
+    String pattern = "lib/**.js";
+
+    assertEquals(true, parser.matches(pattern, "src/main/lib/DocumentHandler.js"));
+    assertEquals(true, parser.matches(pattern, "src/main/lib/sub/DocumentHandler.js"));
+    assertEquals(false, parser.matches(pattern, "src/main/DocumentHandler.js"));
+  }
+
+  @Test
   public void matchesGivenStrings() {
     String pattern = "{package.json,.travis.yml}";
 
