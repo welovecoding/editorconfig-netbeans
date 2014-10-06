@@ -15,7 +15,6 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.editorconfig.netbeans.model.EditorConfigProperty;
-import org.openide.util.Exceptions;
 
 public class EditorConfigParser {
 
@@ -37,9 +36,7 @@ public class EditorConfigParser {
               InputStreamReader isr = new InputStreamReader(fis, "UTF-8");
               BufferedReader br = new BufferedReader(isr)) {
         while ((line = br.readLine()) != null) {
-          boolean isInteresting = !(line.startsWith("#") || line.isEmpty());
-
-          if (isInteresting) {
+          if (isInterestingLine(line)) {
             if (line.startsWith("[")) {
               section = parseSection(line);
             } else if (section != null) {
@@ -60,6 +57,25 @@ public class EditorConfigParser {
     }
 
     return result;
+  }
+
+  private boolean isInterestingLine(String line) {
+    boolean isInteresting = true;
+    line = line.trim();
+
+    if (line.startsWith("#")) {
+      isInteresting = false;
+    }
+
+    if (line.startsWith("; ")) {
+      isInteresting = false;
+    }
+
+    if (line.isEmpty()) {
+      isInteresting = false;
+    }
+
+    return isInteresting;
   }
 
   private void addProperty(String section, EditorConfigProperty property) {
