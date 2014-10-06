@@ -12,8 +12,16 @@ import org.editorconfig.netbeans.printer.EditorConfigPrinter;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Before;
+import org.junit.Rule;
+import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
+@RunWith(JUnit4.class)
 public class EditorConfigParserTest {
+
+  @Rule
+  public ExpectedException exception = ExpectedException.none();
 
   private static final Logger LOG = Logger.getLogger(EditorConfigParserTest.class.getName());
 
@@ -91,6 +99,22 @@ public class EditorConfigParserTest {
     assertEquals(true, parser.matches(pattern, ".travis.yml"));
     assertEquals(false, parser.matches(pattern, "travis.yml"));
     assertEquals(false, parser.matches(pattern, "src/package.json"));
+  }
+
+  @Test
+  public void parsesValidProperty() throws InvalidPropertyException {
+    String line = "indent_style = space";
+    EditorConfigProperty property = parser.parseProperty(line);
+
+    assertEquals(EditorConfigProperty.INDENT_STYLE, property.getKey());
+    assertEquals("space", property.getValue());
+  }
+
+  @Test
+  public void handlesInvalidProperty() throws InvalidPropertyException {
+    String line = "indent_style =";
+    exception.expect(InvalidPropertyException.class);
+    parser.parseProperty(line);
   }
 
 }

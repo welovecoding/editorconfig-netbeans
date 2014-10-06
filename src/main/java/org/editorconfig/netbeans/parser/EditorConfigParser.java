@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.editorconfig.netbeans.model.EditorConfigProperty;
+import org.openide.util.Exceptions;
 
 public class EditorConfigParser {
 
@@ -42,8 +43,12 @@ public class EditorConfigParser {
             if (line.startsWith("[")) {
               section = parseSection(line);
             } else if (section != null) {
-              EditorConfigProperty property = parseProperty(line);
-              addProperty(section, property);
+              try {
+                EditorConfigProperty property = parseProperty(line);
+                addProperty(section, property);
+              } catch (InvalidPropertyException ex) {
+                LOG.log(Level.SEVERE, ex.getMessage());
+              }
             }
           }
         }
@@ -128,11 +133,19 @@ public class EditorConfigParser {
     return matcher.matches();
   }
 
-  private EditorConfigProperty parseProperty(String line) {
-    String[] splitted = line.split("=");
-    String key = splitted[0].trim();
-    String value = splitted[1].trim();
+  protected EditorConfigProperty parseProperty(String line) throws InvalidPropertyException {
+    EditorConfigProperty property = null;
 
-    return new EditorConfigProperty(key, value);
+    String[] splitted = line.split("=");
+
+    if (splitted.length == 2) {
+      String key = splitted[0].trim();
+      String value = splitted[1].trim();
+      property = new EditorConfigProperty(key, value);
+    } else {
+      throw new InvalidPropertyException("Invalid property: " + line);
+    }
+
+    return property;
   }
 }
