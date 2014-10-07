@@ -44,26 +44,29 @@ import org.openide.util.lookup.Lookups;
 public class ECProjectOpenedHook implements LookupProvider {
 
   private static final Logger LOG = Logger.getLogger(ECProjectOpenedHook.class.getName());
-  private Map<FileObject, ECChangeListener> listeners = new HashMap<>();
+  private final Map<FileObject, ECChangeListener> listeners = new HashMap<>();
 
   @Override
   public Lookup createAdditionalLookup(Lookup lookup) {
-    System.out.println("CREATE ADDITIONAL LOOKUP");
-    final Project p = lookup.lookup(Project.class);
+    final Project project = lookup.lookup(Project.class);
+    String projectName = project.getProjectDirectory().getName();
+
+    LOG.log(Level.INFO, "Setup hooks for: {0}", projectName);
+
     return Lookups.fixed(new ProjectOpenedHook() {
       @Override
       protected void projectOpened() {
-        LOG.log(Level.INFO, "Opened project: {0}", p.getProjectDirectory().getName());
-        FileObject projFo = p.getProjectDirectory();
+        FileObject projectFileObject = project.getProjectDirectory();
+        LOG.log(Level.INFO, "Opened project: {0}", projectFileObject.getName());
 
-        attachListeners(projFo, p);
-
-        ECProjectPreferences.setLineEnding(BaseDocument.LS_CRLF, p);
+        attachListeners(projectFileObject, project);
+        LOG.log(Level.INFO, "Attached listeners to project: {0}", projectFileObject.getName());
+        // ECProjectPreferences.setLineEnding(BaseDocument.LS_CRLF, project);
       }
 
       @Override
       protected void projectClosed() {
-        System.out.println("PROJECT " + p.getProjectDirectory().getName() + " CLOSED");
+        LOG.log(Level.INFO, "Closed project: {0}", project.getProjectDirectory().getName());
       }
     });
   }
@@ -84,11 +87,11 @@ public class ECProjectOpenedHook implements LookupProvider {
     }
 
     for (FileObject file : root.getChildren()) {
-      LOG.log(Level.INFO, "Inspecting file: {0}", file.getPath());
+      // LOG.log(Level.INFO, "Inspecting file: {0}", file.getPath());
       if (file.isFolder()) {
         attachListeners(file, p);
       } else if (file.getName().equals(".editorconfig")) {
-        LOG.log(Level.INFO, "Found .editorconfig file: {0}", file.getPath());
+        LOG.log(Level.INFO, "Found EditorConfig file: {0}", file.getPath());
 
         ECChangeListener newListener = new ECChangeListener(p, file);
         file.getParent().addRecursiveListener(newListener);
@@ -100,21 +103,21 @@ public class ECProjectOpenedHook implements LookupProvider {
 
   private class ECChangeListener extends FileChangeAdapter {
 
-    private Project p;
-    private Map<String, List<EditorConfigProperty>> ec = new HashMap<>();
+    private Project project;
+    private Map<String, List<EditorConfigProperty>> editorConfig = new HashMap<>();
 
-    public ECChangeListener(Project p, FileObject ecFile) {
-      this.p = p;
+    public ECChangeListener(Project project, FileObject editorConfigFileObject) {
+      this.project = project;
 
-      if (ecFile != null) {
+      if (editorConfigFileObject != null) {
         EditorConfigParser parser = new EditorConfigParser();
         try {
-          ec = parser.parseConfig(FileUtil.toFile(ecFile));
+          editorConfig = parser.parseConfig(FileUtil.toFile(editorConfigFileObject));
         } catch (EditorConfigParserException ex) {
           Exceptions.printStackTrace(ex);
         }
 
-        for (Map.Entry<String, List<EditorConfigProperty>> entry : ec.entrySet()) {
+        for (Map.Entry<String, List<EditorConfigProperty>> entry : editorConfig.entrySet()) {
           String key = entry.getKey();
           List<EditorConfigProperty> value = entry.getValue();
           System.out.println("Key: " + key);
@@ -166,37 +169,44 @@ public class ECProjectOpenedHook implements LookupProvider {
      * content in netbeans. Method is also triggered when project will be
      * opened.
      * <p>
-     * @param fe
+     * @param event
      */
     @Override
-    public void fileDataCreated(FileEvent fe) {
-      super.fileDataCreated(fe);
-      System.out.println("ECChangeListener :: fileDataCreated \n" + fe.getFile().getPath());
+    public void fileDataCreated(FileEvent event) {
+      super.fileDataCreated(event);
+      System.out.println("ECChangeListener :: fileDataCreated \n" + event.getFile().getPath());
 
-      FileObject file = fe.getFile();
-      DataObject dobj;
+      FileObject fileObject = event.getFile();
+      DataObject dataObject;
       try {
-        dobj = DataObject.find(file);
+        dataObject = DataObject.find(fileObject);
 
-        for (Map.Entry<String, List<EditorConfigProperty>> entry : ec.entrySet()) {
-          List<EditorConfigProperty> list = entry.getValue();
+        for (Map.Entry<String, List<EditorConfigProperty>> entry : editorConfig.entrySet()) {
+          List<EditorConfigProperty> properties = entry.getValue();
 
-          if (file.getPath().matches(entry.getKey())) {
+          if (fileObject.getPath().matches(entry.getKey())) {
 
-            for (EditorConfigProperty editorConfigProperty : list) {
-              switch (editorConfigProperty.getKey()) {
+            for (EditorConfigProperty property : properties) {
+              String propertyKey = property.getKey();
+
+              switch (propertyKey) {
                 case EditorConfigProperty.END_OF_LINE:
-                  StyledDocument doc = NbDocument.getDocument(dobj);
-                  if (doc != null) {
-                    switch (editorConfigProperty.getValue()) {
+                  StyledDocument document = NbDocument.getDocument(dataObject);
+                  String lineEnding = property.getValue();
+
+                  LOG.log(Level.INFO, "Changing line ending for \"{0}\" to \"{1}\".",
+                          new Object[]{propertyKey, lineEnding});
+
+                  if (document != null) {
+                    switch (lineEnding) {
                       case EditorConfigProperty.LINE_FEED:
-                        doc.putProperty(BaseDocument.READ_LINE_SEPARATOR_PROP, BaseDocument.LS_LF);
+                        document.putProperty(BaseDocument.READ_LINE_SEPARATOR_PROP, BaseDocument.LS_LF);
                         break;
                       case EditorConfigProperty.CARRIAGE_RETURN:
-                        doc.putProperty(BaseDocument.READ_LINE_SEPARATOR_PROP, BaseDocument.LS_CR);
+                        document.putProperty(BaseDocument.READ_LINE_SEPARATOR_PROP, BaseDocument.LS_CR);
                         break;
                       case EditorConfigProperty.CARRIAGE_RETURN_LINE_FEED:
-                        doc.putProperty(BaseDocument.READ_LINE_SEPARATOR_PROP, BaseDocument.LS_CRLF);
+                        document.putProperty(BaseDocument.READ_LINE_SEPARATOR_PROP, BaseDocument.LS_CRLF);
                         break;
                     }
 
@@ -211,9 +221,9 @@ public class ECProjectOpenedHook implements LookupProvider {
 
         }
 
-        final DataFolder dof = dobj.getFolder();
+        final DataFolder dof = dataObject.getFolder();
 
-        if (file.getNameExt().equals(".editorconfig")) {
+        if (fileObject.getNameExt().equals(".editorconfig")) {
 //					file.addFileChangeListener(new FileChangeAdapter() {
 //						@Override
 //						public void fileChanged(FileEvent fe) {
