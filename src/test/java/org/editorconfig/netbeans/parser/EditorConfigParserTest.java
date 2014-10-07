@@ -116,7 +116,7 @@ public class EditorConfigParserTest {
     EditorConfigProperty property = parser.parseProperty(line);
 
     assertEquals(EditorConfigProperty.INDENT_STYLE, property.getKey());
-    assertEquals("space", property.getValue());
+    assertEquals(EditorConfigProperty.SPACE, property.getValue());
   }
 
   @Test

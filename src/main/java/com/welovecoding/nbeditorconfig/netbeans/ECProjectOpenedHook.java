@@ -189,14 +189,13 @@ public class ECProjectOpenedHook implements LookupProvider {
                   StyledDocument doc = NbDocument.getDocument(dobj);
                   if (doc != null) {
                     switch (editorConfigProperty.getValue()) {
-
-                      case "lf":
+                      case EditorConfigProperty.LINE_FEED:
                         doc.putProperty(BaseDocument.READ_LINE_SEPARATOR_PROP, BaseDocument.LS_LF);
                         break;
-                      case "cr":
+                      case EditorConfigProperty.CARRIAGE_RETURN:
                         doc.putProperty(BaseDocument.READ_LINE_SEPARATOR_PROP, BaseDocument.LS_CR);
                         break;
-                      case "crlf":
+                      case EditorConfigProperty.CARRIAGE_RETURN_LINE_FEED:
                         doc.putProperty(BaseDocument.READ_LINE_SEPARATOR_PROP, BaseDocument.LS_CRLF);
                         break;
                     }
