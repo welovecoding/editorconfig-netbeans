@@ -102,6 +102,15 @@ public class EditorConfigParserTest {
   }
 
   @Test
+  public void convertsUpperCaseValues() throws InvalidPropertyException {
+    String line = "end_of_line = LF";
+    EditorConfigProperty property = parser.parseProperty(line);
+
+    assertEquals(EditorConfigProperty.END_OF_LINE, property.getKey());
+    assertEquals(EditorConfigProperty.LINE_FEED, property.getValue());
+  }
+
+  @Test
   public void parsesValidProperty() throws InvalidPropertyException {
     String line = "indent_style = space";
     EditorConfigProperty property = parser.parseProperty(line);

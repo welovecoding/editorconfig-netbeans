@@ -157,7 +157,7 @@ public class EditorConfigParser {
     if (splitted.length == 2) {
       String key = splitted[0].trim();
       String value = splitted[1].trim();
-      property = new EditorConfigProperty(key, value);
+      property = new EditorConfigProperty(key.toLowerCase(), value.toLowerCase());
     } else {
       throw new InvalidPropertyException("Invalid property: " + line);
     }
