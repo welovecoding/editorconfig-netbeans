@@ -5,6 +5,10 @@
   <artifactId>NBEditorConfig</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <packaging>nbm</packaging>
+  
+  <name>EditorConfig Plugin for NetBeans IDE</name>
+  <description>A NetBeans IDE plugin supporting the EditorConfig standard.</description>
+  <url>https://github.com/we-love-coding/editorconfig-netbeans</url>
     
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -239,5 +243,5 @@
         </configuration>
       </plugin>
     </plugins>
-  </build>
+  </build>  
 </project>
