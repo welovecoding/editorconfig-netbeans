@@ -1,6 +1,6 @@
 package org.editorconfig.netbeans.model;
 
-public interface EditorConfigConstants {
+public class EditorConfigConstant {
 
   // Keys
   public static final String CHARSET = "charset";

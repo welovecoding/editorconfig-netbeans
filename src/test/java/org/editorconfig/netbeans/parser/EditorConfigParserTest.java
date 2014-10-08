@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.editorconfig.netbeans.model.EditorConfigConstant;
 import org.editorconfig.netbeans.model.EditorConfigProperty;
 import org.editorconfig.netbeans.printer.EditorConfigPrinter;
 import org.junit.Test;
@@ -106,8 +107,8 @@ public class EditorConfigParserTest {
     String line = "end_of_line = LF";
     EditorConfigProperty property = parser.parseProperty(line);
 
-    assertEquals(EditorConfigProperty.END_OF_LINE, property.getKey());
-    assertEquals(EditorConfigProperty.LINE_FEED, property.getValue());
+    assertEquals(EditorConfigConstant.END_OF_LINE, property.getKey());
+    assertEquals(EditorConfigConstant.LINE_FEED, property.getValue());
   }
 
   @Test
@@ -115,8 +116,8 @@ public class EditorConfigParserTest {
     String line = "indent_style = space";
     EditorConfigProperty property = parser.parseProperty(line);
 
-    assertEquals(EditorConfigProperty.INDENT_STYLE, property.getKey());
-    assertEquals(EditorConfigProperty.SPACE, property.getValue());
+    assertEquals(EditorConfigConstant.INDENT_STYLE, property.getKey());
+    assertEquals(EditorConfigConstant.SPACE, property.getValue());
   }
 
   @Test

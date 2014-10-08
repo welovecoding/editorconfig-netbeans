@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import javax.swing.text.StyledDocument;
+import org.editorconfig.netbeans.model.EditorConfigConstant;
 import org.editorconfig.netbeans.model.EditorConfigProperty;
 import org.editorconfig.netbeans.parser.EditorConfigParser;
 import org.editorconfig.netbeans.parser.EditorConfigParserException;
@@ -190,7 +191,7 @@ public class ECProjectOpenedHook implements LookupProvider {
               String propertyKey = property.getKey();
 
               switch (propertyKey) {
-                case EditorConfigProperty.END_OF_LINE:
+                case EditorConfigConstant.END_OF_LINE:
                   StyledDocument document = NbDocument.getDocument(dataObject);
                   String lineEnding = property.getValue();
 
@@ -199,13 +200,13 @@ public class ECProjectOpenedHook implements LookupProvider {
 
                   if (document != null) {
                     switch (lineEnding) {
-                      case EditorConfigProperty.LINE_FEED:
+                      case EditorConfigConstant.LINE_FEED:
                         document.putProperty(BaseDocument.READ_LINE_SEPARATOR_PROP, BaseDocument.LS_LF);
                         break;
-                      case EditorConfigProperty.CARRIAGE_RETURN:
+                      case EditorConfigConstant.CARRIAGE_RETURN:
                         document.putProperty(BaseDocument.READ_LINE_SEPARATOR_PROP, BaseDocument.LS_CR);
                         break;
-                      case EditorConfigProperty.CARRIAGE_RETURN_LINE_FEED:
+                      case EditorConfigConstant.CARRIAGE_RETURN_LINE_FEED:
                         document.putProperty(BaseDocument.READ_LINE_SEPARATOR_PROP, BaseDocument.LS_CRLF);
                         break;
                     }

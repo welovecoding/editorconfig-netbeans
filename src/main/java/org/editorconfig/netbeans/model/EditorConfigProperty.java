@@ -1,6 +1,6 @@
 package org.editorconfig.netbeans.model;
 
-public final class EditorConfigProperty implements EditorConfigConstants {
+public final class EditorConfigProperty {
 
   private final String key;
   private final String value;

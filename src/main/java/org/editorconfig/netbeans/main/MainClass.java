@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+import org.editorconfig.netbeans.model.EditorConfigConstant;
 import org.editorconfig.netbeans.model.EditorConfigProperty;
 import org.editorconfig.netbeans.parser.EditorConfigParser;
 import org.editorconfig.netbeans.parser.EditorConfigParserException;
@@ -56,28 +57,28 @@ public class MainClass {
               String key = property.getKey();
               String value = property.getValue();
               switch (key) {
-                case EditorConfigProperty.CHARSET:
+                case EditorConfigConstant.CHARSET:
                   System.out.println("\tWe have to change the character set to: " + value);
                   break;
-                case EditorConfigProperty.END_OF_LINE:
+                case EditorConfigConstant.END_OF_LINE:
                   System.out.println("\tWe have to change the line endings to: " + value);
                   break;
-                case EditorConfigProperty.INDENT_SIZE:
+                case EditorConfigConstant.INDENT_SIZE:
                   System.out.println("\tWe have to change the indent size to: " + value);
                   break;
-                case EditorConfigProperty.INDENT_STYLE:
+                case EditorConfigConstant.INDENT_STYLE:
                   System.out.println("\tWe have to change the indent style to: " + value);
                   break;
-                case EditorConfigProperty.INSERT_FINAL_NEWLINE:
+                case EditorConfigConstant.INSERT_FINAL_NEWLINE:
                   System.out.println("\tWe have to insert a new line at the end of the file: " + value);
                   break;
-                case EditorConfigProperty.MAX_LINE_LENGTH:
+                case EditorConfigConstant.MAX_LINE_LENGTH:
                   System.out.println("\tWe have to change the max line length to: " + value);
                   break;
-                case EditorConfigProperty.TAB_WIDTH:
+                case EditorConfigConstant.TAB_WIDTH:
                   System.out.println("\tWe have to change the tab width to: " + value);
                   break;
-                case EditorConfigProperty.TRIM_TRAILING_WHITESPACE:
+                case EditorConfigConstant.TRIM_TRAILING_WHITESPACE:
                   System.out.println("\tWe have to trim trailing whitespaces: " + value);
                   break;
                 default:
