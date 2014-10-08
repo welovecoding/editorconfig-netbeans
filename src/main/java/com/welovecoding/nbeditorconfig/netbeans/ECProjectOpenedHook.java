@@ -31,14 +31,18 @@ import org.openide.util.lookup.Lookups;
  *
  * @author Michael Koppen
  */
+// project types supported by NetBeans IDE:
+// https://platform.netbeans.org/tutorials/nbm-projectextension.html
 @LookupProvider.Registration(projectType = {
+  "org-netbeans-modules-j2ee-archiveproject",
+  "org-netbeans-modules-j2ee-clientproject",
+  "org-netbeans-modules-j2ee-earproject",
+  "org-netbeans-modules-j2ee-ejbjarproject",
   "org-netbeans-modules-java-j2seproject",
-  "org-netbeans-modules-web-project",
-  "org.netbeans.modules.web.clientproject",
-  "org-netbeans-modules-web-clientproject",
   "org-netbeans-modules-maven",
-  "org-netbeans-modules-apisupport-project"}
-)
+  "org-netbeans-modules-web-clientproject", // HTML5 project
+  "org-netbeans-modules-web-project"
+})
 /**
  * Listener for newly opened Projects.
  */
@@ -92,7 +96,7 @@ public class ECProjectOpenedHook implements LookupProvider {
       if (file.isFolder()) {
         attachListeners(file, p);
       } else if (file.getName().equals(".editorconfig")) {
-        LOG.log(Level.INFO, "Found EditorConfig file: {0}", file.getPath());
+        LOG.log(Level.INFO, "Found EditorConfig: {0}", file.getPath());
 
         ECChangeListener newListener = new ECChangeListener(p, file);
         file.getParent().addRecursiveListener(newListener);
