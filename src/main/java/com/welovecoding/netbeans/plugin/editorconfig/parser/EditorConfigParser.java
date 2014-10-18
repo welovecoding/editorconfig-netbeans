@@ -1,4 +1,4 @@
-package org.editorconfig.netbeans.parser;
+package com.welovecoding.netbeans.plugin.editorconfig.parser;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -14,7 +14,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.editorconfig.netbeans.model.EditorConfigProperty;
+import com.welovecoding.netbeans.plugin.editorconfig.model.EditorConfigProperty;
 
 public class EditorConfigParser {
 

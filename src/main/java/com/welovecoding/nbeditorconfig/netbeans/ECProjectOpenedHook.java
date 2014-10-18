@@ -8,10 +8,10 @@ import java.util.logging.Logger;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import javax.swing.text.StyledDocument;
-import org.editorconfig.netbeans.model.EditorConfigConstant;
-import org.editorconfig.netbeans.model.EditorConfigProperty;
-import org.editorconfig.netbeans.parser.EditorConfigParser;
-import org.editorconfig.netbeans.parser.EditorConfigParserException;
+import com.welovecoding.netbeans.plugin.editorconfig.model.EditorConfigConstant;
+import com.welovecoding.netbeans.plugin.editorconfig.model.EditorConfigProperty;
+import com.welovecoding.netbeans.plugin.editorconfig.parser.EditorConfigParser;
+import com.welovecoding.netbeans.plugin.editorconfig.parser.EditorConfigParserException;
 import org.netbeans.api.editor.settings.SimpleValueNames;
 import org.netbeans.api.project.Project;
 import org.netbeans.editor.BaseDocument;
@@ -28,11 +28,9 @@ import org.openide.util.Lookup;
 import org.openide.util.lookup.Lookups;
 
 /**
- *
- * @author Michael Koppen
+ * Project types supported by NetBeans IDE:
+ * https://platform.netbeans.org/tutorials/nbm-projectextension.html
  */
-// project types supported by NetBeans IDE:
-// https://platform.netbeans.org/tutorials/nbm-projectextension.html
 @LookupProvider.Registration(projectType = {
   "org-netbeans-modules-j2ee-archiveproject",
   "org-netbeans-modules-j2ee-clientproject",

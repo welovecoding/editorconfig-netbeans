@@ -1,8 +1,8 @@
-package org.editorconfig.netbeans.printer;
+package com.welovecoding.netbeans.plugin.editorconfig.printer;
 
 import java.util.List;
 import java.util.Map;
-import org.editorconfig.netbeans.model.EditorConfigProperty;
+import com.welovecoding.netbeans.plugin.editorconfig.model.EditorConfigProperty;
 
 public class EditorConfigPrinter {
 

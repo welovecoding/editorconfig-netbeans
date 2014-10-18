@@ -1,4 +1,4 @@
-package org.editorconfig.netbeans.parser;
+package com.welovecoding.netbeans.plugin.editorconfig.parser;
 
 import java.io.File;
 import java.net.URISyntaxException;
@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.editorconfig.netbeans.model.EditorConfigConstant;
-import org.editorconfig.netbeans.model.EditorConfigProperty;
-import org.editorconfig.netbeans.printer.EditorConfigPrinter;
+import com.welovecoding.netbeans.plugin.editorconfig.model.EditorConfigConstant;
+import com.welovecoding.netbeans.plugin.editorconfig.model.EditorConfigProperty;
+import com.welovecoding.netbeans.plugin.editorconfig.printer.EditorConfigPrinter;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Before;

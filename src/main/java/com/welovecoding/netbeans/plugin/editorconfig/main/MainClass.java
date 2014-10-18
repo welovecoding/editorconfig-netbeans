@@ -1,4 +1,4 @@
-package org.editorconfig.netbeans.main;
+package com.welovecoding.netbeans.plugin.editorconfig.main;
 
 import java.io.File;
 import java.net.URISyntaxException;
@@ -9,10 +9,10 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
-import org.editorconfig.netbeans.model.EditorConfigConstant;
-import org.editorconfig.netbeans.model.EditorConfigProperty;
-import org.editorconfig.netbeans.parser.EditorConfigParser;
-import org.editorconfig.netbeans.parser.EditorConfigParserException;
+import com.welovecoding.netbeans.plugin.editorconfig.model.EditorConfigConstant;
+import com.welovecoding.netbeans.plugin.editorconfig.model.EditorConfigProperty;
+import com.welovecoding.netbeans.plugin.editorconfig.parser.EditorConfigParser;
+import com.welovecoding.netbeans.plugin.editorconfig.parser.EditorConfigParserException;
 
 public class MainClass {
 

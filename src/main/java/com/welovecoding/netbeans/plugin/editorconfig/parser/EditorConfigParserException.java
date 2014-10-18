@@ -1,4 +1,4 @@
-package org.editorconfig.netbeans.parser;
+package com.welovecoding.netbeans.plugin.editorconfig.parser;
 
 public class EditorConfigParserException extends Exception {
 

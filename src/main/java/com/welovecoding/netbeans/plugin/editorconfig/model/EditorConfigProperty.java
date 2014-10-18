@@ -1,4 +1,4 @@
-package org.editorconfig.netbeans.model;
+package com.welovecoding.netbeans.plugin.editorconfig.model;
 
 public final class EditorConfigProperty {
 
