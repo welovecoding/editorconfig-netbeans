@@ -35,6 +35,7 @@ public class EditorConfigParserTest {
   Map<String, List<EditorConfigProperty>> config;
 
   private final String[] sampleFiles = new String[]{
+    ".travis.yml",
     "src/main/webapp/categories.xhtml",
     "src/main/webapp/resources/js/wlc/DocumentHandler.js",
     "src/main/webapp/resources/js/wlc/Rollbar.js",
@@ -140,6 +141,32 @@ public class EditorConfigParserTest {
     assertEquals(false, parser.isInterestingLine("  "));
     assertEquals(true, parser.isInterestingLine("end_of_line = lf"));
     assertEquals(true, parser.isInterestingLine("unknown_config = hello"));
+  }
+
+  @Test
+  public void findsMatchingRules() {
+    /**
+     * 7x wildcard (*)<br/>
+     * 2x JavaScript (*.js)<br/>
+     * 1x .travis.yaml
+     */
+    int matchingRules = 10;
+    int matchedRules = 0;
+
+    for (String filePath : sampleFiles) {
+      for (String regEx : config.keySet()) {
+        boolean isMatching = parser.matches(regEx, filePath);
+        if (isMatching) {
+          matchedRules++;
+          List<EditorConfigProperty> properties = config.get(regEx);
+          for (EditorConfigProperty property : properties) {
+            //
+          }
+        }
+      }
+    }
+
+    assertEquals(matchingRules, matchedRules);
   }
 
 }
