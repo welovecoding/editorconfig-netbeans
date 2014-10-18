@@ -8,17 +8,17 @@ import org.netbeans.api.project.Project;
 import org.netbeans.spi.project.ui.ProjectOpenedHook;
 import org.openide.filesystems.FileObject;
 
-public class SpecificProjectOpenedHook extends ProjectOpenedHook {
+public class EditorConfigProjectOpenedHook extends ProjectOpenedHook {
 
-  private static final Logger LOG = Logger.getLogger(SpecificProjectOpenedHook.class.getName());
+  private static final Logger LOG = Logger.getLogger(EditorConfigProjectOpenedHook.class.getName());
   private final Map<FileObject, EditorConfigChangeListener> listeners = new HashMap<>();
   Project project;
 
-  public SpecificProjectOpenedHook() {
+  public EditorConfigProjectOpenedHook() {
     super();
   }
 
-  public SpecificProjectOpenedHook(Project project) {
+  public EditorConfigProjectOpenedHook(Project project) {
     this();
     this.project = project;
   }

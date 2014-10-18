@@ -1,6 +1,6 @@
 package com.welovecoding.nbeditorconfig.netbeans;
 
-import com.welovecoding.netbeans.plugin.editorconfig.hook.SpecificProjectOpenedHook;
+import com.welovecoding.netbeans.plugin.editorconfig.hook.EditorConfigProjectOpenedHook;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.netbeans.api.project.Project;
@@ -37,7 +37,7 @@ public class EditorConfigHookLookup implements LookupProvider {
 
     LOG.log(Level.INFO, "Setup hooks for: {0}", projectName);
 
-    return Lookups.fixed(new SpecificProjectOpenedHook(project));
+    return Lookups.fixed(new EditorConfigProjectOpenedHook(project));
   }
 
 }
