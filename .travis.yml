@@ -1,0 +1,7 @@
+# http://docs.travis-ci.com/user/languages/java/
+language: java
+
+jdk:
+  - oraclejdk7
+
+install: mvn clean package -DskipTests=true
