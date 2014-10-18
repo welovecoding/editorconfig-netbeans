@@ -1,3 +1,5 @@
+[![](https://travis-ci.org/welovecoding/editorconfig-netbeans.svg?branch=master)](https://travis-ci.org/welovecoding/editorconfig-netbeans)
+
 # EditorConfig NetBeans Plugin
 
 
