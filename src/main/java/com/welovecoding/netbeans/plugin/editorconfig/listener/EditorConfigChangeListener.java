@@ -32,7 +32,6 @@ import org.openide.util.Exceptions;
 public class EditorConfigChangeListener extends FileChangeAdapter {
 
   private static final Logger LOG = Logger.getLogger(EditorConfigChangeListener.class.getName());
-  public static final String indentSize = SimpleValueNames.INDENT_SHIFT_WIDTH;
   private Map<String, List<EditorConfigProperty>> editorConfig = new HashMap<>();
   private Project project;
 
@@ -81,7 +80,55 @@ public class EditorConfigChangeListener extends FileChangeAdapter {
   @Override
   public void fileChanged(FileEvent event) {
     super.fileChanged(event);
+    applyEditorConfigRules(event);
     LOG.log(Level.INFO, "File content changed: {0}", event.getFile().getPath());
+  }
+
+  private void applyEditorConfigRules(FileEvent event) {
+
+    LOG.log(Level.INFO, "Let the fun begin... {0}", event.getFile().getPath());
+
+    EditorConfigParser parser = new EditorConfigParser();
+    String filePath = event.getFile().getPath();
+
+    FileObject fileObject = event.getFile();
+    DataObject dataObject = null;
+
+    try {
+      dataObject = DataObject.find(fileObject);
+    } catch (DataObjectNotFoundException ex) {
+      LOG.log(Level.SEVERE, "Error accessing file object: {0}", ex.getMessage());
+    }
+
+    if (dataObject != null) {
+      for (String regEx : editorConfig.keySet()) {
+        boolean isMatching = parser.matches(regEx, filePath);
+        if (isMatching) {
+          LOG.log(Level.INFO, "Matched \"{0}\" with \"{1}\".", new Object[]{
+            filePath, regEx
+          });
+
+          List<EditorConfigProperty> properties = editorConfig.get(regEx);
+          for (EditorConfigProperty property : properties) {
+
+            String key = property.getKey();
+            String value = property.getValue();
+
+            LOG.log(Level.INFO, "\t{0}: {1}", new Object[]{
+              key, value
+            });
+
+            switch (key) {
+              case EditorConfigConstant.INDENT_SIZE:
+                int indentSize = Integer.valueOf(value);
+                doIndentSize(dataObject.getPrimaryFile(), indentSize);
+                break;
+            }
+
+          }
+        }
+      }
+    }
   }
 
   /**
@@ -202,6 +249,10 @@ public class EditorConfigChangeListener extends FileChangeAdapter {
   }
 
   private void doIndentSize(FileObject file, int value) {
+    LOG.log(Level.INFO, "Set indent size to \"{0}\" for \"{1}\".", new Object[]{
+      value, file.getPath()
+    });
+
     Preferences codeStyle = CodeStylePreferences.get(file, file.getMIMEType()).getPreferences();
     codeStyle.putInt(SimpleValueNames.INDENT_SHIFT_WIDTH, value);
 

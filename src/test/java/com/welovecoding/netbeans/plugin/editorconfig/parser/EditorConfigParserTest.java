@@ -25,14 +25,11 @@ public class EditorConfigParserTest {
   public ExpectedException exception = ExpectedException.none();
 
   private static final Logger LOG = Logger.getLogger(EditorConfigParserTest.class.getName());
-
   private final EditorConfigParser parser;
-
   private final String testFilePath = "org/editorconfig/example/editorconfig-test.ini";
-
   private final File testFile;
 
-  Map<String, List<EditorConfigProperty>> config;
+  private Map<String, List<EditorConfigProperty>> config;
 
   private final String[] sampleFiles = new String[]{
     ".travis.yml",
