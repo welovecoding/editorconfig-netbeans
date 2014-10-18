@@ -39,6 +39,7 @@ public class EditorConfigParserTest {
     "src/main/webapp/categories.xhtml",
     "src/main/webapp/resources/js/wlc/DocumentHandler.js",
     "src/main/webapp/resources/js/wlc/Rollbar.js",
+    "src/main/webapp/resources/js/lib/jQuery.js",
     "src/main/webapp/resources/less/sidebar-widgets.less",
     "src/main/java/com/welovecoding/Debugger.java",
     "src/main/java/com/welovecoding/StringUtils.java"
@@ -146,11 +147,12 @@ public class EditorConfigParserTest {
   @Test
   public void findsMatchingRules() {
     /**
-     * 7x wildcard (*)<br/>
-     * 2x JavaScript (*.js)<br/>
+     * 8x wildcard (*)<br/>
+     * 3x JavaScript (*.js)<br/>
+     * 1x JavaScript library (lib/**.js)<br/>
      * 1x .travis.yaml
      */
-    int matchingRules = 10;
+    int matchingRules = 13;
     int matchedRules = 0;
 
     for (String filePath : sampleFiles) {
@@ -159,14 +161,46 @@ public class EditorConfigParserTest {
         if (isMatching) {
           matchedRules++;
           List<EditorConfigProperty> properties = config.get(regEx);
-          for (EditorConfigProperty property : properties) {
-            //
-          }
         }
       }
     }
 
     assertEquals(matchingRules, matchedRules);
+  }
+
+  @Test
+  public void matchesIndentSizeRule() {
+    int indentSize = 2;
+    int indentSizeFound = -1;
+
+    // Iterate project files
+    for (String filePath : sampleFiles) {
+      // Get RegEx definition from parsed EditorConfig file
+      for (String regEx : config.keySet()) {
+        // Check if path of project file matches the rule
+        boolean isMatching = parser.matches(regEx, filePath);
+        if (isMatching) {
+          // If it matches the rule, get the declarations of the rule
+          List<EditorConfigProperty> properties = config.get(regEx);
+          // Check specific rule for test-case
+          if (filePath.equals("src/main/webapp/resources/js/lib/jQuery.js")) {
+            for (EditorConfigProperty property : properties) {
+
+              String key = property.getKey();
+              String value = property.getValue();
+
+              switch (key) {
+                case EditorConfigConstant.INDENT_SIZE:
+                  indentSizeFound = Integer.valueOf(value);
+                  break;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    assertEquals(indentSize, indentSizeFound);
   }
 
 }
