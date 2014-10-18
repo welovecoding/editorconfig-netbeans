@@ -1,5 +1,7 @@
-package com.welovecoding.nbeditorconfig.netbeans;
+package com.welovecoding.netbeans.plugin.editorconfig.project.service;
 
+import com.welovecoding.netbeans.plugin.editorconfig.project.service.ChangeLineEndingServiceProdiver;
+import com.welovecoding.netbeans.plugin.editorconfig.project.EditorConfigProjectPreferences;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.text.Document;
@@ -12,8 +14,8 @@ import org.netbeans.spi.editor.document.OnSaveTask;
 import org.openide.filesystems.FileObject;
 import org.openide.util.lookup.ServiceProvider;
 
-@ServiceProvider(service = ChangeLE.class)
-public class ChangeLEProvider implements OnSaveTask, ChangeLE {
+@ServiceProvider(service = ChangeLineEndingServiceProdiver.class)
+public class ChangeLineEndingProvider implements OnSaveTask, ChangeLineEndingServiceProdiver {
 
   public static final String LF = "LF"; // NOI18N
   public static final String CR = "CR"; // NOI18N
@@ -27,11 +29,11 @@ public class ChangeLEProvider implements OnSaveTask, ChangeLE {
     LE_TYPES.put(CRLF, BaseDocument.LS_CRLF);
   }
 
-  public ChangeLEProvider() {
+  public ChangeLineEndingProvider() {
     this.document = null;
   }
 
-  private ChangeLEProvider(Document document) {
+  private ChangeLineEndingProvider(Document document) {
     this.document = document;
   }
 
@@ -45,7 +47,7 @@ public class ChangeLEProvider implements OnSaveTask, ChangeLE {
         System.out.println("LE: " + key);
       }
     }
-    document.putProperty(BaseDocument.READ_LINE_SEPARATOR_PROP, ECProjectPreferences.getLineEnding(getProject()));
+    document.putProperty(BaseDocument.READ_LINE_SEPARATOR_PROP, EditorConfigProjectPreferences.getLineEnding(getProject()));
   }
 
   @Override
@@ -69,7 +71,7 @@ public class ChangeLEProvider implements OnSaveTask, ChangeLE {
 
     @Override
     public OnSaveTask createTask(Context context) {
-      return new ChangeLEProvider(context.getDocument());
+      return new ChangeLineEndingProvider(context.getDocument());
     }
   }
 

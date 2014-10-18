@@ -1,5 +1,6 @@
 package com.welovecoding.netbeans.plugin.editorconfig.hook;
 
+import com.welovecoding.netbeans.plugin.editorconfig.listener.EditorConfigChangeListener;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;

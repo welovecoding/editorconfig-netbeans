@@ -1,4 +1,4 @@
-package com.welovecoding.nbeditorconfig.netbeans;
+package com.welovecoding.netbeans.plugin.editorconfig.hook;
 
 import com.welovecoding.netbeans.plugin.editorconfig.hook.EditorConfigProjectOpenedHook;
 import java.util.logging.Level;

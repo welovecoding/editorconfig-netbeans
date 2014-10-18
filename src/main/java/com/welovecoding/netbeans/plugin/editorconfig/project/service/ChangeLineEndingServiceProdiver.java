@@ -1,9 +1,5 @@
-package com.welovecoding.nbeditorconfig.netbeans;
+package com.welovecoding.netbeans.plugin.editorconfig.project.service;
 
-/**
- *
- * @author Michael Koppen
- */
-public interface ChangeLE {
+public interface ChangeLineEndingServiceProdiver {
 
 }

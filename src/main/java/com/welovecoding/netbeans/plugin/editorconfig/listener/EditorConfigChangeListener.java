@@ -1,4 +1,4 @@
-package com.welovecoding.netbeans.plugin.editorconfig.hook;
+package com.welovecoding.netbeans.plugin.editorconfig.listener;
 
 import com.welovecoding.netbeans.plugin.editorconfig.model.EditorConfigConstant;
 import com.welovecoding.netbeans.plugin.editorconfig.model.EditorConfigProperty;

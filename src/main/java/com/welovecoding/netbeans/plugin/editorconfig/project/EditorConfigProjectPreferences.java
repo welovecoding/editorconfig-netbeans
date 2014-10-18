@@ -1,25 +1,23 @@
-package com.welovecoding.nbeditorconfig.netbeans;
+package com.welovecoding.netbeans.plugin.editorconfig.project;
 
 import java.util.prefs.Preferences;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.ProjectUtils;
 
-public class ECProjectPreferences {
+public class EditorConfigProjectPreferences {
 
   private static final String LINE_ENDING = "line_ending";
 
-  public static void setLineEnding(String le, Project p) {
-    System.out.println("SETTING LINE ENDING");
-    getPreferences(p).put(LINE_ENDING, le);
+  public static void setLineEnding(String lineEnding, Project project) {
+    getPreferences(project).put(LINE_ENDING, lineEnding);
   }
 
-  public static String getLineEnding(Project p) {
-    System.out.println("GETTING LINE ENDING");
-    return getPreferences(p).get(LINE_ENDING, System.getProperty("line.separator"));
+  public static String getLineEnding(Project project) {
+    return getPreferences(project).get(LINE_ENDING, System.getProperty("line.separator"));
   }
 
-  private static Preferences getPreferences(Project p) {
-    return ProjectUtils.getPreferences(p, ECProjectPreferences.class, true);
+  private static Preferences getPreferences(Project project) {
+    return ProjectUtils.getPreferences(project, EditorConfigProjectPreferences.class, true);
   }
 
 }
