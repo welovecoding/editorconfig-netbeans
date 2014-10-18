@@ -47,7 +47,6 @@ public class EditorConfigProjectOpenedHook extends ProjectOpenedHook {
       EditorConfigChangeListener rootListener = new EditorConfigChangeListener(project, null);
       root.addRecursiveListener(rootListener);
       listeners.put(root, rootListener);
-      LOG.log(Level.INFO, "Attached change listener to: {0}", project.getProjectDirectory().getPath());
     }
 
     for (FileObject file : root.getChildren()) {
@@ -59,14 +58,14 @@ public class EditorConfigProjectOpenedHook extends ProjectOpenedHook {
     }
   }
 
-  private void attachEditorConfigChangeListener(Project project, FileObject file) {
-    LOG.log(Level.INFO, "Found EditorConfig: {0}", file.getPath());
+  private void attachEditorConfigChangeListener(Project project, FileObject editorConfigFileObject) {
+    LOG.log(Level.INFO, "Found EditorConfig: {0}", editorConfigFileObject.getPath());
 
-    EditorConfigChangeListener listener = new EditorConfigChangeListener(project, file);
-    file.getParent().addRecursiveListener(listener);
-    listeners.put(file.getParent(), listener);
+    EditorConfigChangeListener listener = new EditorConfigChangeListener(project, editorConfigFileObject);
+    editorConfigFileObject.getParent().addRecursiveListener(listener);
+    listeners.put(editorConfigFileObject.getParent(), listener);
 
-    LOG.log(Level.INFO, "Attached EditorConfig listener to: {0}", file.getParent().getPath());
+    LOG.log(Level.INFO, "Attached change listener to: {0}", editorConfigFileObject.getParent().getPath());
   }
 
 }

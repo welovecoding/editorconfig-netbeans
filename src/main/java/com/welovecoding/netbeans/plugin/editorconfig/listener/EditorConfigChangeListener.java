@@ -4,6 +4,7 @@ import com.welovecoding.netbeans.plugin.editorconfig.model.EditorConfigConstant;
 import com.welovecoding.netbeans.plugin.editorconfig.model.EditorConfigProperty;
 import com.welovecoding.netbeans.plugin.editorconfig.parser.EditorConfigParser;
 import com.welovecoding.netbeans.plugin.editorconfig.parser.EditorConfigParserException;
+import com.welovecoding.netbeans.plugin.editorconfig.printer.EditorConfigPrinter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,48 +32,44 @@ import org.openide.util.Exceptions;
 public class EditorConfigChangeListener extends FileChangeAdapter {
 
   private static final Logger LOG = Logger.getLogger(EditorConfigChangeListener.class.getName());
-  private Project project;
+  public static final String indentSize = SimpleValueNames.INDENT_SHIFT_WIDTH;
   private Map<String, List<EditorConfigProperty>> editorConfig = new HashMap<>();
+  private Project project;
 
   public EditorConfigChangeListener(Project project, FileObject editorConfigFileObject) {
     this.project = project;
 
     if (editorConfigFileObject != null) {
+      LOG.log(Level.INFO, "Parsing EditorConfig: {0}", editorConfigFileObject.getPath());
       EditorConfigParser parser = new EditorConfigParser();
+
       try {
         editorConfig = parser.parseConfig(FileUtil.toFile(editorConfigFileObject));
       } catch (EditorConfigParserException ex) {
-        Exceptions.printStackTrace(ex);
+        LOG.log(Level.SEVERE, "Exception parsing config file: {0}", ex.getMessage());
       }
 
-      for (Map.Entry<String, List<EditorConfigProperty>> entry : editorConfig.entrySet()) {
-        String key = entry.getKey();
-        List<EditorConfigProperty> value = entry.getValue();
-        System.out.println("Key: " + key);
-        for (EditorConfigProperty editorConfigProperty : value) {
-          System.out.println(editorConfigProperty.getKey() + " : " + editorConfigProperty.getValue());
-        }
-      }
+      String config = EditorConfigPrinter.logConfig(editorConfig);
+      LOG.log(Level.INFO, config);
     }
-
   }
 
   @Override
-  public void fileAttributeChanged(FileAttributeEvent fe) {
-    super.fileAttributeChanged(fe);
-    System.out.println("ECChangeListener :: fileAttributeChanged \n" + fe.getFile().getPath());
+  public void fileAttributeChanged(FileAttributeEvent event) {
+    super.fileAttributeChanged(event);
+    LOG.log(Level.INFO, "Attribute changed: {0}", event.getFile().getPath());
   }
 
   @Override
-  public void fileRenamed(FileRenameEvent fe) {
-    super.fileRenamed(fe);
-    System.out.println("ECChangeListener :: fileRenamed \n" + fe.getFile().getPath());
+  public void fileRenamed(FileRenameEvent event) {
+    super.fileRenamed(event);
+    LOG.log(Level.INFO, "Renamed file: {0}", event.getFile().getPath());
   }
 
   @Override
-  public void fileDeleted(FileEvent fe) {
-    super.fileDeleted(fe);
-    System.out.println("ECChangeListener :: fileDeleted \n" + fe.getFile().getPath());
+  public void fileDeleted(FileEvent event) {
+    super.fileDeleted(event);
+    LOG.log(Level.INFO, "Deleted file: {0}", event.getFile().getPath());
     //TODO processDeletedEditorConfig
     //TODO processDeletedFolderWhichMayContainsFoldersWithListeners -> remove them
   }
@@ -81,30 +78,26 @@ public class EditorConfigChangeListener extends FileChangeAdapter {
 
   }
 
-  /**
-   * method is triggered when content has changed
-   * <p>
-   * @param fe
-   */
   @Override
-  public void fileChanged(FileEvent fe) {
-    super.fileChanged(fe);
-    System.out.println("ECChangeListener :: fileChanged \n" + fe.getFile().getPath());
+  public void fileChanged(FileEvent event) {
+    super.fileChanged(event);
+    LOG.log(Level.INFO, "File content changed: {0}", event.getFile().getPath());
   }
 
   /**
-   * Method is triggered when content has changed and its possible to display
-   * content in netbeans. Method is also triggered when project will be opened.
-   * <p>
+   * Method is triggered when content has changed and it's possible to display
+   * content in NetBeans. Method is also triggered when project will be opened.
+   *
    * @param event
    */
   @Override
   public void fileDataCreated(FileEvent event) {
     super.fileDataCreated(event);
-    System.out.println("ECChangeListener :: fileDataCreated \n" + event.getFile().getPath());
+    LOG.log(Level.INFO, "Here starts the fun... {0}", event.getFile().getPath());
 
     FileObject fileObject = event.getFile();
     DataObject dataObject;
+
     try {
       dataObject = DataObject.find(fileObject);
 
@@ -174,20 +167,20 @@ public class EditorConfigChangeListener extends FileChangeAdapter {
   }
 
   @Override
-  public void fileFolderCreated(FileEvent fe) {
-    super.fileFolderCreated(fe);
-    System.out.println("ECChangeListener :: fileFolderCreated \n" + fe.getFile().getPath());
+  public void fileFolderCreated(FileEvent event) {
+    super.fileFolderCreated(event);
+    LOG.log(Level.INFO, "Created folder: {0}", event.getFile().getPath());
     //TODO search for editor-configs and attach listeners
   }
 
-  private void applyEditorConfigToFolder(DataFolder dof) {
-    for (DataObject dobj : dof.getChildren()) {
-      applyEditorConfigToFile(dobj);
+  private void applyEditorConfigToFolder(DataFolder folder) {
+    for (DataObject file : folder.getChildren()) {
+      applyEditorConfigToFile(file);
     }
   }
 
-  private void applyEditorConfigToFile(DataObject dobj) throws NumberFormatException {
-    System.out.println("APPLY");
+  private void applyEditorConfigToFile(DataObject file) throws NumberFormatException {
+    LOG.log(Level.INFO, "applyEditorConfigToFile: {0}", file.getPrimaryFile().getPath());
 
 //			EditorConfig ec;
 //			try {
@@ -207,15 +200,15 @@ public class EditorConfigChangeListener extends FileChangeAdapter {
 //				Exceptions.printStackTrace(ex);
 //			}
   }
-  public static final String indentSize = SimpleValueNames.INDENT_SHIFT_WIDTH;
 
   private void doIndentSize(FileObject file, int value) {
-    Preferences prefs = CodeStylePreferences.get(file, file.getMIMEType()).getPreferences();
-    prefs.putInt(indentSize, value);
+    Preferences codeStyle = CodeStylePreferences.get(file, file.getMIMEType()).getPreferences();
+    codeStyle.putInt(SimpleValueNames.INDENT_SHIFT_WIDTH, value);
+
     try {
-      prefs.flush();
+      codeStyle.flush();
     } catch (BackingStoreException ex) {
-      Exceptions.printStackTrace(ex);
+      LOG.log(Level.SEVERE, "Error while setting indent size: {0}", ex.getMessage());
     }
   }
 

@@ -1,6 +1,5 @@
 package com.welovecoding.netbeans.plugin.editorconfig.project.service;
 
-import com.welovecoding.netbeans.plugin.editorconfig.project.service.ChangeLineEndingServiceProdiver;
 import com.welovecoding.netbeans.plugin.editorconfig.project.EditorConfigProjectPreferences;
 import java.util.HashMap;
 import java.util.Map;
@@ -14,7 +13,7 @@ import org.netbeans.spi.editor.document.OnSaveTask;
 import org.openide.filesystems.FileObject;
 import org.openide.util.lookup.ServiceProvider;
 
-@ServiceProvider(service = ChangeLineEndingServiceProdiver.class)
+@ServiceProvider(service = ChangeLineEndingServiceProdiver.class, position = 1600)
 public class ChangeLineEndingProvider implements OnSaveTask, ChangeLineEndingServiceProdiver {
 
   public static final String LF = "LF"; // NOI18N
