@@ -3,7 +3,7 @@
 # EditorConfig NetBeans Plugin
 
 
-A NetBeans IDE plugin supporting the [EditorConfig][] standard. 
+A NetBeans IDE plugin supporting the [EditorConfig][] standard.
 
 
 ## EditorConfig Project
@@ -47,5 +47,16 @@ indent_size = 2
 indent_style = space
 indent_size = 2
 ```
+
+## Supported properties
+
+- :construction_worker: charset
+- :construction_worker: end_of_line
+- :white_check_mark: indent_size
+- :construction_worker: indent_style
+- :white_check_mark: insert_final_newline
+- :question: max_line_length
+- :construction_worker: tab_width
+- :construction_worker: trim_trailing_whitespace
 
 [EditorConfig]: http://editorconfig.org
