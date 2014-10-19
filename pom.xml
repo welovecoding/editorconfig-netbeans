@@ -130,12 +130,19 @@
       <artifactId>org-openide-dialogs</artifactId>
       <version>${netbeans.api.version}</version>
     </dependency>
-    <!-- TEST -->
+    <!-- Test -->
     <dependency>
       <groupId>org.netbeans.api</groupId>
       <artifactId>org-netbeans-libs-junit4</artifactId>
       <version>${netbeans.api.version}</version>
       <scope>test</scope>
+    </dependency>
+    <!-- Utils -->
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>2.4</version>
+      <type>jar</type>
     </dependency>
   </dependencies>
     

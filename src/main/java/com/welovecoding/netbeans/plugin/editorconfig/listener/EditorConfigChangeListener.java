@@ -5,6 +5,9 @@ import com.welovecoding.netbeans.plugin.editorconfig.model.EditorConfigProperty;
 import com.welovecoding.netbeans.plugin.editorconfig.parser.EditorConfigParser;
 import com.welovecoding.netbeans.plugin.editorconfig.parser.EditorConfigParserException;
 import com.welovecoding.netbeans.plugin.editorconfig.printer.EditorConfigPrinter;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +16,8 @@ import java.util.logging.Logger;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import javax.swing.text.StyledDocument;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.input.ReversedLinesFileReader;
 import org.netbeans.api.editor.settings.SimpleValueNames;
 import org.netbeans.api.project.Project;
 import org.netbeans.editor.BaseDocument;
@@ -39,20 +44,25 @@ public class EditorConfigChangeListener extends FileChangeAdapter {
     this.project = project;
 
     if (editorConfigFileObject != null) {
-      LOG.log(Level.INFO, "Parsing EditorConfig: {0}", editorConfigFileObject.getPath());
-      EditorConfigParser parser = new EditorConfigParser();
-
-      try {
-        editorConfig = parser.parseConfig(FileUtil.toFile(editorConfigFileObject));
-      } catch (EditorConfigParserException ex) {
-        LOG.log(Level.SEVERE, "Exception parsing config file: {0}", ex.getMessage());
-      }
-
-      String config = EditorConfigPrinter.logConfig(editorConfig);
-      LOG.log(Level.INFO, config);
+      readEditorConfigFile(editorConfigFileObject);
     }
   }
 
+  private void readEditorConfigFile(FileObject editorConfigFileObject) {
+    LOG.log(Level.INFO, "Parsing EditorConfig: {0}", editorConfigFileObject.getPath());
+    EditorConfigParser parser = new EditorConfigParser();
+
+    try {
+      editorConfig = parser.parseConfig(FileUtil.toFile(editorConfigFileObject));
+    } catch (EditorConfigParserException ex) {
+      LOG.log(Level.SEVERE, "Exception parsing config file: {0}", ex.getMessage());
+    }
+
+    String config = EditorConfigPrinter.logConfig(editorConfig);
+    LOG.log(Level.INFO, config);
+  }
+
+  // <editor-fold defaultstate="collapsed" desc="Overrides">
   @Override
   public void fileAttributeChanged(FileAttributeEvent event) {
     super.fileAttributeChanged(event);
@@ -73,63 +83,20 @@ public class EditorConfigChangeListener extends FileChangeAdapter {
     //TODO processDeletedFolderWhichMayContainsFoldersWithListeners -> remove them
   }
 
-  private void processDeletedEditorConfig() {
-
-  }
-
   @Override
   public void fileChanged(FileEvent event) {
     super.fileChanged(event);
-    applyEditorConfigRules(event);
+    applyEditorConfigRules(event.getFile());
     LOG.log(Level.INFO, "File content changed: {0}", event.getFile().getPath());
   }
 
-  private void applyEditorConfigRules(FileEvent event) {
-
-    LOG.log(Level.INFO, "Let the fun begin... {0}", event.getFile().getPath());
-
-    EditorConfigParser parser = new EditorConfigParser();
-    String filePath = event.getFile().getPath();
-
-    FileObject fileObject = event.getFile();
-    DataObject dataObject = null;
-
-    try {
-      dataObject = DataObject.find(fileObject);
-    } catch (DataObjectNotFoundException ex) {
-      LOG.log(Level.SEVERE, "Error accessing file object: {0}", ex.getMessage());
-    }
-
-    if (dataObject != null) {
-      for (String regEx : editorConfig.keySet()) {
-        boolean isMatching = parser.matches(regEx, filePath);
-        if (isMatching) {
-          LOG.log(Level.INFO, "Matched \"{0}\" with \"{1}\".", new Object[]{
-            filePath, regEx
-          });
-
-          List<EditorConfigProperty> properties = editorConfig.get(regEx);
-          for (EditorConfigProperty property : properties) {
-
-            String key = property.getKey();
-            String value = property.getValue();
-
-            LOG.log(Level.INFO, "\t{0}: {1}", new Object[]{
-              key, value
-            });
-
-            switch (key) {
-              case EditorConfigConstant.INDENT_SIZE:
-                int indentSize = Integer.valueOf(value);
-                doIndentSize(dataObject.getPrimaryFile(), indentSize);
-                break;
-            }
-
-          }
-        }
-      }
-    }
+  @Override
+  public void fileFolderCreated(FileEvent event) {
+    super.fileFolderCreated(event);
+    LOG.log(Level.INFO, "Created folder: {0}", event.getFile().getPath());
+    //TODO search for editor-configs and attach listeners
   }
+  // </editor-fold>  
 
   /**
    * Method is triggered when content has changed and it's possible to display
@@ -140,7 +107,7 @@ public class EditorConfigChangeListener extends FileChangeAdapter {
   @Override
   public void fileDataCreated(FileEvent event) {
     super.fileDataCreated(event);
-    LOG.log(Level.INFO, "Here starts the fun... {0}", event.getFile().getPath());
+    LOG.log(Level.INFO, "fileDataCreated: {0}", event.getFile().getPath());
 
     FileObject fileObject = event.getFile();
     DataObject dataObject;
@@ -213,44 +180,71 @@ public class EditorConfigChangeListener extends FileChangeAdapter {
     }
   }
 
-  @Override
-  public void fileFolderCreated(FileEvent event) {
-    super.fileFolderCreated(event);
-    LOG.log(Level.INFO, "Created folder: {0}", event.getFile().getPath());
-    //TODO search for editor-configs and attach listeners
-  }
-
   private void applyEditorConfigToFolder(DataFolder folder) {
-    for (DataObject file : folder.getChildren()) {
-      applyEditorConfigToFile(file);
+    for (DataObject dataObject : folder.getChildren()) {
+      applyEditorConfigRules(dataObject);
     }
   }
 
-  private void applyEditorConfigToFile(DataObject file) throws NumberFormatException {
-    LOG.log(Level.INFO, "applyEditorConfigToFile: {0}", file.getPrimaryFile().getPath());
+  private void applyEditorConfigRules(FileObject fileObject) {
+    DataObject dataObject = null;
 
-//			EditorConfig ec;
-//			try {
-//				ec = new EditorConfig();
-//				List<EditorConfig.OutPair> l = null;
-//				l = ec.getProperties(dobj.getPrimaryFile().getPath());
-//				for (int i = 0; i < l.size(); ++i) {
-//					if (l.get(i).getKey().equals("indent_size")) {
-//						doIndentSize(
-//							dobj.getPrimaryFile(),
-//							Integer.valueOf(l.get(i).getVal()));
-//					}
-//				}
-//			} catch (PythonException ex) {
-//				Exceptions.printStackTrace(ex);
-//			} catch (EditorConfigException ex) {
-//				Exceptions.printStackTrace(ex);
-//			}
+    try {
+      dataObject = DataObject.find(fileObject);
+    } catch (DataObjectNotFoundException ex) {
+      LOG.log(Level.SEVERE, "Error accessing file object: {0}", ex.getMessage());
+    }
+
+    if (dataObject != null) {
+      applyEditorConfigRules(dataObject);
+    }
+  }
+
+  private void applyEditorConfigRules(DataObject dataObject) {
+    EditorConfigParser parser = new EditorConfigParser();
+    String filePath = dataObject.getPrimaryFile().getPath();
+
+    LOG.log(Level.INFO, "Apply rules for: {0}", filePath);
+
+    for (String regEx : editorConfig.keySet()) {
+      boolean isMatching = parser.matches(regEx, filePath);
+      if (isMatching) {
+        LOG.log(Level.INFO, "Matched \"{0}\" with \"{1}\".", new Object[]{
+          filePath, regEx
+        });
+
+        List<EditorConfigProperty> properties = editorConfig.get(regEx);
+        for (EditorConfigProperty property : properties) {
+
+          String key = property.getKey();
+          String value = property.getValue();
+
+          LOG.log(Level.INFO, "  {0}: {1}", new Object[]{
+            key, value
+          });
+
+          switch (key) {
+
+            case EditorConfigConstant.INDENT_SIZE:
+              int indentSize = Integer.valueOf(value);
+              doIndentSize(dataObject.getPrimaryFile(), indentSize);
+              break;
+
+            case EditorConfigConstant.INSERT_FINAL_NEWLINE:
+              boolean insertFinalNewline = Boolean.parseBoolean(value);
+              doNewLine(dataObject.getPrimaryFile(), insertFinalNewline);
+              break;
+
+          }
+
+        }
+      }
+    }
   }
 
   private void doIndentSize(FileObject file, int value) {
-    LOG.log(Level.INFO, "Set indent size to \"{0}\" for \"{1}\".", new Object[]{
-      value, file.getPath()
+    LOG.log(Level.INFO, "    Set indent size for \"{0}\" to \"{1}\".", new Object[]{
+      file.getPath(), value
     });
 
     Preferences codeStyle = CodeStylePreferences.get(file, file.getMIMEType()).getPreferences();
@@ -261,6 +255,46 @@ public class EditorConfigChangeListener extends FileChangeAdapter {
     } catch (BackingStoreException ex) {
       LOG.log(Level.SEVERE, "Error while setting indent size: {0}", ex.getMessage());
     }
+  }
+
+  private void doNewLine(FileObject file, boolean insertFinalNewline) {
+    String filePath = file.getPath();
+    LOG.log(Level.INFO, "    Insert new line in \"{0}\": \"{1}\".", new Object[]{
+      filePath, insertFinalNewline
+    });
+
+    if (file.canWrite() && insertFinalNewline) {
+
+      if (isAlreadyNewLine(filePath)) {
+        LOG.log(Level.INFO, "    File ends already with an empty line.");
+      } else {
+        LOG.log(Level.INFO, "    Inserting new line...");
+        try (FileWriter fileWriter = new FileWriter(filePath, true);
+                BufferedWriter bufferWritter = new BufferedWriter(fileWriter)) {
+          bufferWritter.write(System.getProperty("line.separator", "\r\n"));
+        } catch (IOException ex) {
+          LOG.log(Level.SEVERE, "Cannot insert new line: {0}", ex.getMessage());
+        }
+      }
+
+    }
+  }
+
+  private boolean isAlreadyNewLine(String filePath) {
+    String lastLine = "";
+    boolean isNewLine = false;
+
+    try (ReversedLinesFileReader reader = new ReversedLinesFileReader(FileUtils.getFile(filePath));) {
+      lastLine = reader.readLine();
+    } catch (IOException ex) {
+      LOG.log(Level.SEVERE, "Cannot read file: {0}", ex.getMessage());
+    }
+
+    if (lastLine.equals("\r") || lastLine.equals("\n") && lastLine.equals("\r\n")) {
+      isNewLine = true;
+    }
+
+    return isNewLine;
   }
 
 }
