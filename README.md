@@ -60,3 +60,15 @@ indent_size = 2
 - :construction_worker: trim_trailing_whitespace
 
 [EditorConfig]: http://editorconfig.org
+
+## Contributors
+
+[![Benny Neugebauer on Stack Exchange][stack_exchange_flair_bennyn]][stack_exchange_link_bennyn]
+
+[![Michael Koppen on Stack Exchange][stack_exchange_flair_yser]][stack_exchange_link_yser]
+
+
+[stack_exchange_link_bennyn]: http://stackexchange.com/users/203782/benny-neugebauer?tab=accounts
+[stack_exchange_link_yser]: http://stackexchange.com/users/3210455/yser?tab=accounts
+[stack_exchange_flair_bennyn]: http://stackexchange.com/users/flair/203782.png?theme=default
+[stack_exchange_flair_yser]: http://stackexchange.com/users/flair/3210455.png?theme=default
