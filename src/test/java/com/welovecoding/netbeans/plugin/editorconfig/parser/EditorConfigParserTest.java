@@ -62,7 +62,7 @@ public class EditorConfigParserTest {
   @Test
   public void parsesConfig() throws URISyntaxException, EditorConfigParserException {
     assertEquals("it parses the correct number of sections", config.size(), 5);
-    assertEquals("it parses the correct number of properties per section", config.get(".*").size(), 2);
+    assertEquals("it parses the correct number of properties per section", config.get(".*").size(), 4);
   }
 
   @Test
