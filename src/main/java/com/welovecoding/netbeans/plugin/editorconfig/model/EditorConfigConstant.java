@@ -2,31 +2,51 @@ package com.welovecoding.netbeans.plugin.editorconfig.model;
 
 public class EditorConfigConstant {
 
-  // Keys
+  /**
+   * Set to latin1, utf-8, utf-8-bom, utf-16be or utf-16le to control the
+   * character set. Use of utf-8-bom is discouraged.
+   */
   public static final String CHARSET = "charset";
+  public static final String CHARSET_LATIN_1 = "latin1";
+  public static final String CHARSET_UTF_8 = "utf-8";
+  public static final String CHARSET_UTF_8_BOM = "utf-8-bom";
+  public static final String CHARSET_UTF_16_BE = "utf-16be";
+  public static final String CHARSET_UTF_16_LE = "utf-16le";
+  /**
+   * Set to lf, cr, or crlf to control how line breaks are represented.
+   */
   public static final String END_OF_LINE = "end_of_line";
-  public static final String INDENT_SIZE = "indent_size";
-  public static final String INDENT_STYLE = "indent_style";
-  public static final String INSERT_FINAL_NEWLINE = "insert_final_newline";
-  public static final String MAX_LINE_LENGTH = "max_line_length";
-  public static final String TAB_WIDTH = "tab_width";
-  public static final String TRIM_TRAILING_WHITESPACE = "trim_trailing_whitespace";
+  public static final String END_OF_LINE_LF = "lf"; // Linux, Mac OS X
+  public static final String END_OF_LINE_CR = "cr"; // Mac OS 9
+  public static final String END_OF_LINE_CRLF = "crlf";
 
   /**
-   * Special character signifying the end of a line of text. Mainly used and
-   * standard in: Unix, Linux, Android, Mac OS X, AmigaOS, BSD.F
+   * A whole number defining the number of columns used for each indentation
+   * level and the width of soft tabs (when supported). When set to tab, the
+   * value of tab_width (if specified) will be used.
    */
-  public static final String LINE_FEED = "lf"; // Linux, Mac OS X
+  public static final String INDENT_SIZE = "indent_size";
   /**
-   * Special character signifying the end of a line of text. Mainly used and
-   * standard in: Mac OS until version 9, Apple II, C64
+   * Set to tab or space to use hard tabs or soft tabs respectively.
    */
-  public static final String CARRIAGE_RETURN = "cr"; // Mac OS 9
+  public static final String INDENT_STYLE = "indent_style";
+  public static final String INDENT_STYLE_SPACE = "space";
+  public static final String INDENT_STYLE_TAB = "tab";
   /**
-   * Special sequence of characters signifying the end of a line of text. Mainly
-   * used and standard in: Windows, DOS, OS/2, CP/M, TOS (Atari).
+   * Set to true ensure file ends with a newline when saving and false to ensure
+   * it doesn't.
    */
-  public static final String CARRIAGE_RETURN_LINE_FEED = "crlf";
-  public static final String SPACE = "space";
-  public static final String TAB = "tab";
+  public static final String INSERT_FINAL_NEWLINE = "insert_final_newline";
+  /**
+   * A whole number defining the number of columns used to represent a tab
+   * character. This defaults to the value of indent_size and doesn't usually
+   * need to be specified.
+   */
+  public static final String TAB_WIDTH = "tab_width";
+  /**
+   * Set to true to remove any whitespace characters preceding newline
+   * characters and false to ensure it doesn't.
+   */
+  public static final String TRIM_TRAILING_WHITESPACE = "trim_trailing_whitespace";
+
 }
