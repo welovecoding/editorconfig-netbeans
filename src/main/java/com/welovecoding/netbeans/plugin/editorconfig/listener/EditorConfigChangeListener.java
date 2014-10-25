@@ -11,10 +11,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
+import javax.swing.text.StyledDocument;
 import org.editorconfig.core.EditorConfig;
 import org.editorconfig.core.EditorConfigException;
 import org.netbeans.api.editor.settings.SimpleValueNames;
 import org.netbeans.api.project.Project;
+import org.netbeans.editor.BaseDocument;
 import org.netbeans.modules.editor.indent.spi.CodeStylePreferences;
 import org.openide.filesystems.FileAttributeEvent;
 import org.openide.filesystems.FileChangeAdapter;
@@ -23,6 +25,7 @@ import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileRenameEvent;
 import org.openide.loaders.DataObject;
 import org.openide.loaders.DataObjectNotFoundException;
+import org.openide.text.NbDocument;
 
 public class EditorConfigChangeListener extends FileChangeAdapter {
 
@@ -121,26 +124,29 @@ public class EditorConfigChangeListener extends FileChangeAdapter {
       LOG.log(Level.INFO, "{0}Found rule \"{1}\" with value: {2}", new Object[]{TAB_1, key, value});
 
       switch (key.toLowerCase()) {
+        case EditorConfigConstant.END_OF_LINE:
+          doEndOfLine(dataObject, value);
+          break;
         case EditorConfigConstant.INDENT_SIZE:
-          int indentSize = Integer.valueOf(value);
-          doIndentSize(dataObject.getPrimaryFile(), indentSize);
+          doIndentSize(dataObject.getPrimaryFile(), value);
           break;
         case EditorConfigConstant.INSERT_FINAL_NEWLINE:
-          boolean insertFinalNewline = Boolean.parseBoolean(value);
-          doInsertFinalNewLine(dataObject.getPrimaryFile(), insertFinalNewline);
+          doInsertFinalNewLine(dataObject.getPrimaryFile(), value);
           break;
       }
     }
   }
 
-  private void doIndentSize(FileObject file, int value) {
-    LOG.log(Level.INFO, "{0}Set indent size for \"{1}\" to \"{2}\".", new Object[]{TAB_2, file.getPath(), value});
+  private void doIndentSize(FileObject file, String value) {
+    int indentSize = Integer.valueOf(value);
+
+    LOG.log(Level.INFO, "{0}Set indent size to \"{1}\".", new Object[]{TAB_2, indentSize});
 
     Preferences codeStyle = CodeStylePreferences.get(file, file.getMIMEType()).getPreferences();
     int currentValue = codeStyle.getInt(SimpleValueNames.INDENT_SHIFT_WIDTH, -1);
 
-    if (currentValue != value) {
-      codeStyle.putInt(SimpleValueNames.INDENT_SHIFT_WIDTH, value);
+    if (currentValue != indentSize) {
+      codeStyle.putInt(SimpleValueNames.INDENT_SHIFT_WIDTH, indentSize);
       try {
         codeStyle.flush();
       } catch (BackingStoreException ex) {
@@ -151,15 +157,17 @@ public class EditorConfigChangeListener extends FileChangeAdapter {
     }
   }
 
-  private void doInsertFinalNewLine(FileObject file, boolean needsFinalNewLine) {
+  private void doInsertFinalNewLine(FileObject file, String value) {
+    boolean needsFinalNewLine = Boolean.parseBoolean(value);
+
     String filePath = file.getPath();
 
-    LOG.log(Level.INFO, "{0}Insert new line in \"{1}\": \"{2}\".", new Object[]{TAB_2, filePath, needsFinalNewLine});
+    LOG.log(Level.INFO, "{0}Insert new line: {1}", new Object[]{TAB_2, needsFinalNewLine});
 
     if (file.canWrite() && needsFinalNewLine) {
 
       if (FileAttributes.hasFinalNewLine(filePath)) {
-        LOG.log(Level.INFO, "{0}File ends already with an empty line.", new Object[]{TAB_2});
+        LOG.log(Level.INFO, "{0}File ends already with a new line.", new Object[]{TAB_2});
       } else {
         LOG.log(Level.INFO, "{0}Inserting new line...", new Object[]{TAB_2});
         try (FileWriter fileWriter = new FileWriter(filePath, true);
@@ -171,6 +179,44 @@ public class EditorConfigChangeListener extends FileChangeAdapter {
       }
 
     }
+  }
+
+  private void doEndOfLine(DataObject dataObject, String value) {
+    String normalizedLineEnding = normalizeLineEnding(value);
+
+    LOG.log(Level.INFO, "{0}Change line endings to \"{1}\".", new Object[]{TAB_2, value});
+
+    StyledDocument document = NbDocument.getDocument(dataObject);
+
+    if (!document.getProperty(BaseDocument.READ_LINE_SEPARATOR_PROP).equals(normalizedLineEnding)) {
+      document.putProperty(BaseDocument.READ_LINE_SEPARATOR_PROP, normalizedLineEnding);
+    } else {
+      LOG.log(Level.INFO, "{0}Change not needed. Line endings are already: {1}", new Object[]{TAB_2, value});
+    }
+  }
+
+  /**
+   * Turns line ending settings into file line endings. Example: lnrf -> \r\n
+   *
+   * @param lineEnding
+   * @return
+   */
+  private String normalizeLineEnding(String lineEnding) {
+    String normalizedLineEnding = System.getProperty("line.separator", "\r\n");
+
+    switch (lineEnding) {
+      case EditorConfigConstant.END_OF_LINE_LF:
+        normalizedLineEnding = BaseDocument.LS_LF;
+        break;
+      case EditorConfigConstant.END_OF_LINE_CR:
+        normalizedLineEnding = BaseDocument.LS_CR;
+        break;
+      case EditorConfigConstant.END_OF_LINE_CRLF:
+        normalizedLineEnding = BaseDocument.LS_CRLF;
+        break;
+    }
+
+    return normalizedLineEnding;
   }
 
 }
