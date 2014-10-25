@@ -5,6 +5,7 @@ import com.welovecoding.netbeans.plugin.editorconfig.model.EditorConfigProperty;
 import com.welovecoding.netbeans.plugin.editorconfig.parser.EditorConfigParser;
 import com.welovecoding.netbeans.plugin.editorconfig.parser.EditorConfigParserException;
 import com.welovecoding.netbeans.plugin.editorconfig.printer.EditorConfigPrinter;
+import com.welovecoding.netbeans.plugin.editorconfig.util.FileAttributes;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -39,6 +40,10 @@ public class EditorConfigChangeListener extends FileChangeAdapter {
   private static final Logger LOG = Logger.getLogger(EditorConfigChangeListener.class.getName());
   private Map<String, List<EditorConfigProperty>> editorConfig = new HashMap<>();
   private Project project;
+
+  private final String TAB_1 = "  ";
+  private final String TAB_2 = "    ";
+  private final String TAB_3 = "      ";
 
   public EditorConfigChangeListener(Project project, FileObject editorConfigFileObject) {
     this.project = project;
@@ -219,8 +224,8 @@ public class EditorConfigChangeListener extends FileChangeAdapter {
           String key = property.getKey();
           String value = property.getValue();
 
-          LOG.log(Level.INFO, "  {0}: {1}", new Object[]{
-            key, value
+          LOG.log(Level.INFO, "{0}{1}: {2}", new Object[]{
+            TAB_1, key, value
           });
 
           switch (key) {
@@ -232,7 +237,7 @@ public class EditorConfigChangeListener extends FileChangeAdapter {
 
             case EditorConfigConstant.INSERT_FINAL_NEWLINE:
               boolean insertFinalNewline = Boolean.parseBoolean(value);
-              doNewLine(dataObject.getPrimaryFile(), insertFinalNewline);
+              doInsertFinalNewLine(dataObject.getPrimaryFile(), insertFinalNewline);
               break;
 
           }
@@ -243,8 +248,8 @@ public class EditorConfigChangeListener extends FileChangeAdapter {
   }
 
   private void doIndentSize(FileObject file, int value) {
-    LOG.log(Level.INFO, "    Set indent size for \"{0}\" to \"{1}\".", new Object[]{
-      file.getPath(), value
+    LOG.log(Level.INFO, "{0}Set indent size for \"{1}\" to \"{2}\".", new Object[]{
+      TAB_2, file.getPath(), value
     });
 
     Preferences codeStyle = CodeStylePreferences.get(file, file.getMIMEType()).getPreferences();
@@ -257,18 +262,19 @@ public class EditorConfigChangeListener extends FileChangeAdapter {
     }
   }
 
-  private void doNewLine(FileObject file, boolean insertFinalNewline) {
+  private void doInsertFinalNewLine(FileObject file, boolean needsFinalNewLine) {
     String filePath = file.getPath();
-    LOG.log(Level.INFO, "    Insert new line in \"{0}\": \"{1}\".", new Object[]{
-      filePath, insertFinalNewline
+
+    LOG.log(Level.INFO, "{0}Insert new line in \"{1}\": \"{2}\".", new Object[]{
+      TAB_2, filePath, needsFinalNewLine
     });
 
-    if (file.canWrite() && insertFinalNewline) {
+    if (file.canWrite() && needsFinalNewLine) {
 
-      if (isAlreadyNewLine(filePath)) {
-        LOG.log(Level.INFO, "    File ends already with an empty line.");
+      if (FileAttributes.hasFinalNewLine(filePath)) {
+        LOG.log(Level.INFO, TAB_2 + "File ends already with an empty line.");
       } else {
-        LOG.log(Level.INFO, "    Inserting new line...");
+        LOG.log(Level.INFO, TAB_2 + "Inserting new line...");
         try (FileWriter fileWriter = new FileWriter(filePath, true);
                 BufferedWriter bufferWritter = new BufferedWriter(fileWriter)) {
           bufferWritter.write(System.getProperty("line.separator", "\r\n"));
@@ -278,23 +284,6 @@ public class EditorConfigChangeListener extends FileChangeAdapter {
       }
 
     }
-  }
-
-  private boolean isAlreadyNewLine(String filePath) {
-    String lastLine = "";
-    boolean isNewLine = false;
-
-    try (ReversedLinesFileReader reader = new ReversedLinesFileReader(FileUtils.getFile(filePath));) {
-      lastLine = reader.readLine();
-    } catch (IOException ex) {
-      LOG.log(Level.SEVERE, "Cannot read file: {0}", ex.getMessage());
-    }
-
-    if (lastLine.equals("\r") || lastLine.equals("\n") && lastLine.equals("\r\n")) {
-      isNewLine = true;
-    }
-
-    return isNewLine;
   }
 
 }

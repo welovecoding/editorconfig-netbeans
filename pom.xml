@@ -6,7 +6,7 @@
   <version>0.0.1-SNAPSHOT</version>
   <packaging>nbm</packaging>
   
-  <name>EditorConfig Plugin</name>
+  <name>welovecoding | EditorConfig Plugin</name>
   <description>A NetBeans IDE plugin supporting the EditorConfig standard.</description>
   <url>https://github.com/welovecoding/editorconfig-netbeans</url>
     
