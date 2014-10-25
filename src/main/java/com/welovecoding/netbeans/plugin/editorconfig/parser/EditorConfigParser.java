@@ -15,6 +15,8 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import com.welovecoding.netbeans.plugin.editorconfig.model.EditorConfigProperty;
+import com.welovecoding.netbeans.plugin.editorconfig.model.EditorConfigRules;
+import com.welovecoding.netbeans.plugin.editorconfig.model.EditorConfigSection;
 
 public class EditorConfigParser {
 
@@ -59,6 +61,10 @@ public class EditorConfigParser {
     return result;
   }
 
+  public EditorConfigRules getRules(String filePath) {
+    return new EditorConfigRules();
+  }
+
   protected boolean isInterestingLine(String line) {
     boolean isInteresting = true;
     line = line.trim();
@@ -95,10 +101,13 @@ public class EditorConfigParser {
 
   private String parseSection(String line) {
     String regex = line.substring(1, line.lastIndexOf("]"));
-    return convertRegEx(regex);
+    EditorConfigSection section = convertRegEx(regex);
+    return section.getJavaPattern();
   }
 
-  private String convertRegEx(String regEx) {
+  private EditorConfigSection convertRegEx(String regEx) {
+    EditorConfigSection section;
+
     final String CASE_1 = "*";
     final String CASE_2 = "**.";
     final String CASE_3 = "*.";
@@ -112,6 +121,7 @@ public class EditorConfigParser {
       template = ".*";
 
       expression = template;
+      section = new EditorConfigSection(regEx, expression, 1);
     } else if (regEx.indexOf(CASE_2) > 0) {
       template = "(.*)({0})(.*?)\\.{1}$";
 
@@ -121,12 +131,15 @@ public class EditorConfigParser {
       expression = MessageFormat.format(template, new Object[]{
         startsWith, endsWith
       });
+
+      section = new EditorConfigSection(regEx, expression, 2);
     } else if (regEx.startsWith(CASE_3)) {
       template = "^(.*)\\.{0}$";
 
       value = regEx.substring(CASE_3.length(), regEx.length());
 
       expression = MessageFormat.format(template, value);
+      section = new EditorConfigSection(regEx, expression, 3);
     } else if (regEx.startsWith(CASE_4)) {
       template = "({0})";
 
@@ -135,13 +148,17 @@ public class EditorConfigParser {
       String names = String.join("|", fileNames);
 
       expression = MessageFormat.format(template, names);
+      section = new EditorConfigSection(regEx, expression, 4);
+    } else {
+      section = new EditorConfigSection(expression, expression, 1);
     }
 
-    return expression;
+    return section;
   }
 
   public boolean matches(String regEx, String filePath) {
-    String javaRegEx = convertRegEx(regEx);
+    EditorConfigSection section = convertRegEx(regEx);
+    String javaRegEx = section.getJavaPattern();
 
     Pattern pattern = Pattern.compile(javaRegEx);
     Matcher matcher = pattern.matcher(filePath);
