@@ -2,10 +2,6 @@ package com.welovecoding.netbeans.plugin.editorconfig.util;
 
 import java.io.File;
 import java.net.URL;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 

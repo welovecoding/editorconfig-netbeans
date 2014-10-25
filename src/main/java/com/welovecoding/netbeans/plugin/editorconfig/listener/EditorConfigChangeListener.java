@@ -1,44 +1,32 @@
 package com.welovecoding.netbeans.plugin.editorconfig.listener;
 
 import com.welovecoding.netbeans.plugin.editorconfig.model.EditorConfigConstant;
-import com.welovecoding.netbeans.plugin.editorconfig.model.EditorConfigProperty;
-import com.welovecoding.netbeans.plugin.editorconfig.parser.EditorConfigParser;
-import com.welovecoding.netbeans.plugin.editorconfig.parser.EditorConfigParserException;
-import com.welovecoding.netbeans.plugin.editorconfig.printer.EditorConfigPrinter;
 import com.welovecoding.netbeans.plugin.editorconfig.util.FileAttributes;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
-import javax.swing.text.StyledDocument;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.input.ReversedLinesFileReader;
+import org.editorconfig.core.EditorConfig;
+import org.editorconfig.core.EditorConfigException;
 import org.netbeans.api.editor.settings.SimpleValueNames;
 import org.netbeans.api.project.Project;
-import org.netbeans.editor.BaseDocument;
 import org.netbeans.modules.editor.indent.spi.CodeStylePreferences;
 import org.openide.filesystems.FileAttributeEvent;
 import org.openide.filesystems.FileChangeAdapter;
 import org.openide.filesystems.FileEvent;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileRenameEvent;
-import org.openide.filesystems.FileUtil;
-import org.openide.loaders.DataFolder;
 import org.openide.loaders.DataObject;
 import org.openide.loaders.DataObjectNotFoundException;
-import org.openide.text.NbDocument;
-import org.openide.util.Exceptions;
 
 public class EditorConfigChangeListener extends FileChangeAdapter {
 
   private static final Logger LOG = Logger.getLogger(EditorConfigChangeListener.class.getName());
-  private Map<String, List<EditorConfigProperty>> editorConfig = new HashMap<>();
   private Project project;
 
   private final String TAB_1 = "  ";
@@ -47,24 +35,6 @@ public class EditorConfigChangeListener extends FileChangeAdapter {
 
   public EditorConfigChangeListener(Project project, FileObject editorConfigFileObject) {
     this.project = project;
-
-    if (editorConfigFileObject != null) {
-      readEditorConfigFile(editorConfigFileObject);
-    }
-  }
-
-  private void readEditorConfigFile(FileObject editorConfigFileObject) {
-    LOG.log(Level.INFO, "Parsing EditorConfig: {0}", editorConfigFileObject.getPath());
-    EditorConfigParser parser = new EditorConfigParser();
-
-    try {
-      editorConfig = parser.parseConfig(FileUtil.toFile(editorConfigFileObject));
-    } catch (EditorConfigParserException ex) {
-      LOG.log(Level.SEVERE, "Exception parsing config file: {0}", ex.getMessage());
-    }
-
-    String config = EditorConfigPrinter.logConfig(editorConfig);
-    LOG.log(Level.INFO, config);
   }
 
   // <editor-fold defaultstate="collapsed" desc="Overrides">
@@ -113,82 +83,6 @@ public class EditorConfigChangeListener extends FileChangeAdapter {
   public void fileDataCreated(FileEvent event) {
     super.fileDataCreated(event);
     LOG.log(Level.INFO, "fileDataCreated: {0}", event.getFile().getPath());
-
-    FileObject fileObject = event.getFile();
-    DataObject dataObject;
-
-    try {
-      dataObject = DataObject.find(fileObject);
-
-      for (Map.Entry<String, List<EditorConfigProperty>> entry : editorConfig.entrySet()) {
-        List<EditorConfigProperty> properties = entry.getValue();
-
-        if (fileObject.getPath().matches(entry.getKey())) {
-
-          for (EditorConfigProperty property : properties) {
-            String propertyKey = property.getKey();
-
-            switch (propertyKey) {
-              case EditorConfigConstant.END_OF_LINE:
-                StyledDocument document = NbDocument.getDocument(dataObject);
-                String lineEnding = property.getValue();
-
-                LOG.log(Level.INFO, "Changing line ending for \"{0}\" to \"{1}\".",
-                        new Object[]{propertyKey, lineEnding});
-
-                if (document != null) {
-                  switch (lineEnding) {
-                    case EditorConfigConstant.LINE_FEED:
-                      document.putProperty(BaseDocument.READ_LINE_SEPARATOR_PROP, BaseDocument.LS_LF);
-                      break;
-                    case EditorConfigConstant.CARRIAGE_RETURN:
-                      document.putProperty(BaseDocument.READ_LINE_SEPARATOR_PROP, BaseDocument.LS_CR);
-                      break;
-                    case EditorConfigConstant.CARRIAGE_RETURN_LINE_FEED:
-                      document.putProperty(BaseDocument.READ_LINE_SEPARATOR_PROP, BaseDocument.LS_CRLF);
-                      break;
-                  }
-
-                } else {
-                  System.out.println("ERROR ->> DOC IS NULL :/");
-                }
-                break;
-            }
-          }
-
-        }
-
-      }
-
-      final DataFolder dof = dataObject.getFolder();
-
-      if (fileObject.getNameExt().equals(".editorconfig")) {
-//					file.addFileChangeListener(new FileChangeAdapter() {
-//						@Override
-//						public void fileChanged(FileEvent fe) {
-//							applyEditorConfigToFolder(dof);
-//						}
-//					});
-//					NotificationDisplayer.getDefault().notify(
-//						".editorconfig",
-//						ImageUtilities.loadImageIcon("org/netbeans/ec/editorconfig.png", false),
-//						"Affected folder: " + dof.getName(),
-//						null);
-//					applyEditorConfigToFolder(dof);
-      } else {
-        // if it isn't an editorconfig that's been added,
-        // apply the editorconfig file to it:
-//					applyEditorConfigToFile(dobj);
-      }
-    } catch (DataObjectNotFoundException ex) {
-      Exceptions.printStackTrace(ex);
-    }
-  }
-
-  private void applyEditorConfigToFolder(DataFolder folder) {
-    for (DataObject dataObject : folder.getChildren()) {
-      applyEditorConfigRules(dataObject);
-    }
   }
 
   private void applyEditorConfigRules(FileObject fileObject) {
@@ -206,51 +100,41 @@ public class EditorConfigChangeListener extends FileChangeAdapter {
   }
 
   private void applyEditorConfigRules(DataObject dataObject) {
-    EditorConfigParser parser = new EditorConfigParser();
     String filePath = dataObject.getPrimaryFile().getPath();
 
     LOG.log(Level.INFO, "Apply rules for: {0}", filePath);
 
-    for (String regEx : editorConfig.keySet()) {
-      boolean isMatching = parser.matches(regEx, filePath);
-      if (isMatching) {
-        LOG.log(Level.INFO, "Matched \"{0}\" with \"{1}\".", new Object[]{
-          filePath, regEx
-        });
+    EditorConfig ec = new EditorConfig(".editorconfig", EditorConfig.VERSION);
+    List<EditorConfig.OutPair> rules = new ArrayList<>();
 
-        List<EditorConfigProperty> properties = editorConfig.get(regEx);
-        for (EditorConfigProperty property : properties) {
+    try {
+      rules = ec.getProperties(filePath);
+    } catch (EditorConfigException ex) {
+      LOG.log(Level.SEVERE, ex.getMessage());
+    }
 
-          String key = property.getKey();
-          String value = property.getValue();
+    for (int i = 0; i < rules.size(); ++i) {
+      EditorConfig.OutPair rule = rules.get(i);
+      String key = rule.getKey();
+      String value = rule.getVal();
 
-          LOG.log(Level.INFO, "{0}{1}: {2}", new Object[]{
-            TAB_1, key, value
-          });
+      LOG.log(Level.INFO, "{0}Found rule \"{1}\" with value: {2}", new Object[]{TAB_1, key, value});
 
-          switch (key) {
-
-            case EditorConfigConstant.INDENT_SIZE:
-              int indentSize = Integer.valueOf(value);
-              doIndentSize(dataObject.getPrimaryFile(), indentSize);
-              break;
-
-            case EditorConfigConstant.INSERT_FINAL_NEWLINE:
-              boolean insertFinalNewline = Boolean.parseBoolean(value);
-              doInsertFinalNewLine(dataObject.getPrimaryFile(), insertFinalNewline);
-              break;
-
-          }
-
-        }
+      switch (key.toLowerCase()) {
+        case EditorConfigConstant.INDENT_SIZE:
+          int indentSize = Integer.valueOf(value);
+          doIndentSize(dataObject.getPrimaryFile(), indentSize);
+          break;
+        case EditorConfigConstant.INSERT_FINAL_NEWLINE:
+          boolean insertFinalNewline = Boolean.parseBoolean(value);
+          doInsertFinalNewLine(dataObject.getPrimaryFile(), insertFinalNewline);
+          break;
       }
     }
   }
 
   private void doIndentSize(FileObject file, int value) {
-    LOG.log(Level.INFO, "{0}Set indent size for \"{1}\" to \"{2}\".", new Object[]{
-      TAB_2, file.getPath(), value
-    });
+    LOG.log(Level.INFO, "{0}Set indent size for \"{1}\" to \"{2}\".", new Object[]{TAB_2, file.getPath(), value});
 
     Preferences codeStyle = CodeStylePreferences.get(file, file.getMIMEType()).getPreferences();
     codeStyle.putInt(SimpleValueNames.INDENT_SHIFT_WIDTH, value);
@@ -265,16 +149,14 @@ public class EditorConfigChangeListener extends FileChangeAdapter {
   private void doInsertFinalNewLine(FileObject file, boolean needsFinalNewLine) {
     String filePath = file.getPath();
 
-    LOG.log(Level.INFO, "{0}Insert new line in \"{1}\": \"{2}\".", new Object[]{
-      TAB_2, filePath, needsFinalNewLine
-    });
+    LOG.log(Level.INFO, "{0}Insert new line in \"{1}\": \"{2}\".", new Object[]{TAB_2, filePath, needsFinalNewLine});
 
     if (file.canWrite() && needsFinalNewLine) {
 
       if (FileAttributes.hasFinalNewLine(filePath)) {
-        LOG.log(Level.INFO, TAB_2 + "File ends already with an empty line.");
+        LOG.log(Level.INFO, "{0}File ends already with an empty line.", new Object[]{TAB_2});
       } else {
-        LOG.log(Level.INFO, TAB_2 + "Inserting new line...");
+        LOG.log(Level.INFO, "{0}Inserting new line...", new Object[]{TAB_2});
         try (FileWriter fileWriter = new FileWriter(filePath, true);
                 BufferedWriter bufferWritter = new BufferedWriter(fileWriter)) {
           bufferWritter.write(System.getProperty("line.separator", "\r\n"));
