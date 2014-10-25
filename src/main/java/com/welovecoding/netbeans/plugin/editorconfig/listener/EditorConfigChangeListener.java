@@ -137,12 +137,17 @@ public class EditorConfigChangeListener extends FileChangeAdapter {
     LOG.log(Level.INFO, "{0}Set indent size for \"{1}\" to \"{2}\".", new Object[]{TAB_2, file.getPath(), value});
 
     Preferences codeStyle = CodeStylePreferences.get(file, file.getMIMEType()).getPreferences();
-    codeStyle.putInt(SimpleValueNames.INDENT_SHIFT_WIDTH, value);
+    int currentValue = codeStyle.getInt(SimpleValueNames.INDENT_SHIFT_WIDTH, -1);
 
-    try {
-      codeStyle.flush();
-    } catch (BackingStoreException ex) {
-      LOG.log(Level.SEVERE, "Error while setting indent size: {0}", ex.getMessage());
+    if (currentValue != value) {
+      codeStyle.putInt(SimpleValueNames.INDENT_SHIFT_WIDTH, value);
+      try {
+        codeStyle.flush();
+      } catch (BackingStoreException ex) {
+        LOG.log(Level.SEVERE, "Error while setting indent size: {0}", ex.getMessage());
+      }
+    } else {
+      LOG.log(Level.INFO, "{0}Change not needed. Value is already: {1}", new Object[]{TAB_2, currentValue});
     }
   }
 
