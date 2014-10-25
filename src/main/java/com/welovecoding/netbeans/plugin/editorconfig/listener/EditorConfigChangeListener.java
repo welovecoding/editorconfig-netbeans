@@ -5,6 +5,7 @@ import com.welovecoding.netbeans.plugin.editorconfig.util.FileAttributes;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -27,6 +28,9 @@ import org.openide.loaders.DataObject;
 import org.openide.loaders.DataObjectNotFoundException;
 import org.openide.text.NbDocument;
 
+/**
+ * http://bits.netbeans.org/dev/javadoc/
+ */
 public class EditorConfigChangeListener extends FileChangeAdapter {
 
   private static final Logger LOG = Logger.getLogger(EditorConfigChangeListener.class.getName());
@@ -124,6 +128,9 @@ public class EditorConfigChangeListener extends FileChangeAdapter {
       LOG.log(Level.INFO, "{0}Found rule \"{1}\" with value: {2}", new Object[]{TAB_1, key, value});
 
       switch (key.toLowerCase()) {
+        case EditorConfigConstant.CHARSET:
+          doCharSet(dataObject, value);
+          break;
         case EditorConfigConstant.END_OF_LINE:
           doEndOfLine(dataObject, value);
           break;
@@ -217,6 +224,15 @@ public class EditorConfigChangeListener extends FileChangeAdapter {
     }
 
     return normalizedLineEnding;
+  }
+
+  private void doCharSet(DataObject dataObject, String value) {
+    // ProjectInformation information = ProjectUtils.getPreferences(project, null, true);
+    FileObject fo = dataObject.getPrimaryFile();
+    String charsetAttribute = String.valueOf(fo.getAttribute("encoding"));
+    // Charset charset = Charset.forName(charsetAttribute);
+
+    LOG.log(Level.INFO, "{0}Test: \"{1}\".", new Object[]{TAB_2, charsetAttribute});
   }
 
 }
