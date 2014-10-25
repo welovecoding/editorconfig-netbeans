@@ -5,15 +5,13 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.io.FileUtils;
 
 public class FileAttributes {
 
   private static final Logger LOG = Logger.getLogger(FileAttributes.class.getName());
 
   public static boolean hasFinalNewLine(String filePath) {
-    File file = FileUtils.getFile(filePath);
-    return hasFinalNewLine(file);
+    return hasFinalNewLine(new File(filePath));
   }
 
   public static boolean hasFinalNewLine(File file) {
