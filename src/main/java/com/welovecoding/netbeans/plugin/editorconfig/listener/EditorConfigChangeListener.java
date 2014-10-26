@@ -4,15 +4,13 @@ import com.welovecoding.netbeans.plugin.editorconfig.model.EditorConfigConstant;
 import com.welovecoding.netbeans.plugin.editorconfig.util.FileAttributes;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.Reader;
-import java.io.Writer;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -33,11 +31,9 @@ import org.openide.filesystems.FileEvent;
 import org.openide.filesystems.FileLock;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileRenameEvent;
-import org.openide.filesystems.FileUtil;
 import org.openide.loaders.DataObject;
 import org.openide.loaders.DataObjectNotFoundException;
 import org.openide.text.NbDocument;
-import org.openide.util.Exceptions;
 
 /**
  * http://bits.netbeans.org/dev/javadoc/
@@ -237,86 +233,111 @@ public class EditorConfigChangeListener extends FileChangeAdapter {
     return normalizedLineEnding;
   }
 
-  private void doCharset(DataObject dataObject, String value) {
-    LOG.log(Level.INFO, "{0}Set encoding to: \"{1}\".", new Object[]{TAB_2, value});
+  private void doCharset(DataObject dataObject, String ecCharset) {
+    Charset requestedCharset = convertCharset(ecCharset);
+
+    LOG.log(Level.INFO, "{0}Set encoding to: \"{1}\".", new Object[]{TAB_2, requestedCharset.name()});
 
     FileObject fo = dataObject.getPrimaryFile();
-    Charset encoding = FileEncodingQuery.getEncoding(fo); // UTF-8
-    String lowerCaseEncoding = encoding.name().toLowerCase(); // utf-8
+    Charset currentCharset = getCharset(fo);
 
-    if (lowerCaseEncoding.equals(value)) {
-      LOG.log(Level.INFO, "{0}Change not needed. Encoding is already: \"{1}\".", new Object[]{TAB_2, lowerCaseEncoding});
+    if (currentCharset.name().equals(requestedCharset.name())) {
+      LOG.log(Level.INFO, "{0}Change not needed. Encoding is already: \"{1}\".", new Object[]{TAB_2, currentCharset.name()});
     } else {
-      LOG.log(Level.INFO, "{0}Rewriting file with encoding: \"{1}\".", new Object[]{TAB_2, value});
-      String charset = convertCharset(value);
-      StringBuilder sb = readContentFromFileObject(fo, encoding);
-      try {
-        writeContentToFileObject(fo, charset, sb);
-        LOG.log(Level.INFO, "{0}Changed encoding to: \"{1}\".", new Object[]{TAB_2, charset});
-      } catch (IOException ex) {
-        LOG.log(Level.INFO, "{0}Error writing file with charset \"{1}\": {2}",
-                new Object[]{TAB_2, charset, ex.getMessage()});
+      LOG.log(Level.INFO, "{0}Rewriting file from encoding \"{1}\" to \"{2}\".",
+              new Object[]{TAB_2, currentCharset.name(), requestedCharset.name()});
+
+      ArrayList<String> content = readContentFromFileObject(fo, currentCharset);
+      boolean wasWritten = writeContentToFileObject(fo, requestedCharset, content);
+
+      if (wasWritten) {
+        LOG.log(Level.INFO, "{0}Successfully changed encoding to: \"{1}\".", new Object[]{TAB_2, requestedCharset.name()});
       }
     }
   }
 
-  private String convertCharset(String editorConfigCharset) {
-    String javaCharset;
+  private Charset convertCharset(String editorConfigCharset) {
+    Charset javaCharset;
 
     switch (editorConfigCharset) {
       case EditorConfigConstant.CHARSET_LATIN_1:
-        javaCharset = "ISO-LATIN-1";
+        javaCharset = StandardCharsets.ISO_8859_1;
         break;
       case EditorConfigConstant.CHARSET_UTF_16_BE:
-        javaCharset = "UTF-16BE";
+        javaCharset = StandardCharsets.UTF_16BE;
         break;
       case EditorConfigConstant.CHARSET_UTF_16_LE:
-        javaCharset = "UTF-16LE";
+        javaCharset = StandardCharsets.UTF_16LE;
         break;
       default:
-        javaCharset = "UTF-8";
+        javaCharset = StandardCharsets.UTF_8;
         break;
     }
 
     return javaCharset;
   }
 
-  private StringBuilder readContentFromFileObject(FileObject fo, Charset charset) {
-    StringBuilder sb = new StringBuilder();
+  /**
+   * TODO: It looks like "FileEncodingQuery.getEncoding" always returns "UTF-8".
+   *
+   * Even if the charset of that file is already UTF-16LE. Therefore we should
+   * change our charset lookup. After the charset has been changed by us, we add
+   * a file attribute which helps us to detect the charset in future.
+   *
+   * Maybe we should use a CharsetDetector:
+   * http://userguide.icu-project.org/conversion/detection
+   *
+   * @param fo
+   * @return
+   */
+  private Charset getCharset(FileObject fo) {
+    String fileEncoding = String.valueOf(fo.getAttribute("welovecoding.file.encoding"));
+
+    if (fileEncoding.equals("null")) {
+      Charset currentCharset = FileEncodingQuery.getEncoding(fo);
+      fileEncoding = currentCharset.name();
+    }
+
+    return Charset.forName(fileEncoding);
+  }
+
+  private ArrayList<String> readContentFromFileObject(FileObject fo, Charset charset) {
+    ArrayList<String> lines = new ArrayList<>();
     String line;
 
     try (BufferedReader reader = new BufferedReader(new InputStreamReader(fo.getInputStream(), charset))) {
       while ((line = reader.readLine()) != null) {
-        sb.append(line);
+        lines.add(line);
         // TODO: Use line separator from EditorConfig
-        sb.append(System.getProperty("line.separator", "\r\n"));
+        lines.add(System.getProperty("line.separator", "\r\n"));
       }
     } catch (IOException ex) {
       LOG.log(Level.SEVERE, ex.getMessage());
     }
 
-    return sb;
+    return lines;
   }
 
-  private void writeContentToFileObject(FileObject fo, String charsetName, StringBuilder sb) throws IOException {
-    final FileLock lock = fo.lock();
+  // TODO: Convert characters
+  // http://tripoverit.blogspot.de/2007/04/javas-utf-8-and-unicode-writing-is.html
+  private boolean writeContentToFileObject(FileObject fo, Charset charset, List<String> lines) {
+    boolean wasWritten = false;
+    FileLock lock = null;
 
     try {
-      try (Writer out = new OutputStreamWriter(fo.getOutputStream(lock), charsetName)) {
-        out.write(sb.toString());
-      }
+      fo.lock();
+      Files.write(Paths.get(fo.toURI()), lines, charset);
+      fo.setAttribute("welovecoding.file.encoding", charset.name());
+      wasWritten = true;
+    } catch (IOException ex) {
+      LOG.log(Level.INFO, "{0}Error writing file with charset \"{1}\": {2}",
+              new Object[]{TAB_2, charset, ex.getMessage()});
     } finally {
-      lock.releaseLock();
-    }
-  }
-
-  private File getFileFromFileObject(FileObject fo) {
-    File file = FileUtil.toFile(fo);
-
-    if (file == null) {
-      file = FileUtil.normalizeFile(new File(new File(System.getProperty("user.name")), fo.getNameExt()));
+      if (lock != null) {
+        lock.releaseLock();
+      }
     }
 
-    return file;
+    return wasWritten;
   }
 }
