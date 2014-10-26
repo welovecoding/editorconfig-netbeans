@@ -60,6 +60,12 @@ indent_size = 2
 
 [EditorConfig]: http://editorconfig.org
 
+## Known issues
+
+- A project must be closed and opened after the plugin is installed, to setup hooks for `.editorconfig` files
+- Rules are only applied when a file (which is matched by a rule) is saved
+- It takes ~10 seconds to apply the rules after a file has been saved
+
 ## Disclaimer
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
