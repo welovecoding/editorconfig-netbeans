@@ -2,12 +2,16 @@ package com.welovecoding.netbeans.plugin.editorconfig.listener;
 
 import com.welovecoding.netbeans.plugin.editorconfig.model.EditorConfigConstant;
 import com.welovecoding.netbeans.plugin.editorconfig.util.FileAttributes;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.Reader;
+import java.io.Writer;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,8 +30,10 @@ import org.netbeans.modules.editor.indent.spi.CodeStylePreferences;
 import org.openide.filesystems.FileAttributeEvent;
 import org.openide.filesystems.FileChangeAdapter;
 import org.openide.filesystems.FileEvent;
+import org.openide.filesystems.FileLock;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileRenameEvent;
+import org.openide.filesystems.FileUtil;
 import org.openide.loaders.DataObject;
 import org.openide.loaders.DataObjectNotFoundException;
 import org.openide.text.NbDocument;
@@ -134,7 +140,7 @@ public class EditorConfigChangeListener extends FileChangeAdapter {
 
       switch (key) {
         case EditorConfigConstant.CHARSET:
-          doCharSet(dataObject, value);
+          doCharset(dataObject, value);
           break;
         case EditorConfigConstant.END_OF_LINE:
           doEndOfLine(dataObject, value);
@@ -231,18 +237,86 @@ public class EditorConfigChangeListener extends FileChangeAdapter {
     return normalizedLineEnding;
   }
 
-  private void doCharSet(DataObject dataObject, String value) {
+  private void doCharset(DataObject dataObject, String value) {
     LOG.log(Level.INFO, "{0}Set encoding to: \"{1}\".", new Object[]{TAB_2, value});
 
     FileObject fo = dataObject.getPrimaryFile();
     Charset encoding = FileEncodingQuery.getEncoding(fo); // UTF-8
-    String lowerCaseEncoding = encoding.name().toLowerCase();
+    String lowerCaseEncoding = encoding.name().toLowerCase(); // utf-8
 
     if (lowerCaseEncoding.equals(value)) {
-      LOG.log(Level.INFO, "{0}Change not needed. Coding is already: \"{1}\".", new Object[]{TAB_2, lowerCaseEncoding});
+      LOG.log(Level.INFO, "{0}Change not needed. Encoding is already: \"{1}\".", new Object[]{TAB_2, lowerCaseEncoding});
     } else {
       LOG.log(Level.INFO, "{0}Rewriting file with encoding: \"{1}\".", new Object[]{TAB_2, value});
+      String charset = convertCharset(value);
+      StringBuilder sb = readContentFromFileObject(fo, encoding);
+      try {
+        writeContentToFileObject(fo, charset, sb);
+        LOG.log(Level.INFO, "{0}Changed encoding to: \"{1}\".", new Object[]{TAB_2, charset});
+      } catch (IOException ex) {
+        LOG.log(Level.INFO, "{0}Error writing file with charset \"{1}\": {2}",
+                new Object[]{TAB_2, charset, ex.getMessage()});
+      }
+    }
+  }
+
+  private String convertCharset(String editorConfigCharset) {
+    String javaCharset;
+
+    switch (editorConfigCharset) {
+      case EditorConfigConstant.CHARSET_LATIN_1:
+        javaCharset = "ISO-LATIN-1";
+        break;
+      case EditorConfigConstant.CHARSET_UTF_16_BE:
+        javaCharset = "UTF-16BE";
+        break;
+      case EditorConfigConstant.CHARSET_UTF_16_LE:
+        javaCharset = "UTF-16LE";
+        break;
+      default:
+        javaCharset = "UTF-8";
+        break;
     }
 
+    return javaCharset;
+  }
+
+  private StringBuilder readContentFromFileObject(FileObject fo, Charset charset) {
+    StringBuilder sb = new StringBuilder();
+    String line;
+
+    try (BufferedReader reader = new BufferedReader(new InputStreamReader(fo.getInputStream(), charset))) {
+      while ((line = reader.readLine()) != null) {
+        sb.append(line);
+        // TODO: Use line separator from EditorConfig
+        sb.append(System.getProperty("line.separator", "\r\n"));
+      }
+    } catch (IOException ex) {
+      LOG.log(Level.SEVERE, ex.getMessage());
+    }
+
+    return sb;
+  }
+
+  private void writeContentToFileObject(FileObject fo, String charsetName, StringBuilder sb) throws IOException {
+    final FileLock lock = fo.lock();
+
+    try {
+      try (Writer out = new OutputStreamWriter(fo.getOutputStream(lock), charsetName)) {
+        out.write(sb.toString());
+      }
+    } finally {
+      lock.releaseLock();
+    }
+  }
+
+  private File getFileFromFileObject(FileObject fo) {
+    File file = FileUtil.toFile(fo);
+
+    if (file == null) {
+      file = FileUtil.normalizeFile(new File(new File(System.getProperty("user.name")), fo.getNameExt()));
+    }
+
+    return file;
   }
 }

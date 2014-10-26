@@ -7,11 +7,11 @@ public class EditorConfigConstant {
    * character set. Use of utf-8-bom is discouraged.
    */
   public static final String CHARSET = "charset";
-  public static final String CHARSET_LATIN_1 = "latin1";
-  public static final String CHARSET_UTF_8 = "utf-8";
-  public static final String CHARSET_UTF_8_BOM = "utf-8-bom";
-  public static final String CHARSET_UTF_16_BE = "utf-16be";
-  public static final String CHARSET_UTF_16_LE = "utf-16le";
+  public static final String CHARSET_LATIN_1 = "latin1";        // ISO-LATIN-1
+  public static final String CHARSET_UTF_8 = "utf-8";           // UTF-8
+  public static final String CHARSET_UTF_8_BOM = "utf-8-bom";   // UTF-8 with signature
+  public static final String CHARSET_UTF_16_BE = "utf-16be";    // UTF-16BE
+  public static final String CHARSET_UTF_16_LE = "utf-16le";    // UTF-16LE
   /**
    * Set to lf, cr, or crlf to control how line breaks are represented.
    */

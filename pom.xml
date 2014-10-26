@@ -38,6 +38,7 @@
       <artifactId>org-netbeans-modules-editor-settings</artifactId>
       <version>${netbeans.api.version}</version>
     </dependency>
+    <!-- BaseDocument & Co. -->
     <dependency>
       <groupId>org.netbeans.api</groupId>
       <artifactId>org-netbeans-modules-editor-lib</artifactId>
