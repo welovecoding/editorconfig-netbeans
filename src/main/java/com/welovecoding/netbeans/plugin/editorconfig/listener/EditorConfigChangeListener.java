@@ -3,8 +3,11 @@ package com.welovecoding.netbeans.plugin.editorconfig.listener;
 import com.welovecoding.netbeans.plugin.editorconfig.model.EditorConfigConstant;
 import com.welovecoding.netbeans.plugin.editorconfig.util.FileAttributes;
 import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +20,7 @@ import org.editorconfig.core.EditorConfig;
 import org.editorconfig.core.EditorConfigException;
 import org.netbeans.api.editor.settings.SimpleValueNames;
 import org.netbeans.api.project.Project;
+import org.netbeans.api.queries.FileEncodingQuery;
 import org.netbeans.editor.BaseDocument;
 import org.netbeans.modules.editor.indent.spi.CodeStylePreferences;
 import org.openide.filesystems.FileAttributeEvent;
@@ -27,6 +31,7 @@ import org.openide.filesystems.FileRenameEvent;
 import org.openide.loaders.DataObject;
 import org.openide.loaders.DataObjectNotFoundException;
 import org.openide.text.NbDocument;
+import org.openide.util.Exceptions;
 
 /**
  * http://bits.netbeans.org/dev/javadoc/
@@ -122,12 +127,12 @@ public class EditorConfigChangeListener extends FileChangeAdapter {
 
     for (int i = 0; i < rules.size(); ++i) {
       EditorConfig.OutPair rule = rules.get(i);
-      String key = rule.getKey();
-      String value = rule.getVal();
+      String key = rule.getKey().toLowerCase();
+      String value = rule.getVal().toLowerCase();
 
       LOG.log(Level.INFO, "{0}Found rule \"{1}\" with value: {2}", new Object[]{TAB_1, key, value});
 
-      switch (key.toLowerCase()) {
+      switch (key) {
         case EditorConfigConstant.CHARSET:
           doCharSet(dataObject, value);
           break;
@@ -227,12 +232,17 @@ public class EditorConfigChangeListener extends FileChangeAdapter {
   }
 
   private void doCharSet(DataObject dataObject, String value) {
-    // ProjectInformation information = ProjectUtils.getPreferences(project, null, true);
+    LOG.log(Level.INFO, "{0}Set encoding to: \"{1}\".", new Object[]{TAB_2, value});
+
     FileObject fo = dataObject.getPrimaryFile();
-    String charsetAttribute = String.valueOf(fo.getAttribute("encoding"));
-    // Charset charset = Charset.forName(charsetAttribute);
+    Charset encoding = FileEncodingQuery.getEncoding(fo); // UTF-8
+    String lowerCaseEncoding = encoding.name().toLowerCase();
 
-    LOG.log(Level.INFO, "{0}Test: \"{1}\".", new Object[]{TAB_2, charsetAttribute});
+    if (lowerCaseEncoding.equals(value)) {
+      LOG.log(Level.INFO, "{0}Change not needed. Coding is already: \"{1}\".", new Object[]{TAB_2, lowerCaseEncoding});
+    } else {
+      LOG.log(Level.INFO, "{0}Rewriting file with encoding: \"{1}\".", new Object[]{TAB_2, value});
+    }
+
   }
-
 }

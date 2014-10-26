@@ -130,6 +130,12 @@
       <artifactId>org-openide-dialogs</artifactId>
       <version>${netbeans.api.version}</version>
     </dependency>
+    <!-- FileEncodingQuery & Co. -->
+    <dependency>
+      <groupId>org.netbeans.api</groupId>
+      <artifactId>org-netbeans-modules-queries</artifactId>
+      <version>${netbeans.api.version}</version>
+    </dependency>
     <!-- Test -->
     <dependency>
       <groupId>org.netbeans.api</groupId>
