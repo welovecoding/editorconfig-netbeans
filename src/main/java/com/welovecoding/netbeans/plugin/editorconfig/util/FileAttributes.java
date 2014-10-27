@@ -16,6 +16,9 @@ public class FileAttributes {
 
   public static boolean hasFinalNewLine(File file) {
     boolean isNewLine = false;
+    // TODO: Negative seek offset
+    // If the file only has one byte (UTF-8 file with an "A" as content),
+    // then this method fails because it will be used with -2 bytes
     String lastLine = readLastBytes(file, 2);
 
     if (lastLine.endsWith("\r") || lastLine.endsWith("\n")) {

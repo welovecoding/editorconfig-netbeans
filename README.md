@@ -50,7 +50,7 @@ indent_size = 2
 
 ## Supported properties
 
-- :construction_worker: charset
+- :white_check_mark: charset
 - :white_check_mark: end_of_line
 - :white_check_mark: indent_size
 - :construction_worker: indent_style

@@ -12,6 +12,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -121,6 +122,11 @@ public class EditorConfigChangeListener extends FileChangeAdapter {
     EditorConfig ec = new EditorConfig(".editorconfig", EditorConfig.VERSION);
     List<EditorConfig.OutPair> rules = new ArrayList<>();
 
+    HashMap<String, String> keyedRules = new HashMap<>();
+    for (EditorConfig.OutPair rule : rules) {
+      keyedRules.put(rule.getKey().toLowerCase(), rule.getVal().toLowerCase());
+    }
+
     try {
       rules = ec.getProperties(filePath);
     } catch (EditorConfigException ex) {
@@ -136,7 +142,15 @@ public class EditorConfigChangeListener extends FileChangeAdapter {
 
       switch (key) {
         case EditorConfigConstant.CHARSET:
-          doCharset(dataObject, value);
+          String lineBreaks = keyedRules.get(EditorConfigConstant.END_OF_LINE);
+
+          if (lineBreaks == null) {
+            lineBreaks = System.getProperty("line.separator", "\r\n");
+          } else {
+            lineBreaks = normalizeLineEnding(lineBreaks);
+          }
+
+          doCharset(dataObject, value, lineBreaks);
           break;
         case EditorConfigConstant.END_OF_LINE:
           doEndOfLine(dataObject, value);
@@ -233,7 +247,7 @@ public class EditorConfigChangeListener extends FileChangeAdapter {
     return normalizedLineEnding;
   }
 
-  private void doCharset(DataObject dataObject, String ecCharset) {
+  private void doCharset(DataObject dataObject, String ecCharset, String lineEnding) {
     Charset requestedCharset = convertCharset(ecCharset);
 
     LOG.log(Level.INFO, "{0}Set encoding to: \"{1}\".", new Object[]{TAB_2, requestedCharset.name()});
@@ -247,7 +261,7 @@ public class EditorConfigChangeListener extends FileChangeAdapter {
       LOG.log(Level.INFO, "{0}Rewriting file from encoding \"{1}\" to \"{2}\".",
               new Object[]{TAB_2, currentCharset.name(), requestedCharset.name()});
 
-      ArrayList<String> content = readContentFromFileObject(fo, currentCharset);
+      ArrayList<String> content = readContentFromFileObject(fo, currentCharset, lineEnding);
       boolean wasWritten = writeContentToFileObject(fo, requestedCharset, content);
 
       if (wasWritten) {
@@ -301,15 +315,14 @@ public class EditorConfigChangeListener extends FileChangeAdapter {
     return Charset.forName(fileEncoding);
   }
 
-  private ArrayList<String> readContentFromFileObject(FileObject fo, Charset charset) {
+  private ArrayList<String> readContentFromFileObject(FileObject fo, Charset charset, String lineEnding) {
     ArrayList<String> lines = new ArrayList<>();
     String line;
 
     try (BufferedReader reader = new BufferedReader(new InputStreamReader(fo.getInputStream(), charset))) {
       while ((line = reader.readLine()) != null) {
         lines.add(line);
-        // TODO: Use line separator from EditorConfig
-        lines.add(System.getProperty("line.separator", "\r\n"));
+        lines.add(lineEnding);
       }
 
       // Remove last line-break
