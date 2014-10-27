@@ -311,6 +311,9 @@ public class EditorConfigChangeListener extends FileChangeAdapter {
         // TODO: Use line separator from EditorConfig
         lines.add(System.getProperty("line.separator", "\r\n"));
       }
+
+      // Remove last line-break
+      lines.remove(lines.size() - 1);
     } catch (IOException ex) {
       LOG.log(Level.SEVERE, ex.getMessage());
     }
