@@ -86,6 +86,10 @@ OR OTHER DEALINGS IN THE SOFTWARE.
 
 [![Michael Koppen on Stack Exchange][stack_exchange_flair_yser]][stack_exchange_link_yser]
 
+## Thanks to
+
+- [Geertjan Wielenga](https://blogs.oracle.com/geertjan) for his sample project and article on [EditorConfig and NetBeans IDE](https://blogs.oracle.com/geertjan/entry/editorconfig_and_netbeans_ide)
+
 
 [stack_exchange_link_bennyn]: http://stackexchange.com/users/203782/benny-neugebauer?tab=accounts
 [stack_exchange_link_yser]: http://stackexchange.com/users/3210455/yser?tab=accounts
