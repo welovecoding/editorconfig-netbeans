@@ -7,10 +7,9 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,6 +34,7 @@ import org.openide.filesystems.FileRenameEvent;
 import org.openide.loaders.DataObject;
 import org.openide.loaders.DataObjectNotFoundException;
 import org.openide.text.NbDocument;
+import org.openide.util.Exceptions;
 
 /**
  * http://bits.netbeans.org/dev/javadoc/
@@ -378,28 +378,15 @@ public class EditorConfigChangeListener extends FileChangeAdapter {
     return lines;
   }
 
-  // TODO: Convert characters
-  // http://tripoverit.blogspot.de/2007/04/javas-utf-8-and-unicode-writing-is.html
+  // TODO: @micha
   private boolean writeContentToFileObject(FileObject fo, Charset charset, List<String> lines) {
     boolean wasWritten = false;
     FileLock lock = FileLock.NONE;
 
-    try {
-      lock = fo.lock();
-
-      if (fo.isLocked()) {
-        Files.write(Paths.get(fo.toURI()), lines, charset);
-        fo.setAttribute("welovecoding.file.encoding", charset.name());
-        wasWritten = true;
-      }
-
+    try (PrintWriter output = new PrintWriter(fo.getOutputStream(lock))) {
+      
     } catch (IOException ex) {
-      LOG.log(Level.INFO, "{0}Error writing file with charset \"{1}\": {2}",
-              new Object[]{TAB_2, charset, ex.getMessage()});
-    } finally {
-      if (lock != null) {
-        lock.releaseLock();
-      }
+      Exceptions.printStackTrace(ex);
     }
 
     return wasWritten;
