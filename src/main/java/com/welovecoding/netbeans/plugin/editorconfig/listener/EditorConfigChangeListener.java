@@ -133,6 +133,9 @@ public class EditorConfigChangeListener extends FileChangeAdapter {
       LOG.log(Level.SEVERE, ex.getMessage());
     }
 
+    FileObject primaryFile = dataObject.getPrimaryFile();
+    boolean changedStyle = false;
+
     for (int i = 0; i < rules.size(); ++i) {
       EditorConfig.OutPair rule = rules.get(i);
       String key = rule.getKey().toLowerCase();
@@ -143,29 +146,55 @@ public class EditorConfigChangeListener extends FileChangeAdapter {
       switch (key) {
         case EditorConfigConstant.CHARSET:
           String lineBreaks = keyedRules.get(EditorConfigConstant.END_OF_LINE);
-
-          if (lineBreaks == null) {
-            lineBreaks = System.getProperty("line.separator", "\r\n");
-          } else {
-            lineBreaks = normalizeLineEnding(lineBreaks);
-          }
-
-          doCharset(dataObject, value, lineBreaks);
+          changedStyle = changedStyle || doCharset(dataObject, value, lineBreaks);
           break;
         case EditorConfigConstant.END_OF_LINE:
-          doEndOfLine(dataObject, value);
+          changedStyle = changedStyle || doEndOfLine(dataObject, value);
           break;
         case EditorConfigConstant.INDENT_SIZE:
-          doIndentSize(dataObject.getPrimaryFile(), value);
+          changedStyle = changedStyle || doIndentSize(primaryFile, value);
+          break;
+        case EditorConfigConstant.INDENT_STYLE:
+          changedStyle = changedStyle || doIndentStyle(primaryFile, value);
           break;
         case EditorConfigConstant.INSERT_FINAL_NEWLINE:
-          doInsertFinalNewLine(dataObject.getPrimaryFile(), value);
+          changedStyle = changedStyle || doInsertFinalNewLine(primaryFile, value);
           break;
+      }
+    }
+
+    Preferences codeStyle = CodeStylePreferences.get(primaryFile, primaryFile.getMIMEType()).getPreferences();
+
+    if (changedStyle) {
+      try {
+        codeStyle.flush();
+      } catch (BackingStoreException ex) {
+        LOG.log(Level.SEVERE, "Error applying code style: {0}", ex.getMessage());
       }
     }
   }
 
-  private void doIndentSize(FileObject file, String value) {
+  private boolean doIndentStyle(FileObject file, String value) {
+    LOG.log(Level.INFO, "{0}Set indent style to \"{1}\".", new Object[]{TAB_2, value});
+    boolean expandTabs = false;
+    if (value.equals(EditorConfigConstant.INDENT_STYLE_SPACE)) {
+      expandTabs = true;
+    }
+
+    Preferences codeStyle = CodeStylePreferences.get(file, file.getMIMEType()).getPreferences();
+    boolean currentValue = codeStyle.getBoolean(SimpleValueNames.EXPAND_TABS, false);
+
+    if (currentValue != expandTabs) {
+      codeStyle.putBoolean(SimpleValueNames.EXPAND_TABS, expandTabs);
+      LOG.log(Level.INFO, "{0}Action: Changed indent style to space? {1}", new Object[]{TAB_2, expandTabs});
+      return true;
+    } else {
+      LOG.log(Level.INFO, "{0}Action not needed: Indent style is already set to spaces \"{1}\".", new Object[]{TAB_2, currentValue});
+      return false;
+    }
+  }
+
+  private boolean doIndentSize(FileObject file, String value) {
     int indentSize = Integer.valueOf(value);
 
     LOG.log(Level.INFO, "{0}Set indent size to \"{1}\".", new Object[]{TAB_2, indentSize});
@@ -175,51 +204,56 @@ public class EditorConfigChangeListener extends FileChangeAdapter {
 
     if (currentValue != indentSize) {
       codeStyle.putInt(SimpleValueNames.INDENT_SHIFT_WIDTH, indentSize);
-      try {
-        codeStyle.flush();
-      } catch (BackingStoreException ex) {
-        LOG.log(Level.SEVERE, "Error while setting indent size: {0}", ex.getMessage());
-      }
+      LOG.log(Level.INFO, "{0}Action: Change indent size to \"{1}\".", new Object[]{TAB_2, indentSize});
+      return true;
     } else {
-      LOG.log(Level.INFO, "{0}Change not needed. Value is already: {1}", new Object[]{TAB_2, currentValue});
+      LOG.log(Level.INFO, "{0}Action not needed: Value is already \"{1}\".", new Object[]{TAB_2, currentValue});
+      return false;
     }
   }
 
-  private void doInsertFinalNewLine(FileObject file, String value) {
+  private boolean doInsertFinalNewLine(FileObject file, String value) {
+    boolean wasChanged = false;
     boolean needsFinalNewLine = Boolean.parseBoolean(value);
 
     String filePath = file.getPath();
 
-    LOG.log(Level.INFO, "{0}Insert new line: {1}", new Object[]{TAB_2, needsFinalNewLine});
+    LOG.log(Level.INFO, "{0}Insert new line? {1}", new Object[]{TAB_2, needsFinalNewLine});
 
     if (file.canWrite() && needsFinalNewLine) {
 
       if (FileAttributes.hasFinalNewLine(filePath)) {
-        LOG.log(Level.INFO, "{0}File ends already with a new line.", new Object[]{TAB_2});
+        LOG.log(Level.INFO, "{0}Action not needed: File ends already with a new line.", new Object[]{TAB_2});
       } else {
-        LOG.log(Level.INFO, "{0}Inserting new line...", new Object[]{TAB_2});
+        LOG.log(Level.INFO, "{0}Action: Inserting new line...", new Object[]{TAB_2});
         try (FileWriter fileWriter = new FileWriter(filePath, true);
                 BufferedWriter bufferWritter = new BufferedWriter(fileWriter)) {
-          bufferWritter.write(System.getProperty("line.separator", "\r\n"));
+          // TODO: Take line separator from EditorConfig (if present)
+          bufferWritter.newLine();
+          wasChanged = true;
         } catch (IOException ex) {
-          LOG.log(Level.SEVERE, "Cannot insert new line: {0}", ex.getMessage());
+          LOG.log(Level.SEVERE, "{0}Action: Cannot insert new line: {1}", new Object[]{TAB_2, ex.getMessage()});
         }
       }
 
     }
+
+    return wasChanged;
   }
 
-  private void doEndOfLine(DataObject dataObject, String value) {
-    String normalizedLineEnding = normalizeLineEnding(value);
-
+  private boolean doEndOfLine(DataObject dataObject, String value) {
     LOG.log(Level.INFO, "{0}Change line endings to \"{1}\".", new Object[]{TAB_2, value});
 
+    String normalizedLineEnding = normalizeLineEnding(value);
     StyledDocument document = NbDocument.getDocument(dataObject);
 
     if (!document.getProperty(BaseDocument.READ_LINE_SEPARATOR_PROP).equals(normalizedLineEnding)) {
       document.putProperty(BaseDocument.READ_LINE_SEPARATOR_PROP, normalizedLineEnding);
+      LOG.log(Level.INFO, "{0}Action: Changed line endings to \"{1}\".", new Object[]{TAB_2, value});
+      return true;
     } else {
-      LOG.log(Level.INFO, "{0}Change not needed. Line endings are already: {1}", new Object[]{TAB_2, value});
+      LOG.log(Level.INFO, "{0}Action not needed: Line endings are already \"{1}\".", new Object[]{TAB_2, value});
+      return false;
     }
   }
 
@@ -247,8 +281,15 @@ public class EditorConfigChangeListener extends FileChangeAdapter {
     return normalizedLineEnding;
   }
 
-  private void doCharset(DataObject dataObject, String ecCharset, String lineEnding) {
-    Charset requestedCharset = convertCharset(ecCharset);
+  private boolean doCharset(DataObject dataObject, String ecCharset, String lineEnding) {
+    Charset requestedCharset = mapCharset(ecCharset);
+    boolean wasChanged = false;
+
+    if (lineEnding == null) {
+      lineEnding = System.getProperty("line.separator", "\r\n");
+    } else {
+      lineEnding = normalizeLineEnding(lineEnding);
+    }
 
     LOG.log(Level.INFO, "{0}Set encoding to: \"{1}\".", new Object[]{TAB_2, requestedCharset.name()});
 
@@ -256,21 +297,24 @@ public class EditorConfigChangeListener extends FileChangeAdapter {
     Charset currentCharset = getCharset(fo);
 
     if (currentCharset.name().equals(requestedCharset.name())) {
-      LOG.log(Level.INFO, "{0}Change not needed. Encoding is already: \"{1}\".", new Object[]{TAB_2, currentCharset.name()});
+      LOG.log(Level.INFO, "{0}Action not needed: Encoding is already \"{1}\".", new Object[]{TAB_2, currentCharset.name()});
     } else {
-      LOG.log(Level.INFO, "{0}Rewriting file from encoding \"{1}\" to \"{2}\".",
+      LOG.log(Level.INFO, "{0}Action: Rewriting file from encoding \"{1}\" to \"{2}\".",
               new Object[]{TAB_2, currentCharset.name(), requestedCharset.name()});
 
       ArrayList<String> content = readContentFromFileObject(fo, currentCharset, lineEnding);
       boolean wasWritten = writeContentToFileObject(fo, requestedCharset, content);
 
       if (wasWritten) {
-        LOG.log(Level.INFO, "{0}Successfully changed encoding to: \"{1}\".", new Object[]{TAB_2, requestedCharset.name()});
+        LOG.log(Level.INFO, "{0}Action: Successfully changed encoding to \"{1}\".", new Object[]{TAB_2, requestedCharset.name()});
+        wasChanged = true;
       }
     }
+
+    return wasChanged;
   }
 
-  private Charset convertCharset(String editorConfigCharset) {
+  private Charset mapCharset(String editorConfigCharset) {
     Charset javaCharset;
 
     switch (editorConfigCharset) {
@@ -305,14 +349,14 @@ public class EditorConfigChangeListener extends FileChangeAdapter {
    * @return
    */
   private Charset getCharset(FileObject fo) {
-    String fileEncoding = String.valueOf(fo.getAttribute("welovecoding.file.encoding"));
+    Object fileEncoding = fo.getAttribute("welovecoding.file.encoding");
 
-    if (fileEncoding.equals("null")) {
+    if (fileEncoding == null) {
       Charset currentCharset = FileEncodingQuery.getEncoding(fo);
       fileEncoding = currentCharset.name();
     }
 
-    return Charset.forName(fileEncoding);
+    return Charset.forName((String) fileEncoding);
   }
 
   private ArrayList<String> readContentFromFileObject(FileObject fo, Charset charset, String lineEnding) {
@@ -338,13 +382,17 @@ public class EditorConfigChangeListener extends FileChangeAdapter {
   // http://tripoverit.blogspot.de/2007/04/javas-utf-8-and-unicode-writing-is.html
   private boolean writeContentToFileObject(FileObject fo, Charset charset, List<String> lines) {
     boolean wasWritten = false;
-    FileLock lock = null;
+    FileLock lock = FileLock.NONE;
 
     try {
-      fo.lock();
-      Files.write(Paths.get(fo.toURI()), lines, charset);
-      fo.setAttribute("welovecoding.file.encoding", charset.name());
-      wasWritten = true;
+      lock = fo.lock();
+
+      if (fo.isLocked()) {
+        Files.write(Paths.get(fo.toURI()), lines, charset);
+        fo.setAttribute("welovecoding.file.encoding", charset.name());
+        wasWritten = true;
+      }
+
     } catch (IOException ex) {
       LOG.log(Level.INFO, "{0}Error writing file with charset \"{1}\": {2}",
               new Object[]{TAB_2, charset, ex.getMessage()});
