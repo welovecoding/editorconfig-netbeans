@@ -7,6 +7,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -17,6 +18,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
+import java.util.stream.Collectors;
 import javax.swing.text.StyledDocument;
 import org.editorconfig.core.EditorConfig;
 import org.editorconfig.core.EditorConfigException;
@@ -145,8 +147,13 @@ public class EditorConfigChangeListener extends FileChangeAdapter {
 
       switch (key) {
         case EditorConfigConstant.CHARSET:
-          String lineBreaks = keyedRules.get(EditorConfigConstant.END_OF_LINE);
-          changedStyle = changedStyle || doCharset(dataObject, value, lineBreaks);
+          String lineEnding = keyedRules.get(EditorConfigConstant.END_OF_LINE);
+          if (lineEnding == null) {
+            lineEnding = System.getProperty("line.separator", "\r\n");
+          } else {
+            lineEnding = normalizeLineEnding(lineEnding);
+          }
+          changedStyle = changedStyle || doCharset(dataObject, value, lineEnding);
           break;
         case EditorConfigConstant.END_OF_LINE:
           changedStyle = changedStyle || doEndOfLine(dataObject, value);
@@ -281,15 +288,9 @@ public class EditorConfigChangeListener extends FileChangeAdapter {
     return normalizedLineEnding;
   }
 
-  private boolean doCharset(DataObject dataObject, String ecCharset, String lineEnding) {
+  private boolean doCharset(DataObject dataObject, String ecCharset, final String lineEnding) {
     Charset requestedCharset = mapCharset(ecCharset);
     boolean wasChanged = false;
-
-    if (lineEnding == null) {
-      lineEnding = System.getProperty("line.separator", "\r\n");
-    } else {
-      lineEnding = normalizeLineEnding(lineEnding);
-    }
 
     LOG.log(Level.INFO, "{0}Set encoding to: \"{1}\".", new Object[]{TAB_2, requestedCharset.name()});
 
@@ -302,8 +303,25 @@ public class EditorConfigChangeListener extends FileChangeAdapter {
       LOG.log(Level.INFO, "{0}Action: Rewriting file from encoding \"{1}\" to \"{2}\".",
               new Object[]{TAB_2, currentCharset.name(), requestedCharset.name()});
 
-      ArrayList<String> content = readContentFromFileObject(fo, currentCharset, lineEnding);
-      boolean wasWritten = writeContentToFileObject(fo, requestedCharset, content);
+      final String content = new ReadFileTask(fo) {
+
+        @Override
+        public String apply(BufferedReader reader) {
+          return reader.lines().collect(Collectors.joining(lineEnding));
+        }
+      }.call();
+
+      boolean wasWritten = writeFile(new WriteFileTask(fo) {
+
+        @Override
+        public void apply(OutputStreamWriter writer) {
+          try {
+            writer.write(content);
+          } catch (IOException ex) {
+            Exceptions.printStackTrace(ex);
+          }
+        }
+      });
 
       if (wasWritten) {
         LOG.log(Level.INFO, "{0}Action: Successfully changed encoding to \"{1}\".", new Object[]{TAB_2, requestedCharset.name()});
@@ -384,11 +402,17 @@ public class EditorConfigChangeListener extends FileChangeAdapter {
     FileLock lock = FileLock.NONE;
 
     try (PrintWriter output = new PrintWriter(fo.getOutputStream(lock))) {
-      
+
     } catch (IOException ex) {
       Exceptions.printStackTrace(ex);
     }
 
     return wasWritten;
   }
+
+  private boolean writeFile(WriteFileTask task) {
+    task.run();
+    return true;
+  }
+
 }

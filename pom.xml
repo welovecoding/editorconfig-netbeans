@@ -155,17 +155,18 @@
         <extensions>true</extensions>
         <configuration>
           <skipNbm>${nbm.skip}</skipNbm>
-          <!--
-          <keystore>../certificate/keystore.jks</keystore>
+          <requiresRestart>false</requiresRestart>
+          
+<!--          <keystore>../certificate/keystore.jks</keystore>
           <keystorealias>yser</keystorealias>
           <keystorepassword>${nbm.signing.keystorepassword}</keystorepassword>
           <licenseName>Apache License 2.0</licenseName>
           <licenseFile>LICENSE.txt</licenseFile>
-          <requiresRestart>false</requiresRestart>
+          
           <publicPackages>
               <publicPackage>de.yser.tabswitch</publicPackage>
-          </publicPackages>
-          -->
+          </publicPackages>-->
+          
         </configuration>
       </plugin>
       <plugin>
