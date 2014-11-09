@@ -23,6 +23,7 @@ import org.netbeans.editor.BaseDocument;
 import org.netbeans.modules.editor.indent.spi.CodeStylePreferences;
 import org.openide.filesystems.FileObject;
 import org.openide.loaders.DataObject;
+import org.openide.loaders.DataObjectNotFoundException;
 import org.openide.text.NbDocument;
 import org.openide.util.Exceptions;
 
@@ -200,24 +201,31 @@ public class EditorConfigProcessor {
 //
 //    }
     if (!fo.isLocked()) {
-      String content = new ReadFileTask(fo) {
-
-        @Override
-        public String apply(BufferedReader reader) {
-          return reader.lines().collect(Collectors.joining(System.lineSeparator()));
-        }
-      }.call();
+      String content = "";
+      try {
+        content = fo.asText();
+      } catch (IOException ex) {
+        Exceptions.printStackTrace(ex);
+      }
+//      String content = new ReadFileTask(fo) {
+//
+//        @Override
+//        public String apply(BufferedReader reader) {
+//          return reader.lines().collect(Collectors.joining(System.lineSeparator()));
+//        }
+//      }.call();
       System.out.println("CONTENT: " + content + ".");
 
-      if (!content.endsWith("\n") && !content.endsWith("\r")) {
-        System.out.println("NO NEW LINE");
+      final String contentTest = content;
+      if (!contentTest.endsWith("\n") && !contentTest.endsWith("\r")) {
+        LOG.log(Level.INFO, "Inserting new line");
         new WriteFileTask(fo) {
 
           @Override
           public void apply(OutputStreamWriter writer) {
             try {
-              System.out.println("NEW_CONTENT: " + content + System.lineSeparator() + ".");
-              writer.write(content + System.lineSeparator());
+              System.out.println("NEW_CONTENT: " + contentTest + System.lineSeparator() + ".");
+              writer.write(contentTest + System.lineSeparator());
             } catch (IOException ex) {
               Exceptions.printStackTrace(ex);
             }
@@ -226,12 +234,12 @@ public class EditorConfigProcessor {
       }
     }
 
-//    fo.refresh(true);
-//    try {
-//      DataObject.find(fo).setModified(true);
-//    } catch (DataObjectNotFoundException ex) {
-//      Exceptions.printStackTrace(ex);
-//    }
+    fo.refresh();
+    try {
+      DataObject.find(fo).setModified(true);
+    } catch (DataObjectNotFoundException ex) {
+      Exceptions.printStackTrace(ex);
+    }
     return true;
   }
 
