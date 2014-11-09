@@ -1,5 +1,6 @@
 package com.welovecoding.netbeans.plugin.editorconfig.listener;
 
+import com.welovecoding.netbeans.plugin.editorconfig.mapper.EditorConfigPropertyMapper;
 import com.welovecoding.netbeans.plugin.editorconfig.model.EditorConfigConstant;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -86,11 +87,7 @@ public class EditorConfigProcessor {
       switch (key) {
         case EditorConfigConstant.CHARSET:
           String lineEnding = keyedRules.get(EditorConfigConstant.END_OF_LINE);
-          if (lineEnding == null) {
-            lineEnding = System.getProperty("line.separator", "\r\n");
-          } else {
-            lineEnding = normalizeLineEnding(lineEnding);
-          }
+          lineEnding = EditorConfigPropertyMapper.normalizeLineEnding(lineEnding);
           changed = doCharset(dataObject, value, lineEnding);
           changedStyle = changedStyle || changed;
           break;
@@ -114,6 +111,8 @@ public class EditorConfigProcessor {
           changed = doTabWidth(primaryFile, value);
           changedStyle = changedStyle || changed;
           break;
+        default:
+          LOG.log(Level.WARNING, "Unknown property: {0}", key);
       }
     }
 
@@ -168,16 +167,20 @@ public class EditorConfigProcessor {
   }
 
   private boolean doTabWidth(FileObject file, String value) {
-    int tabWidth = Integer.valueOf(value);
-    LOG.log(Level.INFO, "{0}Set indent size to \"{1}\".", new Object[]{TAB_2, tabWidth});
+    int desiredTabWidth = Integer.valueOf(value);
+    LOG.log(Level.INFO, "{0}Set tab width to \"{1}\".", new Object[]{TAB_2, desiredTabWidth});
 
     Preferences codeStyle = CodeStylePreferences.get(file, file.getMIMEType()).getPreferences();
     int actualTabWidth = codeStyle.getInt(SimpleValueNames.TAB_SIZE, -1);
 
-    LOG.log(Level.INFO, "{0}Action: Tab width (wish) \"{1}\".", new Object[]{TAB_2, actualTabWidth});
-    LOG.log(Level.INFO, "{0}Action: Tab width (actual) \"{1}\".", new Object[]{TAB_2, actualTabWidth});
-
-    return false;
+    if (actualTabWidth != desiredTabWidth) {
+      codeStyle.putInt(SimpleValueNames.TAB_SIZE, desiredTabWidth);
+      LOG.log(Level.INFO, "{0}Action: Changed tab width to \"{1}\".", new Object[]{TAB_2, desiredTabWidth});
+      return true;
+    } else {
+      LOG.log(Level.INFO, "{0}Action not needed: Value is already \"{1}\".", new Object[]{TAB_2, desiredTabWidth});
+      return false;
+    }
   }
 
   private boolean doInsertFinalNewLine(FileObject fo, String value) {
@@ -247,7 +250,7 @@ public class EditorConfigProcessor {
   private boolean doEndOfLine(DataObject dataObject, String value) {
     LOG.log(Level.INFO, "{0}Change line endings to \"{1}\".", new Object[]{TAB_2, value});
 
-    String normalizedLineEnding = normalizeLineEnding(value);
+    String normalizedLineEnding = EditorConfigPropertyMapper.normalizeLineEnding(value);
     StyledDocument document = NbDocument.getDocument(dataObject);
 
     if (document != null) {
@@ -261,30 +264,6 @@ public class EditorConfigProcessor {
       }
     }
     return false;
-  }
-
-  /**
-   * Turns line ending settings into file line endings. Example: lnrf -> \r\n
-   *
-   * @param lineEnding
-   * @return
-   */
-  private String normalizeLineEnding(String lineEnding) {
-    String normalizedLineEnding = System.getProperty("line.separator", "\r\n");
-
-    switch (lineEnding) {
-      case EditorConfigConstant.END_OF_LINE_LF:
-        normalizedLineEnding = BaseDocument.LS_LF;
-        break;
-      case EditorConfigConstant.END_OF_LINE_CR:
-        normalizedLineEnding = BaseDocument.LS_CR;
-        break;
-      case EditorConfigConstant.END_OF_LINE_CRLF:
-        normalizedLineEnding = BaseDocument.LS_CRLF;
-        break;
-    }
-
-    return normalizedLineEnding;
   }
 
   private boolean doCharset(DataObject dataObject, String ecCharset, final String lineEnding) {
