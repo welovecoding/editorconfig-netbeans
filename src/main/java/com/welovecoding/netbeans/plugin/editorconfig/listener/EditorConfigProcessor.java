@@ -75,8 +75,9 @@ public class EditorConfigProcessor {
 
     FileObject primaryFile = dataObject.getPrimaryFile();
     boolean changedStyle = false;
+    boolean changed = false;
 
-    for (int i = 0; i < rules.size(); ++i) {
+    for (int i = 0; i < rules.size(); i++) {
       EditorConfig.OutPair rule = rules.get(i);
       String key = rule.getKey().toLowerCase();
       String value = rule.getVal().toLowerCase();
@@ -91,22 +92,28 @@ public class EditorConfigProcessor {
           } else {
             lineEnding = normalizeLineEnding(lineEnding);
           }
-          changedStyle = changedStyle || doCharset(dataObject, value, lineEnding);
+          changed = doCharset(dataObject, value, lineEnding);
+          changedStyle = changedStyle || changed;
           break;
         case EditorConfigConstant.END_OF_LINE:
-          changedStyle = changedStyle || doEndOfLine(dataObject, value);
+          changed = doEndOfLine(dataObject, value);
+          changedStyle = changedStyle || changed;
           break;
         case EditorConfigConstant.INDENT_SIZE:
-          changedStyle = changedStyle || doIndentSize(primaryFile, value);
+          changed = doIndentSize(primaryFile, value);
+          changedStyle = changedStyle || changed;
           break;
         case EditorConfigConstant.INDENT_STYLE:
-          changedStyle = changedStyle || doIndentStyle(primaryFile, value);
+          changed = doIndentStyle(primaryFile, value);
+          changedStyle = changedStyle || changed;
           break;
         case EditorConfigConstant.INSERT_FINAL_NEWLINE:
-          // changedStyle = changedStyle || doInsertFinalNewLine(primaryFile, value);
+          changed = doInsertFinalNewLine(primaryFile, value);
+          changedStyle = changedStyle || changed;
           break;
         case EditorConfigConstant.TAB_WIDTH:
-          changedStyle = changedStyle || doTabWidth(primaryFile, value);
+          changed = doTabWidth(primaryFile, value);
+          changedStyle = changedStyle || changed;
           break;
       }
     }
@@ -204,7 +211,7 @@ public class EditorConfigProcessor {
         }
       }.run();
 
-      fo.refresh();
+      fo.refresh(true);
       WindowManager.getDefault().invokeWhenUIReady(new Runnable() {
 
         @Override
@@ -216,7 +223,7 @@ public class EditorConfigProcessor {
             if (cookie != null) {
               for (JEditorPane pane : cookie.getOpenedPanes()) {
                 if (pane != null) {
-                  pane.setText("");
+//                  pane.setText("");
                   pane.setDocument(document);
                 } else {
                   LOG.log(Level.INFO, "Pane == null");
