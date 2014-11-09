@@ -81,7 +81,7 @@ public class EditorConfigProcessor {
       String key = rule.getKey().toLowerCase();
       String value = rule.getVal().toLowerCase();
 
-      LOG.log(Level.INFO, "{0}Found rule \"{1}\" with value: {2}", new Object[]{TAB_1, key, value});
+      LOG.log(Level.INFO, "{0}Found rule \"{1}\" with value \"{2}\".", new Object[]{TAB_1, key, value});
 
       switch (key) {
         case EditorConfigConstant.CHARSET:
@@ -103,7 +103,10 @@ public class EditorConfigProcessor {
           changedStyle = changedStyle || doIndentStyle(primaryFile, value);
           break;
         case EditorConfigConstant.INSERT_FINAL_NEWLINE:
-          changedStyle = changedStyle || doInsertFinalNewLine(primaryFile, value);
+          // changedStyle = changedStyle || doInsertFinalNewLine(primaryFile, value);
+          break;
+        case EditorConfigConstant.TAB_WIDTH:
+          changedStyle = changedStyle || doTabWidth(primaryFile, value);
           break;
       }
     }
@@ -156,6 +159,19 @@ public class EditorConfigProcessor {
       LOG.log(Level.INFO, "{0}Action not needed: Value is already \"{1}\".", new Object[]{TAB_2, currentValue});
       return false;
     }
+  }
+
+  private boolean doTabWidth(FileObject file, String value) {
+    int tabWidth = Integer.valueOf(value);
+    LOG.log(Level.INFO, "{0}Set indent size to \"{1}\".", new Object[]{TAB_2, tabWidth});
+
+    Preferences codeStyle = CodeStylePreferences.get(file, file.getMIMEType()).getPreferences();
+    int actualTabWidth = codeStyle.getInt(SimpleValueNames.TAB_SIZE, -1);
+
+    LOG.log(Level.INFO, "{0}Action: Tab width (wish) \"{1}\".", new Object[]{TAB_2, actualTabWidth});
+    LOG.log(Level.INFO, "{0}Action: Tab width (actual) \"{1}\".", new Object[]{TAB_2, actualTabWidth});
+
+    return false;
   }
 
   private boolean doInsertFinalNewLine(FileObject fo, String value) {
