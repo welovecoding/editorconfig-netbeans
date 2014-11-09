@@ -77,8 +77,7 @@ public class EditorConfigProcessor {
     boolean changedStyle = false;
     boolean changed = false;
 
-    for (int i = 0; i < rules.size(); i++) {
-      EditorConfig.OutPair rule = rules.get(i);
+    for (EditorConfig.OutPair rule : rules) {
       String key = rule.getKey().toLowerCase();
       String value = rule.getVal().toLowerCase();
 
