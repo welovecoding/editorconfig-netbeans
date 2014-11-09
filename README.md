@@ -53,9 +53,9 @@ indent_size = 2
 - :white_check_mark: charset
 - :white_check_mark: end_of_line
 - :white_check_mark: indent_size
-- :construction_worker: indent_style
+- :white_check_mark: indent_style
 - :white_check_mark: insert_final_newline
-- :construction_worker: tab_width
+- :white_check_mark: tab_width
 - :construction_worker: trim_trailing_whitespace
 
 [EditorConfig]: http://editorconfig.org
