@@ -25,8 +25,8 @@ import org.netbeans.api.queries.FileEncodingQuery;
 import org.netbeans.editor.BaseDocument;
 import org.netbeans.modules.editor.indent.spi.CodeStylePreferences;
 import org.openide.filesystems.FileObject;
+import org.openide.filesystems.FileUtil;
 import org.openide.loaders.DataObject;
-import org.openide.loaders.DataObjectNotFoundException;
 import org.openide.text.NbDocument;
 import org.openide.util.Exceptions;
 
@@ -52,20 +52,6 @@ public class EditorConfigProcessor {
 
   public static EditorConfigProcessor getInstance() {
     return InstanceHolder.INSTANCE;
-  }
-
-  public void applyEditorConfigRules(FileObject fileObject) {
-    DataObject dataObject = null;
-
-    try {
-      dataObject = DataObject.find(fileObject);
-    } catch (DataObjectNotFoundException ex) {
-      LOG.log(Level.SEVERE, "Error accessing file object: {0}", ex.getMessage());
-    }
-
-    if (dataObject != null) {
-      applyEditorConfigRules(dataObject);
-    }
   }
 
   public void applyEditorConfigRules(DataObject dataObject) {
@@ -171,24 +157,34 @@ public class EditorConfigProcessor {
     }
   }
 
-  private boolean doInsertFinalNewLine(FileObject file, String value) {
+  private boolean doInsertFinalNewLine(FileObject fo, String value) {
     boolean wasChanged = false;
     boolean needsFinalNewLine = Boolean.parseBoolean(value);
 
-    String filePath = file.getPath();
-
     LOG.log(Level.INFO, "{0}Insert new line? {1}", new Object[]{TAB_2, needsFinalNewLine});
 
-    if (file.canWrite() && needsFinalNewLine) {
+    if (fo.canWrite() && needsFinalNewLine) {
 
-      if (FileAttributes.hasFinalNewLine(filePath)) {
+      if (FileAttributes.hasFinalNewLine(FileUtil.toFile(fo))) {
         LOG.log(Level.INFO, "{0}Action not needed: File ends already with a new line.", new Object[]{TAB_2});
       } else {
         LOG.log(Level.INFO, "{0}Action: Inserting new line...", new Object[]{TAB_2});
-        try (FileWriter fileWriter = new FileWriter(filePath, true);
+//        wasChanged = writeFile(new WriteFileTask(fo) {
+//
+//          @Override
+//          public void apply(OutputStreamWriter writer) {
+//            try {
+//              writer.append(System.lineSeparator());
+//            } catch (IOException ex) {
+//              LOG.log(Level.SEVERE, "{0}Action: Cannot insert new line: {1}", new Object[]{TAB_2, ex.getMessage()});
+//            }
+//          }
+//        });
+        try (FileWriter fileWriter = new FileWriter(FileUtil.toFile(fo), true);
                 BufferedWriter bufferWritter = new BufferedWriter(fileWriter)) {
           // TODO: Take line separator from EditorConfig (if present)
           bufferWritter.newLine();
+
           wasChanged = true;
         } catch (IOException ex) {
           LOG.log(Level.SEVERE, "{0}Action: Cannot insert new line: {1}", new Object[]{TAB_2, ex.getMessage()});

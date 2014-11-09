@@ -6,6 +6,7 @@
 package com.welovecoding.netbeans.plugin.editorconfig.listener;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 import org.netbeans.api.queries.FileEncodingQuery;
@@ -35,9 +36,15 @@ public abstract class WriteFileTask implements Runnable {
   @Override
   public void run() {
     FileLock lock = FileLock.NONE;
-    try (OutputStreamWriter writer = new OutputStreamWriter(fo.getOutputStream(lock), cs)) {
-      apply(writer);
-      writer.flush();
+    try {
+      try (OutputStream outputStream = fo.getOutputStream(lock); OutputStreamWriter writer = new OutputStreamWriter(outputStream, cs)) {
+        apply(writer);
+
+        writer.flush();
+        outputStream.flush();
+        lock.releaseLock();
+        fo.refresh(true);
+      }
     } catch (IOException ex) {
       Exceptions.printStackTrace(ex);
     }

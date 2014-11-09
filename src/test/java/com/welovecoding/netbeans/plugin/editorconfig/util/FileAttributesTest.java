@@ -2,8 +2,8 @@ package com.welovecoding.netbeans.plugin.editorconfig.util;
 
 import java.io.File;
 import java.net.URL;
+import static org.junit.Assert.assertEquals;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 public class FileAttributesTest {
 

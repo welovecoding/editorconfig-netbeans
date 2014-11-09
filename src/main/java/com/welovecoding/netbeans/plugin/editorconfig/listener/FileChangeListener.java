@@ -8,6 +8,9 @@ import org.openide.filesystems.FileChangeAdapter;
 import org.openide.filesystems.FileEvent;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileRenameEvent;
+import org.openide.loaders.DataObject;
+import org.openide.loaders.DataObjectNotFoundException;
+import org.openide.util.Exceptions;
 
 /**
  * http://bits.netbeans.org/dev/javadoc/
@@ -48,8 +51,13 @@ public class FileChangeListener extends FileChangeAdapter {
   public void fileChanged(FileEvent event) {
     super.fileChanged(event);
     LOG.log(Level.INFO, "FILECHANGELISTENER: File content changed: {0}", event.getFile().getPath());
-    if (!event.getFile().isFolder()) {
-      processor.applyEditorConfigRules(event.getFile());
+    LOG.log(Level.INFO, "FILECHANGELISTENER: Event expected? {0}", event.isExpected());
+    if (!event.getFile().isFolder() && !event.isExpected()) {
+      try {
+        processor.applyEditorConfigRules(DataObject.find(event.getFile()));
+      } catch (DataObjectNotFoundException ex) {
+        Exceptions.printStackTrace(ex);
+      }
     }
   }
 
