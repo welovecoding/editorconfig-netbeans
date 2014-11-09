@@ -7,7 +7,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,9 +15,6 @@ import java.util.logging.Logger;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
-import javax.swing.JEditorPane;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.JTextComponent;
 import javax.swing.text.StyledDocument;
 import org.editorconfig.core.EditorConfig;
 import org.editorconfig.core.EditorConfigException;
@@ -28,11 +24,9 @@ import org.netbeans.editor.BaseDocument;
 import org.netbeans.modules.editor.indent.spi.CodeStylePreferences;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
-import org.openide.cookies.EditorCookie;
 import org.openide.filesystems.FileLock;
 import org.openide.filesystems.FileObject;
 import org.openide.loaders.DataObject;
-import org.openide.loaders.DataObjectNotFoundException;
 import org.openide.text.NbDocument;
 import org.openide.util.Exceptions;
 import org.openide.windows.WindowManager;
@@ -190,78 +184,41 @@ public class EditorConfigProcessor {
   }
 
   private boolean doInsertFinalNewLine(FileObject fo) {
-
+    final String content;
     try {
-      final String content = fo.asText();
+      content = fo.asText();
       if (content.endsWith("\n") || content.endsWith("\r")) {
         return false;
       }
-      final String newContent = content + System.lineSeparator();
-      FileLock lock = FileLock.NONE;
-      if (!fo.isLocked()) {
-        BufferedOutputStream os = new BufferedOutputStream(fo.getOutputStream(lock));
-        os.write(newContent.getBytes("ASCII"));
-        os.flush();
-        os.close();
-        lock.releaseLock();
-        fo.refresh(true);
-      } else {
-        DialogDisplayer.getDefault().notify(new NotifyDescriptor.Message("Couldn't apply newline at the end of file \"" + fo.getName() + "." + fo.getExt() + "\"", NotifyDescriptor.WARNING_MESSAGE));
-        return false;
-      }
-
     } catch (IOException ex) {
       Exceptions.printStackTrace(ex);
       return false;
     }
 
-    WindowManager.getDefault().invokeWhenUIReady(new Runnable() {
+    // Change file in editor
+    InsertNewLineInEditorAction action = new InsertNewLineInEditorAction(fo);
+    WindowManager.getDefault().invokeWhenUIReady(action);
 
-      @Override
-      public void run() {
-        try {
-          EditorCookie cookie = (EditorCookie) DataObject.find(fo).getCookie(EditorCookie.class);
-          System.out.println("Cookie: " + cookie);
-          if (cookie != null) {
-//            cookie.prepareDocument().waitFinished();
-            StyledDocument document = cookie.openDocument();
-//            cookie.saveDocument();
-            System.out.println("Document: " + document);
-            for (JEditorPane pane : cookie.getOpenedPanes()) {
-              JTextComponent comp = (JTextComponent) pane;
-//              comp.updateUI();
-//              comp.validate();
-//              comp.updateUI();
-//            pane.setDocument(document);
-              NbDocument.runAtomicAsUser(document, new Runnable() {
-
-                @Override
-                public void run() {
-                  try {
-                    document.insertString(document.getEndPosition().getOffset() - 1, "\n", null);
-                    cookie.saveDocument();
-                  } catch (BadLocationException ex) {
-                    Exceptions.printStackTrace(ex);
-                  } catch (IOException ex) {
-                    Exceptions.printStackTrace(ex);
-                  }
-                }
-              });
-
-            }
-//            cookie.open();
-
-          }
-        } catch (BadLocationException ex) {
-          Exceptions.printStackTrace(ex);
-        } catch (DataObjectNotFoundException ex) {
-          Exceptions.printStackTrace(ex);
-        } catch (IOException ex) {
-          Exceptions.printStackTrace(ex);
+    if (!action.isWasOpened()) {
+      // Change file on filesystem
+      try {
+        final String newContent = content + System.lineSeparator();
+        FileLock lock = FileLock.NONE;
+        if (!fo.isLocked()) {
+          BufferedOutputStream os = new BufferedOutputStream(fo.getOutputStream(lock));
+          os.write(newContent.getBytes("ASCII"));
+          os.flush();
+          os.close();
+          lock.releaseLock();
+        } else {
+          DialogDisplayer.getDefault().notify(new NotifyDescriptor.Message("Couldn't apply newline at the end of file \"" + fo.getName() + "." + fo.getExt() + "\"", NotifyDescriptor.WARNING_MESSAGE));
+          return false;
         }
+      } catch (IOException ex) {
+        Exceptions.printStackTrace(ex);
+        return false;
       }
     }
-    );
 
     return true;
 
