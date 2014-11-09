@@ -1,6 +1,7 @@
 package com.welovecoding.netbeans.plugin.editorconfig.listener;
 
 import com.welovecoding.netbeans.plugin.editorconfig.model.EditorConfigConstant;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -15,6 +16,8 @@ import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
 import javax.swing.JEditorPane;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.JTextComponent;
 import javax.swing.text.StyledDocument;
 import org.editorconfig.core.EditorConfig;
 import org.editorconfig.core.EditorConfigException;
@@ -22,7 +25,10 @@ import org.netbeans.api.editor.settings.SimpleValueNames;
 import org.netbeans.api.queries.FileEncodingQuery;
 import org.netbeans.editor.BaseDocument;
 import org.netbeans.modules.editor.indent.spi.CodeStylePreferences;
+import org.openide.DialogDisplayer;
+import org.openide.NotifyDescriptor;
 import org.openide.cookies.EditorCookie;
+import org.openide.filesystems.FileLock;
 import org.openide.filesystems.FileObject;
 import org.openide.loaders.DataObject;
 import org.openide.loaders.DataObjectNotFoundException;
@@ -108,7 +114,7 @@ public class EditorConfigProcessor {
           changedStyle = changedStyle || changed;
           break;
         case EditorConfigConstant.INSERT_FINAL_NEWLINE:
-          changed = doInsertFinalNewLine(primaryFile, value);
+          changed = doInsertFinalNewLine(primaryFile);
           changedStyle = changedStyle || changed;
           break;
         case EditorConfigConstant.TAB_WIDTH:
@@ -181,68 +187,82 @@ public class EditorConfigProcessor {
     return false;
   }
 
-  private boolean doInsertFinalNewLine(FileObject fo, String value) {
-    LOG.log(Level.INFO, "NEW FINAL LINE!");
-    boolean wasChanged = false;
-    boolean needsFinalNewLine = Boolean.parseBoolean(value);
+  private boolean doInsertFinalNewLine(FileObject fo) {
 
-    LOG.log(Level.INFO, "{0}Insert new line? {1}", new Object[]{TAB_2, needsFinalNewLine});
-    String content = "";
     try {
-      content = fo.asText();
+      final String content = fo.asText();
+      if (content.endsWith("\n") || content.endsWith("\r")) {
+        return false;
+      }
+      final String newContent = content + System.lineSeparator();
+      FileLock lock = FileLock.NONE;
+      if (!fo.isLocked()) {
+        BufferedOutputStream os = new BufferedOutputStream(fo.getOutputStream(lock));
+        os.write(newContent.getBytes("ASCII"));
+        os.flush();
+        os.close();
+        lock.releaseLock();
+        fo.refresh(true);
+      } else {
+        DialogDisplayer.getDefault().notify(new NotifyDescriptor.Message("Couldn't apply newline at the end of file \"" + fo.getName() + "." + fo.getExt() + "\"", NotifyDescriptor.WARNING_MESSAGE));
+        return false;
+      }
+
     } catch (IOException ex) {
       Exceptions.printStackTrace(ex);
+      return false;
     }
-    LOG.log(Level.INFO, "CONTENT: {0}.", content);
 
-    final String contentTest = content;
-    if (!contentTest.endsWith("\n") && !contentTest.endsWith("\r")) {
-      LOG.log(Level.INFO, "Inserting new line");
-      new WriteFileTask(fo) {
+    WindowManager.getDefault().invokeWhenUIReady(new Runnable() {
 
-        @Override
-        public void apply(OutputStreamWriter writer) {
-          try {
-            LOG.log(Level.INFO, "NEW_CONTENT: {0}{1}.", new Object[]{contentTest, System.lineSeparator()});
-            writer.write(contentTest + System.lineSeparator());
-          } catch (IOException ex) {
-            Exceptions.printStackTrace(ex);
-          }
-        }
-      }.run();
+      @Override
+      public void run() {
+        try {
+          EditorCookie cookie = (EditorCookie) DataObject.find(fo).getCookie(EditorCookie.class);
+          System.out.println("Cookie: " + cookie);
+          if (cookie != null) {
+//            cookie.prepareDocument().waitFinished();
+            StyledDocument document = cookie.openDocument();
+//            cookie.saveDocument();
+            System.out.println("Document: " + document);
+            for (JEditorPane pane : cookie.getOpenedPanes()) {
+              JTextComponent comp = (JTextComponent) pane;
+//              comp.updateUI();
+//              comp.validate();
+//              comp.updateUI();
+//            pane.setDocument(document);
+              NbDocument.runAtomicAsUser(document, new Runnable() {
 
-      fo.refresh(true);
-      WindowManager.getDefault().invokeWhenUIReady(new Runnable() {
-
-        @Override
-        public void run() {
-          EditorCookie cookie;
-          try {
-            StyledDocument document = NbDocument.getDocument(DataObject.find(fo));
-            cookie = (EditorCookie) DataObject.find(fo).getLookup().lookup(EditorCookie.class);
-            if (cookie != null) {
-              for (JEditorPane pane : cookie.getOpenedPanes()) {
-                if (pane != null) {
-//                  pane.setText("");
-                  pane.setDocument(document);
-                } else {
-                  LOG.log(Level.INFO, "Pane == null");
+                @Override
+                public void run() {
+                  try {
+                    document.insertString(document.getEndPosition().getOffset() - 1, "\n", null);
+                    cookie.saveDocument();
+                  } catch (BadLocationException ex) {
+                    Exceptions.printStackTrace(ex);
+                  } catch (IOException ex) {
+                    Exceptions.printStackTrace(ex);
+                  }
                 }
-              }
-            } else {
-              LOG.log(Level.INFO, "Cookie == null");
+              });
+
             }
+//            cookie.open();
 
-          } catch (DataObjectNotFoundException ex) {
-            Exceptions.printStackTrace(ex);
           }
-
+        } catch (BadLocationException ex) {
+          Exceptions.printStackTrace(ex);
+        } catch (DataObjectNotFoundException ex) {
+          Exceptions.printStackTrace(ex);
+        } catch (IOException ex) {
+          Exceptions.printStackTrace(ex);
         }
-      });
-
+      }
     }
+    );
 
     return true;
+
   }
 
   private boolean doEndOfLine(DataObject dataObject, String value) {
