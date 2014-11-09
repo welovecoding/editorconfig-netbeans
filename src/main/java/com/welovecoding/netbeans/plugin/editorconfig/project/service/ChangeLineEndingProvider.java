@@ -65,7 +65,7 @@ public class ChangeLineEndingProvider implements OnSaveTask, ChangeLineEndingSer
     return FileOwnerQuery.getOwner(fileObject);
   }
 
-  @MimeRegistration(mimeType = "", service = OnSaveTask.Factory.class, position = 1500)
+  @MimeRegistration(mimeType = "", service = OnSaveTask.Factory.class, position = 1600)
   public static final class FactoryImpl implements Factory {
 
     @Override
