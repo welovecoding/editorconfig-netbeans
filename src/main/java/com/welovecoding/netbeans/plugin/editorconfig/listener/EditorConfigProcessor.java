@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
+import javax.swing.JEditorPane;
 import javax.swing.text.StyledDocument;
 import org.editorconfig.core.EditorConfig;
 import org.editorconfig.core.EditorConfigException;
@@ -21,11 +22,13 @@ import org.netbeans.api.editor.settings.SimpleValueNames;
 import org.netbeans.api.queries.FileEncodingQuery;
 import org.netbeans.editor.BaseDocument;
 import org.netbeans.modules.editor.indent.spi.CodeStylePreferences;
+import org.openide.cookies.EditorCookie;
 import org.openide.filesystems.FileObject;
 import org.openide.loaders.DataObject;
 import org.openide.loaders.DataObjectNotFoundException;
 import org.openide.text.NbDocument;
 import org.openide.util.Exceptions;
+import org.openide.windows.WindowManager;
 
 /**
  *
@@ -156,90 +159,66 @@ public class EditorConfigProcessor {
   }
 
   private boolean doInsertFinalNewLine(FileObject fo, String value) {
-    System.out.println("NEW FINAL LINE!");
+    LOG.log(Level.INFO, "NEW FINAL LINE!");
     boolean wasChanged = false;
     boolean needsFinalNewLine = Boolean.parseBoolean(value);
 
     LOG.log(Level.INFO, "{0}Insert new line? {1}", new Object[]{TAB_2, needsFinalNewLine});
-
-//    if (fo.canWrite() && needsFinalNewLine) {
-//
-//      if (FileAttributes.hasFinalNewLine(FileUtil.toFile(fo))) {
-//        LOG.log(Level.INFO, "{0}Action not needed: File ends already with a new line.", new Object[]{TAB_2});
-//      } else {
-//        LOG.log(Level.INFO, "{0}Action: Inserting new line...", new Object[]{TAB_2});
-////        wasChanged = writeFile(new WriteFileTask(fo) {
-////
-////          @Override
-////          public void apply(OutputStreamWriter writer) {
-////            try {
-////              writer.append(System.lineSeparator());
-////            } catch (IOException ex) {
-////              LOG.log(Level.SEVERE, "{0}Action: Cannot insert new line: {1}", new Object[]{TAB_2, ex.getMessage()});
-////            }
-////          }
-////        });
-//        try {
-//          // TODO: Take line separator from EditorConfig (if present)
-//          FileLock lock = fo.lock();
-//          FileWriter fileWriter = new FileWriter(FileUtil.toFile(fo), true);
-//          BufferedWriter bufferWritter = new BufferedWriter(fileWriter);
-//          bufferWritter.newLine();
-//          bufferWritter.flush();
-//          fileWriter.flush();
-//          bufferWritter.close();
-//          fileWriter.close();
-//
-//          lock.releaseLock();
-//          wasChanged = true;
-//          fo.refresh(true);
-//          DataObject.find(fo).setModified(true);
-//        } catch (IOException ex) {
-//          LOG.log(Level.SEVERE, "{0}Action: Cannot insert new line: {1}", new Object[]{TAB_2, ex.getMessage()});
-//        }
-//      }
-//
-//    }
-    if (!fo.isLocked()) {
-      String content = "";
-      try {
-        content = fo.asText();
-      } catch (IOException ex) {
-        Exceptions.printStackTrace(ex);
-      }
-//      String content = new ReadFileTask(fo) {
-//
-//        @Override
-//        public String apply(BufferedReader reader) {
-//          return reader.lines().collect(Collectors.joining(System.lineSeparator()));
-//        }
-//      }.call();
-      System.out.println("CONTENT: " + content + ".");
-
-      final String contentTest = content;
-      if (!contentTest.endsWith("\n") && !contentTest.endsWith("\r")) {
-        LOG.log(Level.INFO, "Inserting new line");
-        new WriteFileTask(fo) {
-
-          @Override
-          public void apply(OutputStreamWriter writer) {
-            try {
-              System.out.println("NEW_CONTENT: " + contentTest + System.lineSeparator() + ".");
-              writer.write(contentTest + System.lineSeparator());
-            } catch (IOException ex) {
-              Exceptions.printStackTrace(ex);
-            }
-          }
-        }.run();
-      }
-    }
-
-    fo.refresh();
+    String content = "";
     try {
-      DataObject.find(fo).setModified(true);
-    } catch (DataObjectNotFoundException ex) {
+      content = fo.asText();
+    } catch (IOException ex) {
       Exceptions.printStackTrace(ex);
     }
+    LOG.log(Level.INFO, "CONTENT: {0}.", content);
+
+    final String contentTest = content;
+    if (!contentTest.endsWith("\n") && !contentTest.endsWith("\r")) {
+      LOG.log(Level.INFO, "Inserting new line");
+      new WriteFileTask(fo) {
+
+        @Override
+        public void apply(OutputStreamWriter writer) {
+          try {
+            LOG.log(Level.INFO, "NEW_CONTENT: {0}{1}.", new Object[]{contentTest, System.lineSeparator()});
+            writer.write(contentTest + System.lineSeparator());
+          } catch (IOException ex) {
+            Exceptions.printStackTrace(ex);
+          }
+        }
+      }.run();
+
+      fo.refresh();
+      WindowManager.getDefault().invokeWhenUIReady(new Runnable() {
+
+        @Override
+        public void run() {
+          EditorCookie cookie;
+          try {
+            StyledDocument document = NbDocument.getDocument(DataObject.find(fo));
+            cookie = (EditorCookie) DataObject.find(fo).getLookup().lookup(EditorCookie.class);
+            if (cookie != null) {
+              for (JEditorPane pane : cookie.getOpenedPanes()) {
+                if (pane != null) {
+                  pane.setText("");
+                  pane.setDocument(document);
+                } else {
+                  LOG.log(Level.INFO, "Pane == null");
+                }
+              }
+            } else {
+              LOG.log(Level.INFO, "Cookie == null");
+            }
+
+          } catch (DataObjectNotFoundException ex) {
+            Exceptions.printStackTrace(ex);
+          }
+
+        }
+      });
+
+    }
+
     return true;
   }
 
