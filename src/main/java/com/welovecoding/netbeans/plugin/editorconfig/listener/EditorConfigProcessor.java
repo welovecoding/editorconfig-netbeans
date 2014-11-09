@@ -267,7 +267,7 @@ public class EditorConfigProcessor {
   }
 
   private boolean doCharset(DataObject dataObject, String ecCharset, final String lineEnding) {
-    Charset requestedCharset = mapCharset(ecCharset);
+    Charset requestedCharset = EditorConfigPropertyMapper.mapCharset(ecCharset);
     boolean wasChanged = false;
 
     LOG.log(Level.INFO, "{0}Set encoding to: \"{1}\".", new Object[]{TAB_2, requestedCharset.name()});
@@ -308,27 +308,6 @@ public class EditorConfigProcessor {
     }
 
     return wasChanged;
-  }
-
-  private Charset mapCharset(String editorConfigCharset) {
-    Charset javaCharset;
-
-    switch (editorConfigCharset) {
-      case EditorConfigConstant.CHARSET_LATIN_1:
-        javaCharset = StandardCharsets.ISO_8859_1;
-        break;
-      case EditorConfigConstant.CHARSET_UTF_16_BE:
-        javaCharset = StandardCharsets.UTF_16BE;
-        break;
-      case EditorConfigConstant.CHARSET_UTF_16_LE:
-        javaCharset = StandardCharsets.UTF_16LE;
-        break;
-      default:
-        javaCharset = StandardCharsets.UTF_8;
-        break;
-    }
-
-    return javaCharset;
   }
 
   /**
