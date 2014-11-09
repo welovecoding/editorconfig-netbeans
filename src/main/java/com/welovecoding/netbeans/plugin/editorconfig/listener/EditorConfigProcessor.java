@@ -2,6 +2,7 @@ package com.welovecoding.netbeans.plugin.editorconfig.listener;
 
 import com.welovecoding.netbeans.plugin.editorconfig.mapper.EditorConfigPropertyMapper;
 import com.welovecoding.netbeans.plugin.editorconfig.model.EditorConfigConstant;
+import com.welovecoding.netbeans.plugin.editorconfig.model.FileAttributeName;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -296,7 +297,8 @@ public class EditorConfigProcessor {
     Charset currentCharset = getCharset(fo);
 
     if (currentCharset.name().equals(requestedCharset.name())) {
-      LOG.log(Level.INFO, "{0}Action not needed: Encoding is already \"{1}\".", new Object[]{TAB_2, currentCharset.name()});
+      LOG.log(Level.INFO, "{0}Action not needed: Encoding is already \"{1}\".",
+              new Object[]{TAB_2, currentCharset.name()});
     } else {
       LOG.log(Level.INFO, "{0}Action: Rewriting file from encoding \"{1}\" to \"{2}\".",
               new Object[]{TAB_2, currentCharset.name(), requestedCharset.name()});
@@ -323,6 +325,7 @@ public class EditorConfigProcessor {
 
       if (wasWritten) {
         LOG.log(Level.INFO, "{0}Action: Successfully changed encoding to \"{1}\".", new Object[]{TAB_2, requestedCharset.name()});
+        setFileAttribute(fo, FileAttributeName.ENCODING, requestedCharset.name());
         wasChanged = true;
       }
     }
@@ -344,7 +347,7 @@ public class EditorConfigProcessor {
    * @return
    */
   private Charset getCharset(FileObject fo) {
-    Object fileEncoding = fo.getAttribute("welovecoding.file.encoding");
+    Object fileEncoding = fo.getAttribute(FileAttributeName.ENCODING);
 
     if (fileEncoding == null) {
       Charset currentCharset = FileEncodingQuery.getEncoding(fo);
@@ -357,5 +360,19 @@ public class EditorConfigProcessor {
   private boolean writeFile(WriteFileTask task) {
     task.run();
     return true;
+  }
+
+  private void setFileAttribute(FileObject fo, String key, String value) {
+    try {
+      fo.setAttribute(key, value);
+    } catch (IOException ex) {
+      LOG.log(Level.SEVERE, "Error setting file attribute \"{0}\" with value \"{1}\" for {2}. {3}",
+              new Object[]{
+                key,
+                value,
+                fo.getPath(),
+                ex.getMessage()
+              });
+    }
   }
 }
