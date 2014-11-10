@@ -1,10 +1,10 @@
 package com.welovecoding.netbeans.plugin.editorconfig.processor.function;
 
-import com.welovecoding.netbeans.plugin.editorconfig.listener.ReadFileTask;
-import com.welovecoding.netbeans.plugin.editorconfig.listener.WriteFileTask;
 import com.welovecoding.netbeans.plugin.editorconfig.mapper.EditorConfigPropertyMapper;
 import com.welovecoding.netbeans.plugin.editorconfig.model.FileAttributeName;
+import com.welovecoding.netbeans.plugin.editorconfig.processor.ReadFileTask;
 import com.welovecoding.netbeans.plugin.editorconfig.processor.Tab;
+import com.welovecoding.netbeans.plugin.editorconfig.processor.WriteFileTask;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.OutputStreamWriter;

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.welovecoding.netbeans.plugin.editorconfig.listener;
+package com.welovecoding.netbeans.plugin.editorconfig.processor;
 
 import java.io.BufferedReader;
 import java.io.IOException;
