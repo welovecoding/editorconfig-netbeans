@@ -10,7 +10,7 @@ public class EditorConfigPropertyMapperTest {
   }
 
   @Test
-  public void itConvertsLineFeed() {
+  public void itConvertsLineFeed() throws EditorConfigPropertyMappingException {
     String ecProperty = "lf";
     String javaProperty = "\n";
     String mappedProperty = EditorConfigPropertyMapper.normalizeLineEnding(ecProperty);
@@ -19,7 +19,7 @@ public class EditorConfigPropertyMapperTest {
   }
 
   @Test
-  public void itConvertsCarriageReturn() {
+  public void itConvertsCarriageReturn() throws EditorConfigPropertyMappingException {
     String ecProperty = "cr";
     String javaProperty = "\r";
     String mappedProperty = EditorConfigPropertyMapper.normalizeLineEnding(ecProperty);
@@ -28,7 +28,7 @@ public class EditorConfigPropertyMapperTest {
   }
 
   @Test
-  public void itConvertsCRLF() {
+  public void itConvertsCRLF() throws EditorConfigPropertyMappingException {
     String ecProperty = "crlf";
     String javaProperty = "\r\n";
     String mappedProperty = EditorConfigPropertyMapper.normalizeLineEnding(ecProperty);
@@ -36,19 +36,21 @@ public class EditorConfigPropertyMapperTest {
     assertEquals(mappedProperty, javaProperty);
   }
 
-  @Test
-  public void itConvertsUnknownValues() {
+  @Test(expected = EditorConfigPropertyMappingException.class)
+  public void itConvertsUnknownValues() throws EditorConfigPropertyMappingException {
     String ecProperty = "something";
-    String javaProperty = System.getProperty("line.separator");
+    String javaProperty = System.lineSeparator();
+
     String mappedProperty = EditorConfigPropertyMapper.normalizeLineEnding(ecProperty);
 
     assertEquals(mappedProperty, javaProperty);
   }
 
-  @Test
-  public void itWorksWithNullValues() {
+  @Test(expected = EditorConfigPropertyMappingException.class)
+  public void itWorksWithNullValues() throws EditorConfigPropertyMappingException {
     String ecProperty = null;
-    String javaProperty = System.getProperty("line.separator");
+    String javaProperty = System.lineSeparator();
+
     String mappedProperty = EditorConfigPropertyMapper.normalizeLineEnding(ecProperty);
 
     assertEquals(mappedProperty, javaProperty);

@@ -7,11 +7,11 @@ import org.netbeans.editor.BaseDocument;
 
 public class EditorConfigPropertyMapper {
 
-  public static String normalizeLineEnding(String lineEnding) {
-    String normalizedLineEnding = System.getProperty("line.separator", "\r\n");
+  public static String normalizeLineEnding(String lineEnding) throws EditorConfigPropertyMappingException {
+    String normalizedLineEnding;
 
     if (lineEnding == null) {
-      return normalizedLineEnding;
+      throw new EditorConfigPropertyMappingException("Cannot convert EditorConfig line ending because given line ending was \"null\".");
     }
 
     switch (lineEnding) {
@@ -24,6 +24,8 @@ public class EditorConfigPropertyMapper {
       case EditorConfigConstant.END_OF_LINE_CRLF:
         normalizedLineEnding = BaseDocument.LS_CRLF;
         break;
+      default:
+        throw new EditorConfigPropertyMappingException("Unknown line ending property: " + lineEnding);
     }
 
     return normalizedLineEnding;
