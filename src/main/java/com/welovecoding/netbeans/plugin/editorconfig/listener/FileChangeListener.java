@@ -1,5 +1,6 @@
 package com.welovecoding.netbeans.plugin.editorconfig.listener;
 
+import com.welovecoding.netbeans.plugin.editorconfig.processor.EditorConfigProcessor;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.netbeans.api.project.Project;
