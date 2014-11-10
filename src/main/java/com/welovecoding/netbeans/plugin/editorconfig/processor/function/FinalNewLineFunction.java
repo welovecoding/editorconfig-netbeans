@@ -81,21 +81,25 @@ public class FinalNewLineFunction {
         EditorCookie cookie = (EditorCookie) DataObject.find(fileObject).getCookie(EditorCookie.class);
         System.out.println("Cookie: " + cookie);
         if (cookie != null) {
-          StyledDocument document = cookie.openDocument();
-          System.out.println("Document: " + document);
-          for (JEditorPane pane : cookie.getOpenedPanes()) {
-            wasOpened = true;
-            JTextComponent comp = (JTextComponent) pane;
-            NbDocument.runAtomicAsUser(document, () -> {
-              try {
-                document.insertString(document.getEndPosition().getOffset() - 1, lineEnding, null);
-                cookie.saveDocument();
-              } catch (BadLocationException ex) {
-                Exceptions.printStackTrace(ex);
-              } catch (IOException ex) {
-                Exceptions.printStackTrace(ex);
-              }
-            });
+          FileLock lock = FileLock.NONE;
+          if (!fileObject.isLocked()) {
+            StyledDocument document = cookie.openDocument();
+            System.out.println("Document: " + document);
+            for (JEditorPane pane : cookie.getOpenedPanes()) {
+              wasOpened = true;
+              JTextComponent comp = (JTextComponent) pane;
+              NbDocument.runAtomicAsUser(document, () -> {
+                try {
+                  document.insertString(document.getEndPosition().getOffset() - 1, lineEnding, null);
+                  cookie.saveDocument();
+                } catch (BadLocationException | IOException ex) {
+                  Exceptions.printStackTrace(ex);
+                }
+              });
+            }
+            lock.releaseLock();
+          } else {
+            DialogDisplayer.getDefault().notify(new NotifyDescriptor.Message("Couldn't apply newline at the end of file \"" + fileObject.getName() + "." + fileObject.getExt() + "\"", NotifyDescriptor.WARNING_MESSAGE));
           }
         }
       } catch (BadLocationException ex) {
