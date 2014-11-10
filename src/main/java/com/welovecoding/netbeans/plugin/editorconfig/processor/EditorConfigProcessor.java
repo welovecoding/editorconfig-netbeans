@@ -1,6 +1,7 @@
 package com.welovecoding.netbeans.plugin.editorconfig.processor;
 
 import com.welovecoding.netbeans.plugin.editorconfig.mapper.EditorConfigPropertyMapper;
+import com.welovecoding.netbeans.plugin.editorconfig.mapper.EditorConfigPropertyMappingException;
 import com.welovecoding.netbeans.plugin.editorconfig.model.EditorConfigConstant;
 import com.welovecoding.netbeans.plugin.editorconfig.processor.function.CharsetFunction;
 import com.welovecoding.netbeans.plugin.editorconfig.processor.function.FinalNewLineFunction;
@@ -20,6 +21,7 @@ import org.editorconfig.core.EditorConfigException;
 import org.netbeans.modules.editor.indent.spi.CodeStylePreferences;
 import org.openide.filesystems.FileObject;
 import org.openide.loaders.DataObject;
+import org.openide.util.Exceptions;
 
 /**
  *
@@ -73,7 +75,12 @@ public class EditorConfigProcessor {
       switch (key) {
         case EditorConfigConstant.CHARSET:
           String lineEnding = keyedRules.get(EditorConfigConstant.END_OF_LINE);
-          lineEnding = EditorConfigPropertyMapper.normalizeLineEnding(lineEnding);
+          try {
+            lineEnding = EditorConfigPropertyMapper.normalizeLineEnding(lineEnding);
+          } catch (EditorConfigPropertyMappingException ex) {
+            lineEnding = System.lineSeparator();
+            LOG.log(Level.WARNING, ex.getMessage());
+          }
           changed = CharsetFunction.doCharset(dataObject, value, lineEnding);
           changedStyle = changedStyle || changed;
           break;
