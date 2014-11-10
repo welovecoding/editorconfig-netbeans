@@ -23,7 +23,7 @@ import org.openide.windows.WindowManager;
  */
 public class FinalNewLineFunction {
 
-  public static boolean doFinalNewLine(FileObject fo) {
+  public static boolean doFinalNewLine(FileObject fo, String lineEnding) {
     final String content;
     try {
       content = fo.asText();
@@ -36,7 +36,7 @@ public class FinalNewLineFunction {
     }
 
     // Change file in editor
-    InsertNewLineInEditorAction action = new InsertNewLineInEditorAction(fo);
+    InsertNewLineInEditorAction action = new InsertNewLineInEditorAction(fo, lineEnding);
     WindowManager.getDefault().invokeWhenUIReady(action);
 
     if (!action.isWasOpened()) {
@@ -68,9 +68,11 @@ public class FinalNewLineFunction {
 
     private boolean wasOpened = false;
     private final FileObject fileObject;
+    private final String lineEnding;
 
-    public InsertNewLineInEditorAction(FileObject fileObject) {
+    public InsertNewLineInEditorAction(FileObject fileObject, String lineEnding) {
       this.fileObject = fileObject;
+      this.lineEnding = lineEnding;
     }
 
     @Override
@@ -86,7 +88,7 @@ public class FinalNewLineFunction {
             JTextComponent comp = (JTextComponent) pane;
             NbDocument.runAtomicAsUser(document, () -> {
               try {
-                document.insertString(document.getEndPosition().getOffset() - 1, "\n", null);
+                document.insertString(document.getEndPosition().getOffset() - 1, lineEnding, null);
                 cookie.saveDocument();
               } catch (BadLocationException ex) {
                 Exceptions.printStackTrace(ex);

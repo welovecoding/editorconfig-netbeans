@@ -21,7 +21,6 @@ import org.editorconfig.core.EditorConfigException;
 import org.netbeans.modules.editor.indent.spi.CodeStylePreferences;
 import org.openide.filesystems.FileObject;
 import org.openide.loaders.DataObject;
-import org.openide.util.Exceptions;
 
 /**
  *
@@ -74,14 +73,7 @@ public class EditorConfigProcessor {
 
       switch (key) {
         case EditorConfigConstant.CHARSET:
-          String lineEnding = keyedRules.get(EditorConfigConstant.END_OF_LINE);
-          try {
-            lineEnding = EditorConfigPropertyMapper.normalizeLineEnding(lineEnding);
-          } catch (EditorConfigPropertyMappingException ex) {
-            lineEnding = System.lineSeparator();
-            LOG.log(Level.WARNING, ex.getMessage());
-          }
-          changed = CharsetFunction.doCharset(dataObject, value, lineEnding);
+          changed = CharsetFunction.doCharset(dataObject, value, getLineEnding(keyedRules.get(EditorConfigConstant.END_OF_LINE)));
           changedStyle = changedStyle || changed;
           break;
         case EditorConfigConstant.END_OF_LINE:
@@ -97,7 +89,7 @@ public class EditorConfigProcessor {
           changedStyle = changedStyle || changed;
           break;
         case EditorConfigConstant.INSERT_FINAL_NEWLINE:
-          changed = FinalNewLineFunction.doFinalNewLine(primaryFile);
+          changed = FinalNewLineFunction.doFinalNewLine(primaryFile, getLineEnding(keyedRules.get(EditorConfigConstant.END_OF_LINE)));
           changedStyle = changedStyle || changed;
           break;
         case EditorConfigConstant.TAB_WIDTH:
@@ -119,5 +111,16 @@ public class EditorConfigProcessor {
       }
     }
 
+  }
+
+  private String getLineEnding(String ecLineEnding) {
+    String javaLineEnding = ecLineEnding;
+    try {
+      javaLineEnding = EditorConfigPropertyMapper.normalizeLineEnding(javaLineEnding);
+    } catch (EditorConfigPropertyMappingException ex) {
+      javaLineEnding = System.lineSeparator();
+      LOG.log(Level.WARNING, ex.getMessage());
+    }
+    return javaLineEnding;
   }
 }
