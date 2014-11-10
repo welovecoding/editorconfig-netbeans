@@ -10,6 +10,7 @@ import com.welovecoding.netbeans.plugin.editorconfig.processor.function.IndentSt
 import com.welovecoding.netbeans.plugin.editorconfig.processor.function.LineEndingFunction;
 import com.welovecoding.netbeans.plugin.editorconfig.processor.function.TabWidthFunction;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
@@ -119,7 +120,9 @@ public class EditorConfigProcessor {
       javaLineEnding = EditorConfigPropertyMapper.normalizeLineEnding(javaLineEnding);
     } catch (EditorConfigPropertyMappingException ex) {
       javaLineEnding = System.lineSeparator();
-      LOG.log(Level.WARNING, ex.getMessage());
+      String printableLineEnding = Arrays.toString(javaLineEnding.toCharArray());
+      LOG.log(Level.WARNING, "{0} Using default line ending: {1}",
+              new Object[]{ex.getMessage(), printableLineEnding});
     }
     return javaLineEnding;
   }
