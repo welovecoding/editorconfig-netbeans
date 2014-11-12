@@ -130,18 +130,21 @@ public class FinalNewLineOperation {
 //              JTextComponent comp = (JTextComponent) pane;
               NbDocument.runAtomicAsUser(document, () -> {
                 try {
-                  LOG.log(Level.INFO, "Adding final newline \"{0}\"", lineEnding);
-                  document.insertString(document.getEndPosition().getOffset() - 1, lineEnding, null);
-                  String result = document.getText(document.getEndPosition().getOffset() - 10, 10);
-                  System.out.println("Result: " + result);
-                  LOG.log(Level.INFO, "Saving Document");
-                  cookie.saveDocument();
+                  String end = document.getText(document.getEndPosition().getOffset() - 2, 1);
+                  LOG.log(Level.INFO, "End: {0}", end);
+                  if (!end.endsWith("\n") && !end.endsWith("\r")) {
+                    LOG.log(Level.INFO, "Adding final newline \"{0}\"", lineEnding);
+                    document.insertString(document.getEndPosition().getOffset() - 1, lineEnding, null);
+                    String result = document.getText(document.getEndPosition().getOffset() - 10, 10);
+                    System.out.println("Result: " + result);
+                    LOG.log(Level.INFO, "Saving Document");
+                    cookie.saveDocument();
+                  }
                 } catch (BadLocationException | IOException ex) {
                   Exceptions.printStackTrace(ex);
                 }
               });
             }
-
           }
         } catch (BadLocationException ex) {
           Exceptions.printStackTrace(ex);
