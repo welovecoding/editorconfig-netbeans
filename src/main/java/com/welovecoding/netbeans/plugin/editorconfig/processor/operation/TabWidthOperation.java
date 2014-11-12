@@ -1,4 +1,4 @@
-package com.welovecoding.netbeans.plugin.editorconfig.processor.function;
+package com.welovecoding.netbeans.plugin.editorconfig.processor.operation;
 
 import com.welovecoding.netbeans.plugin.editorconfig.processor.Tab;
 import java.util.logging.Level;
@@ -12,9 +12,9 @@ import org.openide.filesystems.FileObject;
  *
  * @author Michael Koppen
  */
-public class TabWidthFunction {
+public class TabWidthOperation {
 
-  private static final Logger LOG = Logger.getLogger(TabWidthFunction.class.getName());
+  private static final Logger LOG = Logger.getLogger(TabWidthOperation.class.getName());
 
   public static boolean doTabWidth(FileObject file, String value) {
     int desiredTabWidth = Integer.valueOf(value);

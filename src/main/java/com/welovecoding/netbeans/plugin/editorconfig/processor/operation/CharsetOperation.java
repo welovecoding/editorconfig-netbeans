@@ -1,4 +1,4 @@
-package com.welovecoding.netbeans.plugin.editorconfig.processor.function;
+package com.welovecoding.netbeans.plugin.editorconfig.processor.operation;
 
 import com.welovecoding.netbeans.plugin.editorconfig.mapper.EditorConfigPropertyMapper;
 import com.welovecoding.netbeans.plugin.editorconfig.model.FileAttributeName;
@@ -21,9 +21,9 @@ import org.openide.util.Exceptions;
  *
  * @author Michael Koppen
  */
-public class CharsetFunction {
+public class CharsetOperation {
 
-  private static final Logger LOG = Logger.getLogger(CharsetFunction.class.getName());
+  private static final Logger LOG = Logger.getLogger(CharsetOperation.class.getName());
 
   public static boolean doCharset(DataObject dataObject, String ecCharset, final String lineEnding) {
     Charset requestedCharset = EditorConfigPropertyMapper.mapCharset(ecCharset);

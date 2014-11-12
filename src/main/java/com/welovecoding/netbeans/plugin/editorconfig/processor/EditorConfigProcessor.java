@@ -3,12 +3,12 @@ package com.welovecoding.netbeans.plugin.editorconfig.processor;
 import com.welovecoding.netbeans.plugin.editorconfig.mapper.EditorConfigPropertyMapper;
 import com.welovecoding.netbeans.plugin.editorconfig.mapper.EditorConfigPropertyMappingException;
 import com.welovecoding.netbeans.plugin.editorconfig.model.EditorConfigConstant;
-import com.welovecoding.netbeans.plugin.editorconfig.processor.function.CharsetFunction;
-import com.welovecoding.netbeans.plugin.editorconfig.processor.function.FinalNewLineFunction;
-import com.welovecoding.netbeans.plugin.editorconfig.processor.function.IndentSizeFunction;
-import com.welovecoding.netbeans.plugin.editorconfig.processor.function.IndentStyleFunction;
-import com.welovecoding.netbeans.plugin.editorconfig.processor.function.LineEndingFunction;
-import com.welovecoding.netbeans.plugin.editorconfig.processor.function.TabWidthFunction;
+import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.CharsetOperation;
+import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.FinalNewLineOperation;
+import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.IndentSizeOperation;
+import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.IndentStyleOperation;
+import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.LineEndingOperation;
+import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.TabWidthOperation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -74,27 +74,27 @@ public class EditorConfigProcessor {
 
       switch (key) {
         case EditorConfigConstant.CHARSET:
-          changed = CharsetFunction.doCharset(dataObject, value, getLineEnding(keyedRules.get(EditorConfigConstant.END_OF_LINE)));
+          changed = CharsetOperation.doCharset(dataObject, value, getLineEnding(keyedRules.get(EditorConfigConstant.END_OF_LINE)));
           changedStyle = changedStyle || changed;
           break;
         case EditorConfigConstant.END_OF_LINE:
-          changed = LineEndingFunction.doLineEnding(dataObject, value);
+          changed = LineEndingOperation.doLineEnding(dataObject, value);
           changedStyle = changedStyle || changed;
           break;
         case EditorConfigConstant.INDENT_SIZE:
-          changed = IndentSizeFunction.doIndentSize(primaryFile, value);
+          changed = IndentSizeOperation.doIndentSize(primaryFile, value);
           changedStyle = changedStyle || changed;
           break;
         case EditorConfigConstant.INDENT_STYLE:
-          changed = IndentStyleFunction.doIndentStyle(primaryFile, value);
+          changed = IndentStyleOperation.doIndentStyle(primaryFile, value);
           changedStyle = changedStyle || changed;
           break;
         case EditorConfigConstant.INSERT_FINAL_NEWLINE:
-          changed = FinalNewLineFunction.doFinalNewLine(primaryFile, getLineEnding(keyedRules.get(EditorConfigConstant.END_OF_LINE)));
+          changed = FinalNewLineOperation.doFinalNewLine(primaryFile, getLineEnding(keyedRules.get(EditorConfigConstant.END_OF_LINE)));
           changedStyle = changedStyle || changed;
           break;
         case EditorConfigConstant.TAB_WIDTH:
-          changed = TabWidthFunction.doTabWidth(primaryFile, value);
+          changed = TabWidthOperation.doTabWidth(primaryFile, value);
           changedStyle = changedStyle || changed;
           break;
         default:

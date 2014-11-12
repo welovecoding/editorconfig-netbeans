@@ -1,4 +1,4 @@
-package com.welovecoding.netbeans.plugin.editorconfig.processor.function;
+package com.welovecoding.netbeans.plugin.editorconfig.processor.operation;
 
 import com.welovecoding.netbeans.plugin.editorconfig.mapper.EditorConfigPropertyMapper;
 import com.welovecoding.netbeans.plugin.editorconfig.mapper.EditorConfigPropertyMappingException;
@@ -10,9 +10,9 @@ import org.netbeans.editor.BaseDocument;
 import org.openide.loaders.DataObject;
 import org.openide.text.NbDocument;
 
-public class LineEndingFunction {
+public class LineEndingOperation {
 
-  private static final Logger LOG = Logger.getLogger(LineEndingFunction.class.getName());
+  private static final Logger LOG = Logger.getLogger(LineEndingOperation.class.getName());
 
   public static boolean doLineEnding(DataObject dataObject, String value) {
     String normalizedLineEnding;

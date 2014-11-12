@@ -1,7 +1,9 @@
-package com.welovecoding.netbeans.plugin.editorconfig.processor.function;
+package com.welovecoding.netbeans.plugin.editorconfig.processor.operation;
 
 import java.io.BufferedOutputStream;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JEditorPane;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.JTextComponent;
@@ -21,7 +23,10 @@ import org.openide.windows.WindowManager;
  *
  * @author Michael Koppen
  */
-public class FinalNewLineFunction {
+public class FinalNewLineOperation {
+  private static final Logger LOG = Logger.getLogger(FinalNewLineOperation.class.getName());
+  
+  
 
   public static boolean doFinalNewLine(FileObject fo, String lineEnding) {
     final String content;
@@ -35,11 +40,20 @@ public class FinalNewLineFunction {
       return false;
     }
 
-    // Change file in editor
-    InsertNewLineInEditorAction action = new InsertNewLineInEditorAction(fo, lineEnding);
-    WindowManager.getDefault().invokeWhenUIReady(action);
+    EditorCookie cookie = null;
+    try {
+      cookie = (EditorCookie) DataObject.find(fo).getCookie(EditorCookie.class);
+    } catch (DataObjectNotFoundException ex) {
+      Exceptions.printStackTrace(ex);
+    }
 
-    if (!action.isWasOpened()) {
+    if (cookie != null) {
+      LOG.log(Level.INFO, "Editing file in Editor!");
+      // Change file in editor
+      InsertNewLineInEditorTask action = new InsertNewLineInEditorTask(fo, cookie, lineEnding);
+      WindowManager.getDefault().invokeWhenUIReady(action);
+    } else {
+      LOG.log(Level.INFO, "Editing file in Filesystem!");
       // Change file on filesystem
       try {
         final String newContent = content + System.lineSeparator();
@@ -64,29 +78,30 @@ public class FinalNewLineFunction {
 
   }
 
-  private static class InsertNewLineInEditorAction implements Runnable {
+  private static class InsertNewLineInEditorTask implements Runnable {
+    
+    private static final Logger LOG = Logger.getLogger(InsertNewLineInEditorTask.class.getName());
 
-    private boolean wasOpened = false;
     private final FileObject fileObject;
     private final String lineEnding;
+    private final EditorCookie cookie;
 
-    public InsertNewLineInEditorAction(FileObject fileObject, String lineEnding) {
+    public InsertNewLineInEditorTask(final FileObject fileObject, final EditorCookie cookie, final String lineEnding) {
       this.fileObject = fileObject;
       this.lineEnding = lineEnding;
+      this.cookie = cookie;
     }
 
     @Override
     public void run() {
       try {
-        EditorCookie cookie = (EditorCookie) DataObject.find(fileObject).getCookie(EditorCookie.class);
-        System.out.println("Cookie: " + cookie);
+        LOG.log(Level.INFO, "Cookie: {0}", cookie);
         if (cookie != null) {
           FileLock lock = FileLock.NONE;
           if (!fileObject.isLocked()) {
-            StyledDocument document = cookie.openDocument();
-            System.out.println("Document: " + document);
+            final StyledDocument document = cookie.openDocument();
+            LOG.log(Level.INFO, "Document: {0}", document);
             for (JEditorPane pane : cookie.getOpenedPanes()) {
-              wasOpened = true;
               JTextComponent comp = (JTextComponent) pane;
               NbDocument.runAtomicAsUser(document, () -> {
                 try {
@@ -110,11 +125,5 @@ public class FinalNewLineFunction {
         Exceptions.printStackTrace(ex);
       }
     }
-
-    public boolean isWasOpened() {
-      return wasOpened;
-    }
-
   }
-
 }

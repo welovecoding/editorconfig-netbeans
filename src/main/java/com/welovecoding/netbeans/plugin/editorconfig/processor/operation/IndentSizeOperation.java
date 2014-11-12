@@ -1,4 +1,4 @@
-package com.welovecoding.netbeans.plugin.editorconfig.processor.function;
+package com.welovecoding.netbeans.plugin.editorconfig.processor.operation;
 
 import com.welovecoding.netbeans.plugin.editorconfig.processor.Tab;
 import java.util.logging.Level;
@@ -12,9 +12,9 @@ import org.openide.filesystems.FileObject;
  *
  * @author Michael Koppen
  */
-public class IndentSizeFunction {
+public class IndentSizeOperation {
 
-  private static final Logger LOG = Logger.getLogger(IndentSizeFunction.class.getName());
+  private static final Logger LOG = Logger.getLogger(IndentSizeOperation.class.getName());
 
   public static boolean doIndentSize(FileObject file, String value) {
     int indentSize = Integer.valueOf(value);

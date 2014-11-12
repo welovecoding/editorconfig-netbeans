@@ -1,4 +1,4 @@
-package com.welovecoding.netbeans.plugin.editorconfig.processor.function;
+package com.welovecoding.netbeans.plugin.editorconfig.processor.operation;
 
 import com.welovecoding.netbeans.plugin.editorconfig.model.EditorConfigConstant;
 import com.welovecoding.netbeans.plugin.editorconfig.processor.Tab;
@@ -13,9 +13,9 @@ import org.openide.filesystems.FileObject;
  *
  * @author Michael Koppen
  */
-public class IndentStyleFunction {
+public class IndentStyleOperation {
 
-  private static final Logger LOG = Logger.getLogger(IndentStyleFunction.class.getName());
+  private static final Logger LOG = Logger.getLogger(IndentStyleOperation.class.getName());
 
   public static boolean doIndentStyle(FileObject file, String value) {
     LOG.log(Level.INFO, "{0}Set indent style to \"{1}\".", new Object[]{Tab.TWO, value});
