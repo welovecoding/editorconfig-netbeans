@@ -1,8 +1,8 @@
 package com.welovecoding.netbeans.plugin.editorconfig.mapper;
 
 import java.nio.charset.Charset;
+import static org.junit.Assert.assertEquals;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 public class EditorConfigPropertyMapperTest {
 
@@ -36,7 +36,7 @@ public class EditorConfigPropertyMapperTest {
     assertEquals(mappedProperty, javaProperty);
   }
 
-  @Test(expected = EditorConfigPropertyMappingException.class)
+  @Test
   public void itConvertsUnknownValues() throws EditorConfigPropertyMappingException {
     String ecProperty = "something";
     String javaProperty = System.lineSeparator();
@@ -46,7 +46,7 @@ public class EditorConfigPropertyMapperTest {
     assertEquals(mappedProperty, javaProperty);
   }
 
-  @Test(expected = EditorConfigPropertyMappingException.class)
+  @Test
   public void itWorksWithNullValues() throws EditorConfigPropertyMappingException {
     String ecProperty = null;
     String javaProperty = System.lineSeparator();

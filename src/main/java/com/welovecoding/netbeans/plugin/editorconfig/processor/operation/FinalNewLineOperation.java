@@ -2,14 +2,12 @@ package com.welovecoding.netbeans.plugin.editorconfig.processor.operation;
 
 import java.io.BufferedOutputStream;
 import java.io.IOException;
+import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JEditorPane;
 import javax.swing.text.BadLocationException;
-import javax.swing.text.JTextComponent;
 import javax.swing.text.StyledDocument;
-import org.openide.DialogDisplayer;
-import org.openide.NotifyDescriptor;
 import org.openide.cookies.EditorCookie;
 import org.openide.filesystems.FileLock;
 import org.openide.filesystems.FileObject;
@@ -24,106 +22,137 @@ import org.openide.windows.WindowManager;
  * @author Michael Koppen
  */
 public class FinalNewLineOperation {
+
   private static final Logger LOG = Logger.getLogger(FinalNewLineOperation.class.getName());
-  
-  
 
-  public static boolean doFinalNewLine(FileObject fo, String lineEnding) {
-    final String content;
-    try {
-      content = fo.asText();
-      if (content.endsWith("\n") || content.endsWith("\r")) {
-        return false;
-      }
-    } catch (IOException ex) {
-      Exceptions.printStackTrace(ex);
-      return false;
+  public static boolean doFinalNewLine(final DataObject dataObject, final String lineEnding) throws Exception {
+    return new FinalNewLineOperation().apply(dataObject, lineEnding).call();
+  }
+
+  public Callable<Boolean> apply(final DataObject dataObject, final String lineEnding) {
+    return new ApplyFinalNewLineTask(dataObject, lineEnding);
+  }
+
+  private class ApplyFinalNewLineTask implements Callable<Boolean> {
+
+    private final DataObject dataObject;
+    private final String lineEnding;
+
+    public ApplyFinalNewLineTask(final DataObject dataObject, final String lineEnding) {
+      LOG.log(Level.INFO, "Created new ApplyFinalNewLineTask for File {0}", dataObject.getPrimaryFile().getPath());
+      this.dataObject = dataObject;
+      this.lineEnding = lineEnding;
     }
 
-    EditorCookie cookie = null;
-    try {
-      cookie = (EditorCookie) DataObject.find(fo).getCookie(EditorCookie.class);
-    } catch (DataObjectNotFoundException ex) {
-      Exceptions.printStackTrace(ex);
-    }
+    @Override
+    public Boolean call() throws Exception {
+      LOG.log(Level.INFO, "Executing ApplyFinalNewLineTask");
+      FileObject fileObject = dataObject.getPrimaryFile();
 
-    if (cookie != null) {
-      LOG.log(Level.INFO, "Editing file in Editor!");
-      // Change file in editor
-      InsertNewLineInEditorTask action = new InsertNewLineInEditorTask(fo, cookie, lineEnding);
-      WindowManager.getDefault().invokeWhenUIReady(action);
-    } else {
-      LOG.log(Level.INFO, "Editing file in Filesystem!");
-      // Change file on filesystem
+      final String content;
       try {
-        final String newContent = content + System.lineSeparator();
-        FileLock lock = FileLock.NONE;
-        if (!fo.isLocked()) {
-          BufferedOutputStream os = new BufferedOutputStream(fo.getOutputStream(lock));
-          os.write(newContent.getBytes("ASCII"));
-          os.flush();
-          os.close();
-          lock.releaseLock();
-        } else {
-          DialogDisplayer.getDefault().notify(new NotifyDescriptor.Message("Couldn't apply newline at the end of file \"" + fo.getName() + "." + fo.getExt() + "\"", NotifyDescriptor.WARNING_MESSAGE));
+        content = fileObject.asText();
+        if (content.endsWith("\n") || content.endsWith("\r")) {
+          LOG.log(Level.INFO, "File already ends with a newline");
           return false;
         }
+        LOG.log(Level.INFO, "File does not already ends with a newline");
       } catch (IOException ex) {
         Exceptions.printStackTrace(ex);
         return false;
       }
-    }
 
-    return true;
-
-  }
-
-  private static class InsertNewLineInEditorTask implements Runnable {
-    
-    private static final Logger LOG = Logger.getLogger(InsertNewLineInEditorTask.class.getName());
-
-    private final FileObject fileObject;
-    private final String lineEnding;
-    private final EditorCookie cookie;
-
-    public InsertNewLineInEditorTask(final FileObject fileObject, final EditorCookie cookie, final String lineEnding) {
-      this.fileObject = fileObject;
-      this.lineEnding = lineEnding;
-      this.cookie = cookie;
-    }
-
-    @Override
-    public void run() {
+      EditorCookie cookie = null;
       try {
-        LOG.log(Level.INFO, "Cookie: {0}", cookie);
-        if (cookie != null) {
-          FileLock lock = FileLock.NONE;
-          if (!fileObject.isLocked()) {
+        cookie = (EditorCookie) DataObject.find(fileObject).getCookie(EditorCookie.class);
+      } catch (DataObjectNotFoundException ex) {
+        Exceptions.printStackTrace(ex);
+      }
+
+      if (cookie != null) {
+        LOG.log(Level.INFO, "File is opened in Editor! Appling on Editor.");
+        // Change file in editor
+        InsertNewLineInEditorTask action = new InsertNewLineInEditorTask(fileObject, cookie, lineEnding);
+        WindowManager.getDefault().invokeWhenUIReady(action);
+      } else {
+        LOG.log(Level.INFO, "File is NOT opened in Editor! Appling on filesystem.");
+
+        FileLock lock = FileLock.NONE;
+
+        while (fileObject.isLocked()) {
+          LOG.log(Level.INFO, "Blocking execution while file is locked");
+          Thread.sleep(3000);
+        }
+        LOG.log(Level.INFO, "file is unlocked");
+        if (!fileObject.isLocked()) {
+          lock = fileObject.lock();
+        }
+        // Change file on filesystem
+        try {
+          LOG.log(Level.INFO, "Adding final newline \"{0}\"", lineEnding);
+          final String newContent = content + lineEnding;
+          BufferedOutputStream os = new BufferedOutputStream(fileObject.getOutputStream(lock));
+          os.write(newContent.getBytes("ASCII"));
+          os.flush();
+          os.close();
+        } catch (IOException ex) {
+          Exceptions.printStackTrace(ex);
+          return false;
+        } finally {
+          lock.releaseLock();
+        }
+      }
+
+      return true;
+    }
+
+    private class InsertNewLineInEditorTask implements Runnable {
+
+      private final FileObject fileObject;
+      private final String lineEnding;
+      private final EditorCookie cookie;
+
+      public InsertNewLineInEditorTask(FileObject fileObject, final EditorCookie cookie, final String lineEnding) {
+        this.fileObject = fileObject;
+        this.lineEnding = lineEnding;
+        this.cookie = cookie;
+      }
+
+      @Override
+      public void run() {
+        try {
+          LOG.log(Level.INFO, "Cookie: {0}", cookie);
+          if (cookie != null) {
+            LOG.log(Level.INFO, "opening document");
             final StyledDocument document = cookie.openDocument();
             LOG.log(Level.INFO, "Document: {0}", document);
             for (JEditorPane pane : cookie.getOpenedPanes()) {
-              JTextComponent comp = (JTextComponent) pane;
+//              JTextComponent comp = (JTextComponent) pane;
               NbDocument.runAtomicAsUser(document, () -> {
                 try {
+                  LOG.log(Level.INFO, "Adding final newline \"{0}\"", lineEnding);
                   document.insertString(document.getEndPosition().getOffset() - 1, lineEnding, null);
+                  String result = document.getText(document.getEndPosition().getOffset() - 10, 10);
+                  System.out.println("Result: " + result);
+                  LOG.log(Level.INFO, "Saving Document");
                   cookie.saveDocument();
                 } catch (BadLocationException | IOException ex) {
                   Exceptions.printStackTrace(ex);
                 }
               });
             }
-            lock.releaseLock();
-          } else {
-            DialogDisplayer.getDefault().notify(new NotifyDescriptor.Message("Couldn't apply newline at the end of file \"" + fileObject.getName() + "." + fileObject.getExt() + "\"", NotifyDescriptor.WARNING_MESSAGE));
+
           }
+        } catch (BadLocationException ex) {
+          Exceptions.printStackTrace(ex);
+        } catch (DataObjectNotFoundException ex) {
+          Exceptions.printStackTrace(ex);
+        } catch (IOException ex) {
+          Exceptions.printStackTrace(ex);
         }
-      } catch (BadLocationException ex) {
-        Exceptions.printStackTrace(ex);
-      } catch (DataObjectNotFoundException ex) {
-        Exceptions.printStackTrace(ex);
-      } catch (IOException ex) {
-        Exceptions.printStackTrace(ex);
       }
+
     }
   }
+
 }

@@ -20,11 +20,9 @@ public class FileChangeListener extends FileChangeAdapter {
 
   private static final Logger LOG = Logger.getLogger(FileChangeListener.class.getName());
   private final Project project;
-  private final EditorConfigProcessor processor;
 
   public FileChangeListener(Project project, FileObject editorConfigFileObject) {
     this.project = project;
-    this.processor = EditorConfigProcessor.getInstance();
     LOG.log(Level.INFO, "Attached FileChangeListener to: {0}", editorConfigFileObject.getParent().getPath());
   }
 
@@ -55,8 +53,10 @@ public class FileChangeListener extends FileChangeAdapter {
     LOG.log(Level.INFO, "FILECHANGELISTENER: Event expected? {0}", event.isExpected());
     if (!event.getFile().isFolder() && !event.isExpected()) {
       try {
-        processor.applyEditorConfigRules(DataObject.find(event.getFile()));
+        new EditorConfigProcessor().applyRulesToFile(DataObject.find(event.getFile()));
       } catch (DataObjectNotFoundException ex) {
+        Exceptions.printStackTrace(ex);
+      } catch (Exception ex) {
         Exceptions.printStackTrace(ex);
       }
     }

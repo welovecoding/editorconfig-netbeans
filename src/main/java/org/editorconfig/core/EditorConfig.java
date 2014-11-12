@@ -1,7 +1,16 @@
 package org.editorconfig.core;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -11,12 +20,13 @@ import java.util.regex.Pattern;
  * @author Dennis.Ushakov
  */
 public class EditorConfig {
+
   private static boolean DEBUG = System.getProperty("editorconfig.debug") != null;
 
   public static String VERSION = "0.11.3-final";
 
-  private static final Pattern SECTION_PATTERN = Pattern.compile("\\s*\\[(([^#;]|\\\\#|\\\\;)+)]" +
-                                                                 ".*"); // Python match searches from the line start
+  private static final Pattern SECTION_PATTERN = Pattern.compile("\\s*\\[(([^#;]|\\\\#|\\\\;)+)]"
+          + ".*"); // Python match searches from the line start
   private static final int HEADER = 1;
 
   private static final Pattern OPTION_PATTERN = Pattern.compile("\\s*([^:=\\s][^:=]*)\\s*[:=]\\s*(.*)");
@@ -30,17 +40,19 @@ public class EditorConfig {
   private final String version;
 
   /**
-   * Creates EditorConfig handler with default configuration filename (.editorconfig) and
-   * version {@link EditorConfig#VERSION}
+   * Creates EditorConfig handler with default configuration filename
+   * (.editorconfig) and version {@link EditorConfig#VERSION}
    */
   public EditorConfig() {
     this(".editorconfig", VERSION);
   }
 
   /**
-   * Creates EditorConfig handler with specified configuration filename and version.
-   * Used mostly for debugging/testing.
-   * @param configFilename configuration file name to be searched for instead of .editorconfig
+   * Creates EditorConfig handler with specified configuration filename and
+   * version. Used mostly for debugging/testing.
+   *
+   * @param configFilename configuration file name to be searched for instead of
+   * .editorconfig
    * @param version required version
    */
   public EditorConfig(String configFilename, String version) {
@@ -49,15 +61,20 @@ public class EditorConfig {
   }
 
   /**
-   * Parse editorconfig files corresponding to the file path given by filename, and return the parsing result.
+   * Parse editorconfig files corresponding to the file path given by filename,
+   * and return the parsing result.
    *
-   * @param filePath The full path to be parsed. The path is usually the path of the file which is currently edited
-   *                 by the editor.
-   * @return The parsing result stored in a list of {@link EditorConfig.OutPair}.
-   * @throws org.editorconfig.core.ParsingException      If an {@code .editorconfig} file could not be parsed
-   * @throws org.editorconfig.core.VersionException      If version greater than actual is specified in constructor
-   * @throws org.editorconfig.core.EditorConfigException If an EditorConfig exception occurs. Usually one of
-   *                                                     {@link ParsingException} or {@link VersionException}
+   * @param filePath The full path to be parsed. The path is usually the path of
+   * the file which is currently edited by the editor.
+   * @return The parsing result stored in a list of
+   * {@link EditorConfig.OutPair}.
+   * @throws org.editorconfig.core.ParsingException If an {@code .editorconfig}
+   * file could not be parsed
+   * @throws org.editorconfig.core.VersionException If version greater than
+   * actual is specified in constructor
+   * @throws org.editorconfig.core.EditorConfigException If an EditorConfig
+   * exception occurs. Usually one of {@link ParsingException} or
+   * {@link VersionException}
    */
   public List<OutPair> getProperties(String filePath) throws EditorConfigException {
     checkAssertions();
@@ -114,11 +131,15 @@ public class EditorConfig {
       int v2 = -1;
       try {
         v1 = Integer.parseInt(version1Component);
-      } catch (NumberFormatException ignored) {}
+      } catch (NumberFormatException ignored) {
+      }
       try {
         v2 = Integer.parseInt(version2Component);
-      } catch (NumberFormatException ignored) {}
-      if (v1 != v2) return v1 - v2;
+      } catch (NumberFormatException ignored) {
+      }
+      if (v1 != v2) {
+        return v1 - v2;
+      }
     }
     return 0;
   }
@@ -126,7 +147,7 @@ public class EditorConfig {
   private void preprocessOptions(Map<String, String> options) {
     // Lowercase option value for certain options
     for (String key : new String[]{"end_of_line", "indent_style", "indent_size", "insert_final_newline",
-                                   "trim_trailing_whitespace", "charset"}) {
+      "trim_trailing_whitespace", "charset"}) {
       String value = options.get(key);
       if (value != null) {
         options.put(key, value.toLowerCase(Locale.US));
@@ -135,8 +156,8 @@ public class EditorConfig {
 
     // Set indent_size to "tab" if indent_size is unspecified and
     // indent_style is set to "tab".
-    if ("tab".equals(options.get("indent_style")) && !options.containsKey("indent_size") &&
-        compareVersions(version, "0.10.0") >= 0) {
+    if ("tab".equals(options.get("indent_style")) && !options.containsKey("indent_size")
+            && compareVersions(version, "0.10.0") >= 0) {
       options.put("indent_size", "tab");
     }
 
@@ -167,7 +188,9 @@ public class EditorConfig {
       }
 
       // comment or blank line?
-      if (line.isEmpty() || line.startsWith("#") || line.startsWith(";")) continue;
+      if (line.isEmpty() || line.startsWith("#") || line.startsWith(";")) {
+        continue;
+      }
 
       Matcher matcher = SECTION_PATTERN.matcher(line);
       if (matcher.matches()) {
@@ -221,9 +244,13 @@ public class EditorConfig {
       for (int i = 0; i < matcher.groupCount(); i++) {
         final int[] range = ranges.get(i);
         final String numberString = matcher.group(i + 1);
-        if (numberString == null || numberString.startsWith("0")) return false;
+        if (numberString == null || numberString.startsWith("0")) {
+          return false;
+        }
         int number = Integer.parseInt(numberString);
-        if (number < range[0] || number > range[1]) return false;
+        if (number < range[0] || number > range[1]) {
+          return false;
+        }
       }
       return true;
     }
@@ -292,8 +319,8 @@ public class EditorConfig {
         result.append(braceLevel > 0 && !escaped ? "|" : ",");
       } else if ('/' == current) {
         if (i < length && pattern.charAt(i) == '*') {
-          if (i + 1 < length && pattern.charAt(i + 1) == '*' &&
-              i + 2 < length && pattern.charAt(i + 2) == '/') {
+          if (i + 1 < length && pattern.charAt(i + 1) == '*'
+                  && i + 2 < length && pattern.charAt(i + 2) == '/') {
             result.append("(?:/|/.*/)");
             i += 3;
           } else {
@@ -313,7 +340,9 @@ public class EditorConfig {
         result.append(escapeToRegex(String.valueOf(current)));
       }
       if ('\\' == current) {
-        if (escaped) result.append("\\\\");
+        if (escaped) {
+          result.append("\\\\");
+        }
         escaped = !escaped;
       } else {
         escaped = false;
@@ -325,12 +354,15 @@ public class EditorConfig {
 
   private static int[] getNumericRange(String choice) {
     final int separator = choice.indexOf("..");
-    if (separator < 0 ) return null;
+    if (separator < 0) {
+      return null;
+    }
     try {
       int start = Integer.parseInt(choice.substring(0, separator));
       int end = Integer.parseInt(choice.substring(separator + 2));
-      return new int[] {start, end};
-    } catch (NumberFormatException ignored) {}
+      return new int[]{start, end};
+    } catch (NumberFormatException ignored) {
+    }
     return null;
   }
 
@@ -364,7 +396,9 @@ public class EditorConfig {
   private static int countAll(Pattern regex, String pattern) {
     final Matcher matcher = regex.matcher(pattern);
     int count = 0;
-    while (matcher.find()) count++;
+    while (matcher.find()) {
+      count++;
+    }
     return count;
   }
 
@@ -372,6 +406,7 @@ public class EditorConfig {
    * String-String pair to store the parsing result.
    */
   public static class OutPair {
+
     private final String key;
     private final String val;
 
@@ -380,7 +415,7 @@ public class EditorConfig {
       this.val = val;
     }
 
-    public String getKey(){
+    public String getKey() {
       return key;
     }
 

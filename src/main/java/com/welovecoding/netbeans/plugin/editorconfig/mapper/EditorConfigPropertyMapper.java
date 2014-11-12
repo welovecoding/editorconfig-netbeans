@@ -3,17 +3,20 @@ package com.welovecoding.netbeans.plugin.editorconfig.mapper;
 import com.welovecoding.netbeans.plugin.editorconfig.model.EditorConfigConstant;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.netbeans.editor.BaseDocument;
 
 public class EditorConfigPropertyMapper {
 
-  public static String normalizeLineEnding(String lineEnding) throws EditorConfigPropertyMappingException {
+  private static final Logger LOG = Logger.getLogger(EditorConfigPropertyMapper.class.getName());
+
+  public synchronized static String normalizeLineEnding(String lineEnding) throws EditorConfigPropertyMappingException {
     String normalizedLineEnding;
 
     if (lineEnding == null) {
-      throw new EditorConfigPropertyMappingException("Cannot convert EditorConfig line ending because given line ending was \"null\".");
+      lineEnding = "";
     }
-
     switch (lineEnding) {
       case EditorConfigConstant.END_OF_LINE_LF:
         normalizedLineEnding = BaseDocument.LS_LF;
@@ -25,14 +28,21 @@ public class EditorConfigPropertyMapper {
         normalizedLineEnding = BaseDocument.LS_CRLF;
         break;
       default:
-        throw new EditorConfigPropertyMappingException("Unknown line ending property: " + lineEnding);
+        normalizedLineEnding = System.lineSeparator();
+        LOG.log(Level.INFO, "Using default line ending");
+        break;
     }
 
+    LOG.log(Level.INFO, "Using line ending: \"{0}\"", normalizedLineEnding);
     return normalizedLineEnding;
   }
 
-  public static Charset mapCharset(String editorConfigCharset) {
+  public synchronized static Charset mapCharset(String editorConfigCharset) {
     Charset javaCharset;
+
+    if (editorConfigCharset == null) {
+      editorConfigCharset = "";
+    }
 
     switch (editorConfigCharset) {
       case EditorConfigConstant.CHARSET_LATIN_1:
@@ -46,9 +56,11 @@ public class EditorConfigPropertyMapper {
         break;
       default:
         javaCharset = StandardCharsets.UTF_8;
+        LOG.log(Level.INFO, "Using default charset");
         break;
     }
 
+    LOG.log(Level.INFO, "Using charset: \"{0}\"", javaCharset);
     return javaCharset;
   }
 }
