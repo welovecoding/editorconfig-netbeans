@@ -25,8 +25,12 @@ public class FinalNewLineOperation {
 
   private static final Logger LOG = Logger.getLogger(FinalNewLineOperation.class.getName());
 
-  public static boolean doFinalNewLine(final DataObject dataObject, final String lineEnding) throws Exception {
-    return new FinalNewLineOperation().apply(dataObject, lineEnding).call();
+  public static boolean doFinalNewLine(final DataObject dataObject, final String value, final String lineEnding) throws Exception {
+    if (Boolean.valueOf(value)) {
+      return new FinalNewLineOperation().apply(dataObject, lineEnding).call();
+    } else {
+      return false;
+    }
   }
 
   public Callable<Boolean> apply(final DataObject dataObject, final String lineEnding) {
@@ -88,7 +92,7 @@ public class FinalNewLineOperation {
         if (!fileObject.isLocked()) {
           lock = fileObject.lock();
         }
-        
+
         try {
           LOG.log(Level.INFO, "Adding final newline \"{0}\"", lineEnding);
           final String newContent = content + lineEnding;

@@ -93,7 +93,7 @@ public class EditorConfigProcessor {
           changedStyle = changedStyle || changed;
           break;
         case EditorConfigConstant.INSERT_FINAL_NEWLINE:
-          FinalNewLineOperation.doFinalNewLine(dataObject,
+          FinalNewLineOperation.doFinalNewLine(dataObject, value, 
                   EditorConfigPropertyMapper.normalizeLineEnding(
                           keyedRules.get(EditorConfigConstant.END_OF_LINE)));
           break;
