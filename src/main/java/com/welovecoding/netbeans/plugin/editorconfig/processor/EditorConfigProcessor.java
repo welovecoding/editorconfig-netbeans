@@ -30,16 +30,6 @@ public class EditorConfigProcessor {
 
   private static final Logger LOG = Logger.getLogger(EditorConfigProcessor.class.getName());
 
-//  private static final class InstanceHolder {
-//
-//    static final EditorConfigProcessor INSTANCE = new EditorConfigProcessor();
-//  }
-//
-//  private EditorConfigProcessor() {
-//  }
-//  public static EditorConfigProcessor getInstance() {
-//    return InstanceHolder.INSTANCE;
-//  }
   public EditorConfigProcessor() {
   }
 
@@ -79,11 +69,6 @@ public class EditorConfigProcessor {
 
     HashMap<String, String> keyedRules = parseRulesForFile(dataObject);
 
-//    for (Map.Entry<String, String> entrySet : keyedRules.entrySet()) {
-//      String key = entrySet.getKey();
-//      String value = entrySet.getValue();
-//      System.out.println(key + "      :" + value);
-//    }
     FileObject fileObject = dataObject.getPrimaryFile();
     boolean changedStyle = false;
     boolean changed = false;

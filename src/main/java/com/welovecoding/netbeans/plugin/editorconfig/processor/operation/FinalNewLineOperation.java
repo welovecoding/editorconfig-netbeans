@@ -76,6 +76,7 @@ public class FinalNewLineOperation {
         WindowManager.getDefault().invokeWhenUIReady(action);
       } else {
         LOG.log(Level.INFO, "File is NOT opened in Editor! Appling on filesystem.");
+        // Change file on filesystem
 
         FileLock lock = FileLock.NONE;
 
@@ -87,7 +88,7 @@ public class FinalNewLineOperation {
         if (!fileObject.isLocked()) {
           lock = fileObject.lock();
         }
-        // Change file on filesystem
+        
         try {
           LOG.log(Level.INFO, "Adding final newline \"{0}\"", lineEnding);
           final String newContent = content + lineEnding;
@@ -127,7 +128,6 @@ public class FinalNewLineOperation {
             final StyledDocument document = cookie.openDocument();
             LOG.log(Level.INFO, "Document: {0}", document);
             for (JEditorPane pane : cookie.getOpenedPanes()) {
-//              JTextComponent comp = (JTextComponent) pane;
               NbDocument.runAtomicAsUser(document, () -> {
                 try {
                   String end = document.getText(document.getEndPosition().getOffset() - 2, 1);
@@ -154,8 +154,6 @@ public class FinalNewLineOperation {
           Exceptions.printStackTrace(ex);
         }
       }
-
     }
   }
-
 }
