@@ -77,15 +77,31 @@ public class CharsetOperation {
           public void apply(OutputStreamWriter writer) {
             try {
               writer.write(content);
+              setFileAttribute(fo, FileAttributeName.ENCODING, requestedCharset.name());
             } catch (IOException ex) {
               Exceptions.printStackTrace(ex);
             }
           }
+
+          private void setFileAttribute(FileObject fo, String key, String value) {
+            try {
+              fo.setAttribute(key, value);
+            } catch (IOException ex) {
+              LOG.log(Level.SEVERE, "Error setting file attribute \"{0}\" with value \"{1}\" for {2}. {3}",
+                      new Object[]{
+                        key,
+                        value,
+                        fo.getPath(),
+                        ex.getMessage()
+                      });
+            }
+          }
+
         });
 
         if (wasWritten) {
           LOG.log(Level.INFO, "{0}Action: Successfully changed encoding to \"{1}\".", new Object[]{Tab.TWO, requestedCharset.name()});
-          setFileAttribute(fo, FileAttributeName.ENCODING, requestedCharset.name());
+//          setFileAttribute(fo, FileAttributeName.ENCODING, requestedCharset.name());
           wasChanged = true;
         }
       }
@@ -111,6 +127,7 @@ public class CharsetOperation {
       Object fileEncoding = fo.getAttribute(FileAttributeName.ENCODING);
 
       if (fileEncoding == null) {
+         LOG.log(Level.WARNING, "Attribute was null!");
         Charset currentCharset = FileEncodingQuery.getEncoding(fo);
         fileEncoding = currentCharset.name();
       }
@@ -123,18 +140,5 @@ public class CharsetOperation {
       return true;
     }
 
-    private void setFileAttribute(FileObject fo, String key, String value) {
-      try {
-        fo.setAttribute(key, value);
-      } catch (IOException ex) {
-        LOG.log(Level.SEVERE, "Error setting file attribute \"{0}\" with value \"{1}\" for {2}. {3}",
-                new Object[]{
-                  key,
-                  value,
-                  fo.getPath(),
-                  ex.getMessage()
-                });
-      }
-    }
   }
 }

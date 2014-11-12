@@ -43,7 +43,7 @@ public abstract class WriteFileTask implements Runnable {
         writer.flush();
         outputStream.flush();
         lock.releaseLock();
-//        fo.refresh(true);
+        fo.refresh(true);
       }
     } catch (IOException ex) {
       Exceptions.printStackTrace(ex);
