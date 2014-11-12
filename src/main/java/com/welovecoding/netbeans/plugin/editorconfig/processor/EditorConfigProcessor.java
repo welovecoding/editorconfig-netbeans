@@ -51,15 +51,15 @@ public class EditorConfigProcessor {
     EditorConfig ec = new EditorConfig(".editorconfig", EditorConfig.VERSION);
     List<EditorConfig.OutPair> rules = new ArrayList<>();
 
-    HashMap<String, String> keyedRules = new HashMap<>();
-    for (EditorConfig.OutPair rule : rules) {
-      keyedRules.put(rule.getKey().toLowerCase(), rule.getVal().toLowerCase());
-    }
-
     try {
       rules = ec.getProperties(filePath);
     } catch (EditorConfigException ex) {
       LOG.log(Level.SEVERE, ex.getMessage());
+    }
+
+    HashMap<String, String> keyedRules = new HashMap<>();
+    for (EditorConfig.OutPair rule : rules) {
+      keyedRules.put(rule.getKey().toLowerCase(), rule.getVal().toLowerCase());
     }
 
     FileObject primaryFile = dataObject.getPrimaryFile();
