@@ -101,7 +101,6 @@ public class CharsetOperation {
 
         if (wasWritten) {
           LOG.log(Level.INFO, "{0}Action: Successfully changed encoding to \"{1}\".", new Object[]{Tab.TWO, requestedCharset.name()});
-//          setFileAttribute(fo, FileAttributeName.ENCODING, requestedCharset.name());
           wasChanged = true;
         }
       }
@@ -127,7 +126,6 @@ public class CharsetOperation {
       Object fileEncoding = fo.getAttribute(FileAttributeName.ENCODING);
 
       if (fileEncoding == null) {
-         LOG.log(Level.WARNING, "Attribute was null!");
         Charset currentCharset = FileEncodingQuery.getEncoding(fo);
         fileEncoding = currentCharset.name();
       }

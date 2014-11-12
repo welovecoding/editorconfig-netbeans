@@ -29,8 +29,10 @@ import org.openide.loaders.DataObject;
 public class EditorConfigProcessor {
 
   private static final Logger LOG = Logger.getLogger(EditorConfigProcessor.class.getName());
+  private final EditorConfig ec;
 
   public EditorConfigProcessor() {
+    ec = new EditorConfig(".editorconfig", EditorConfig.VERSION);
   }
 
   private HashMap<String, String> parseRulesForFile(DataObject dataObject) {
@@ -38,7 +40,6 @@ public class EditorConfigProcessor {
 
     LOG.log(Level.INFO, "Apply rules for: {0}", filePath);
 
-    EditorConfig ec = new EditorConfig(".editorconfig", EditorConfig.VERSION);
     List<EditorConfig.OutPair> rules = new ArrayList<>();
 
     try {
@@ -48,15 +49,9 @@ public class EditorConfigProcessor {
     }
 
     HashMap<String, String> keyedRules = new HashMap<>();
-    StringBuilder props = new StringBuilder();
     for (EditorConfig.OutPair rule : rules) {
-      props.append(rule.getKey().toLowerCase()).append(" : ").append(rule.getVal().toLowerCase());
-      props.append("\n");
       keyedRules.put(rule.getKey().toLowerCase(), rule.getVal().toLowerCase());
     }
-    System.out.println("");
-    System.out.println(props.toString());
-    System.out.println("");
     return keyedRules;
   }
 
@@ -98,16 +93,9 @@ public class EditorConfigProcessor {
           changedStyle = changedStyle || changed;
           break;
         case EditorConfigConstant.INSERT_FINAL_NEWLINE:
-          System.out.println("HIIIIITTTTTT");
-          changed = FinalNewLineOperation.doFinalNewLine(dataObject,
+          FinalNewLineOperation.doFinalNewLine(dataObject,
                   EditorConfigPropertyMapper.normalizeLineEnding(
                           keyedRules.get(EditorConfigConstant.END_OF_LINE)));
-          if (changed) {
-            LOG.log(Level.INFO, "FinalNewLineOperation was executed on File {0}", dataObject.getPrimaryFile().getPath());
-          }else{
-            LOG.log(Level.INFO, "FinalNewLineOperation was NOT executed on File {0}", dataObject.getPrimaryFile().getPath());
-          }
-          
           break;
         case EditorConfigConstant.TAB_WIDTH:
           changed = TabWidthOperation.doTabWidth(dataObject, value);
