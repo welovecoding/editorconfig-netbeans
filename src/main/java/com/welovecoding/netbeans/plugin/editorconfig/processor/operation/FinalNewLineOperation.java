@@ -81,30 +81,24 @@ public class FinalNewLineOperation {
       } else {
         LOG.log(Level.INFO, "File is NOT opened in Editor! Appling on filesystem.");
         // Change file on filesystem
-
         FileLock lock = FileLock.NONE;
 
-        while (fileObject.isLocked()) {
-          LOG.log(Level.INFO, "Blocking execution while file is locked");
-          Thread.sleep(3000);
-        }
         LOG.log(Level.INFO, "file is unlocked");
         if (!fileObject.isLocked()) {
           lock = fileObject.lock();
-        }
-
-        try {
-          LOG.log(Level.INFO, "Adding final newline \"{0}\"", lineEnding);
-          final String newContent = content + lineEnding;
-          BufferedOutputStream os = new BufferedOutputStream(fileObject.getOutputStream(lock));
-          os.write(newContent.getBytes("ASCII"));
-          os.flush();
-          os.close();
-        } catch (IOException ex) {
-          Exceptions.printStackTrace(ex);
-          return false;
-        } finally {
-          lock.releaseLock();
+          try {
+            LOG.log(Level.INFO, "Adding final newline \"{0}\"", lineEnding);
+            final String newContent = content + lineEnding;
+            BufferedOutputStream os = new BufferedOutputStream(fileObject.getOutputStream(lock));
+            os.write(newContent.getBytes("ASCII"));
+            os.flush();
+            os.close();
+          } catch (IOException ex) {
+            Exceptions.printStackTrace(ex);
+            return false;
+          } finally {
+            lock.releaseLock();
+          }
         }
       }
 
