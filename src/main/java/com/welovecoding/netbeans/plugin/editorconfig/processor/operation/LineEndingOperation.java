@@ -14,7 +14,7 @@ public class LineEndingOperation {
   private static final Logger LOG = Logger.getLogger(LineEndingOperation.class.getName());
 
   public static boolean doLineEnding(final DataObject dataObject, final String lineEnding) throws Exception {
-    return new FinalNewLineOperation().apply(dataObject, lineEnding).call();
+    return new LineEndingOperation().apply(dataObject, lineEnding).call();
   }
 
   public Callable<Boolean> apply(final DataObject dataObject, final String lineEnding) {

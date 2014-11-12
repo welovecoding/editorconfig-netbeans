@@ -98,9 +98,16 @@ public class EditorConfigProcessor {
           changedStyle = changedStyle || changed;
           break;
         case EditorConfigConstant.INSERT_FINAL_NEWLINE:
-          FinalNewLineOperation.doFinalNewLine(dataObject,
+          System.out.println("HIIIIITTTTTT");
+          changed = FinalNewLineOperation.doFinalNewLine(dataObject,
                   EditorConfigPropertyMapper.normalizeLineEnding(
                           keyedRules.get(EditorConfigConstant.END_OF_LINE)));
+          if (changed) {
+            LOG.log(Level.INFO, "FinalNewLineOperation was executed on File {0}", dataObject.getPrimaryFile().getPath());
+          }else{
+            LOG.log(Level.INFO, "FinalNewLineOperation was NOT executed on File {0}", dataObject.getPrimaryFile().getPath());
+          }
+          
           break;
         case EditorConfigConstant.TAB_WIDTH:
           changed = TabWidthOperation.doTabWidth(dataObject, value);
@@ -108,6 +115,7 @@ public class EditorConfigProcessor {
           break;
         default:
           LOG.log(Level.WARNING, "Unknown property: {0}", key);
+          break;
       }
     }
 

@@ -26,7 +26,7 @@ public class TabWidthOperation {
    * @return
    */
   public static boolean doTabWidth(final DataObject dataObject, final String tabWidth) throws Exception {
-    return new FinalNewLineOperation().apply(dataObject, tabWidth).call();
+    return new TabWidthOperation().apply(dataObject, tabWidth).call();
   }
 
   public Callable<Boolean> apply(final DataObject dataObject, final String tabWidth) {
