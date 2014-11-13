@@ -1,14 +1,11 @@
 package com.welovecoding.netbeans.plugin.editorconfig.processor.operation;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.netbeans.junit.NbTestCase;
 import org.openide.filesystems.FileObject;
@@ -21,7 +18,6 @@ public class CharsetOperationTest extends NbTestCase {
   }
 
   @Test
-  @Ignore
   public void testSetup() throws FileNotFoundException, IOException, URISyntaxException {
     String path = "files/charsets/utf-8-bom.txt";
     URL url = Thread.currentThread().getContextClassLoader().getResource(path);
