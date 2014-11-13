@@ -40,6 +40,7 @@ public class TrimTrailingWhitespaceOperation {
     private final String lineEnding;
 
     public ApplyTrailingWhitespacesTask(final DataObject dataObject, final Charset ecCharset, final String lineEnding) {
+      LOG.log(Level.INFO, "Created new ApplyTrailingWhitespacesTask for File {0}", dataObject.getPrimaryFile().getPath());
       this.dataObject = dataObject;
       this.ecCharset = ecCharset;
       this.lineEnding = lineEnding;
@@ -47,6 +48,7 @@ public class TrimTrailingWhitespaceOperation {
 
     @Override
     public Boolean call() throws Exception {
+      LOG.log(Level.INFO, "Executing ApplyTrailingWhitespacesTask");
       boolean wasChanged = false;
 
       FileObject fo = dataObject.getPrimaryFile();
@@ -61,7 +63,10 @@ public class TrimTrailingWhitespaceOperation {
         }
       }.call();
 
-      if (!content.equals(dataObject.getPrimaryFile().asText())) {
+      if (content.equals(dataObject.getPrimaryFile().asText())) {
+        LOG.log(Level.INFO, "File has NO trailing whitespaces");
+      } else {
+        LOG.log(Level.INFO, "File has trailing whitespaces");
         boolean wasWritten = writeFile(new WriteFileTask(fo) {
 
           @Override
