@@ -8,6 +8,7 @@ import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.IndentS
 import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.IndentStyleOperation;
 import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.LineEndingOperation;
 import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.TabWidthOperation;
+import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.TrimTrailingWhitespaceOperation;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -93,12 +94,19 @@ public class EditorConfigProcessor {
           changedStyle = changedStyle || changed;
           break;
         case EditorConfigConstant.INSERT_FINAL_NEWLINE:
-          FinalNewLineOperation.doFinalNewLine(dataObject, value, 
+          FinalNewLineOperation.doFinalNewLine(dataObject, value,
                   EditorConfigPropertyMapper.normalizeLineEnding(
                           keyedRules.get(EditorConfigConstant.END_OF_LINE)));
           break;
         case EditorConfigConstant.TAB_WIDTH:
           changed = TabWidthOperation.doTabWidth(dataObject, value);
+          changedStyle = changedStyle || changed;
+          break;
+        case EditorConfigConstant.TRIM_TRAILING_WHITESPACE:
+          changed = TrimTrailingWhitespaceOperation.doTrimTrailingWhitespaces(
+                  dataObject,
+                  EditorConfigPropertyMapper.mapCharset(keyedRules.get(EditorConfigConstant.CHARSET)),
+                  EditorConfigPropertyMapper.normalizeLineEnding(keyedRules.get(EditorConfigConstant.END_OF_LINE)));
           changedStyle = changedStyle || changed;
           break;
         default:
