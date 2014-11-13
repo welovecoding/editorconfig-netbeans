@@ -149,6 +149,14 @@
       <version>${netbeans.api.version}</version>
       <scope>test</scope>
     </dependency>
+    <!-- Dependencies to test in the NetBeans Runtime Container Environment -->
+    <dependency>
+      <groupId>org.netbeans.api</groupId>
+      <artifactId>org-netbeans-modules-nbjunit</artifactId>
+      <version>${netbeans.api.version}</version>
+      <scope>test</scope>
+      <type>jar</type>
+    </dependency>
   </dependencies>
     
   <build>
