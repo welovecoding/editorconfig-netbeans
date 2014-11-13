@@ -1,0 +1,9 @@
+EditorConfig: latin1
+Java: ISO-8859-1
+Notepad++: ANSI / US-ASCII
+
+Buchstabe y
+Buchstabe ä
+Eurozeichen €
+Violinschlüssel 𝄞
+CJK-Ideogramm 𤽜
