@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JEditorPane;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.StyledDocument;
 import org.openide.cookies.EditorCookie;
@@ -73,7 +72,7 @@ public class FinalNewLineOperation {
         Exceptions.printStackTrace(ex);
       }
 
-      if (cookie != null) {
+      if (cookie != null && cookie.getOpenedPanes() != null) {
         LOG.log(Level.INFO, "File is opened in Editor! Appling on Editor.");
         // Change file in editor
         InsertNewLineInEditorTask action = new InsertNewLineInEditorTask(fileObject, cookie, lineEnding);
@@ -131,7 +130,7 @@ public class FinalNewLineOperation {
             LOG.log(Level.INFO, "opening document");
             final StyledDocument document = cookie.openDocument();
             LOG.log(Level.INFO, "Document: {0}", document);
-            for (JEditorPane pane : cookie.getOpenedPanes()) {
+            if (cookie.getOpenedPanes() != null) {
               NbDocument.runAtomicAsUser(document, () -> {
                 try {
                   String end = document.getText(document.getEndPosition().getOffset() - 2, 1);
