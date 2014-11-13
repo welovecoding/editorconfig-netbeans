@@ -33,11 +33,7 @@
       <artifactId>org-netbeans-api-annotations-common</artifactId>
       <version>${netbeans.api.version}</version>
     </dependency>
-    <dependency>
-      <groupId>org.netbeans.api</groupId>
-      <artifactId>org-netbeans-modules-editor-settings</artifactId>
-      <version>${netbeans.api.version}</version>
-    </dependency>
+
     <!-- BaseDocument & Co. -->
     <dependency>
       <groupId>org.netbeans.api</groupId>
@@ -57,11 +53,6 @@
     <dependency>
       <groupId>org.netbeans.api</groupId>
       <artifactId>org-netbeans-modules-editor-indent</artifactId>
-      <version>${netbeans.api.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.netbeans.api</groupId>
-      <artifactId>org-netbeans-modules-options-api</artifactId>
       <version>${netbeans.api.version}</version>
     </dependency>
     <dependency>
@@ -94,19 +85,7 @@
     </dependency>
     <dependency>
       <groupId>org.netbeans.api</groupId>
-      <artifactId>org-openide-io</artifactId>
-      <type>jar</type>
-      <version>${netbeans.api.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.netbeans.api</groupId>
       <artifactId>org-openide-util</artifactId>
-      <type>jar</type>
-      <version>${netbeans.api.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.netbeans.api</groupId>
-      <artifactId>org-openide-nodes</artifactId>
       <type>jar</type>
       <version>${netbeans.api.version}</version>
     </dependency>
@@ -118,17 +97,7 @@
     </dependency>
     <dependency>
       <groupId>org.netbeans.api</groupId>
-      <artifactId>org-openide-awt</artifactId>
-      <version>${netbeans.api.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.netbeans.api</groupId>
       <artifactId>org-openide-text</artifactId>
-      <version>${netbeans.api.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.netbeans.api</groupId>
-      <artifactId>org-openide-dialogs</artifactId>
       <version>${netbeans.api.version}</version>
     </dependency>
     <!-- FileEncodingQuery & Co. -->
