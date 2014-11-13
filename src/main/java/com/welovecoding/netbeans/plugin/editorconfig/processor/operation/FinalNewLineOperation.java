@@ -72,7 +72,7 @@ public class FinalNewLineOperation {
         Exceptions.printStackTrace(ex);
       }
 
-      if (cookie != null && cookie.getOpenedPanes() != null) {
+      if (cookie != null && cookie.getDocument() != null) {
         LOG.log(Level.INFO, "File is opened in Editor! Appling on Editor.");
         // Change file in editor
         InsertNewLineInEditorTask action = new InsertNewLineInEditorTask(fileObject, cookie, lineEnding);
@@ -121,33 +121,27 @@ public class FinalNewLineOperation {
         try {
           LOG.log(Level.INFO, "Cookie: {0}", cookie);
           if (cookie != null) {
-            LOG.log(Level.INFO, "opening document");
-            final StyledDocument document = cookie.openDocument();
+            LOG.log(Level.INFO, "getting document");
+            final StyledDocument document = cookie.getDocument();
             LOG.log(Level.INFO, "Document: {0}", document);
-            if (cookie.getOpenedPanes() != null) {
-              NbDocument.runAtomicAsUser(document, () -> {
-                try {
-                  String end = document.getText(document.getEndPosition().getOffset() - 2, 1);
-                  LOG.log(Level.INFO, "End: {0}", end);
-                  if (!end.endsWith("\n") && !end.endsWith("\r")) {
-                    LOG.log(Level.INFO, "Adding final newline \"{0}\"", lineEnding);
-                    document.insertString(document.getEndPosition().getOffset() - 1, lineEnding, null);
-                    String result = document.getText(document.getEndPosition().getOffset() - 10, 10);
-                    System.out.println("Result: " + result);
-                    LOG.log(Level.INFO, "Saving Document");
-                    cookie.saveDocument();
-                  }
-                } catch (BadLocationException | IOException ex) {
-                  Exceptions.printStackTrace(ex);
+            NbDocument.runAtomicAsUser(document, () -> {
+              try {
+                String end = document.getText(document.getEndPosition().getOffset() - 2, 1);
+                LOG.log(Level.INFO, "End: {0}", end);
+                if (!end.endsWith("\n") && !end.endsWith("\r")) {
+                  LOG.log(Level.INFO, "Adding final newline \"{0}\"", lineEnding);
+                  document.insertString(document.getEndPosition().getOffset() - 1, lineEnding, null);
+                  String result = document.getText(document.getEndPosition().getOffset() - 10, 10);
+                  System.out.println("Result: " + result);
+                  LOG.log(Level.INFO, "Saving Document");
+                  cookie.saveDocument();
                 }
-              });
-            }
+              } catch (BadLocationException | IOException ex) {
+                Exceptions.printStackTrace(ex);
+              }
+            });
           }
         } catch (BadLocationException ex) {
-          Exceptions.printStackTrace(ex);
-        } catch (DataObjectNotFoundException ex) {
-          Exceptions.printStackTrace(ex);
-        } catch (IOException ex) {
           Exceptions.printStackTrace(ex);
         }
       }
