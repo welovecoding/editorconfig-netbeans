@@ -56,19 +56,14 @@ indent_size = 2
 - :white_check_mark: indent_style
 - :white_check_mark: insert_final_newline
 - :white_check_mark: tab_width
-- :construction_worker: trim_trailing_whitespace
+- :white_check_mark: trim_trailing_whitespace
 
 [EditorConfig]: http://editorconfig.org
 
-## Known issues
+## Info
 
 - A project must be closed and opened after the plugin is installed, to setup hooks for `.editorconfig` files
-- Rules are only applied when a file (which is matched by a rule) is saved
-- It takes ~10 seconds to apply the rules after a file has been saved
-
-## Tools
-
-- [Detenc (Character Encoding Detector)](http://www.marblesoftware.com/Marble_Software/Detenc.html)
+- Rules are applied when a file (which is matched by a rule) is saved
 
 ## Disclaimer
 
@@ -86,7 +81,7 @@ OR OTHER DEALINGS IN THE SOFTWARE.
 
 [![Michael Koppen on Stack Exchange][stack_exchange_flair_yser]][stack_exchange_link_yser]
 
-## Thanks to
+## Special Thanks
 
 - [Geertjan Wielenga](https://blogs.oracle.com/geertjan) for his sample project and article on [EditorConfig and NetBeans IDE](https://blogs.oracle.com/geertjan/entry/editorconfig_and_netbeans_ide)
 
