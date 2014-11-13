@@ -142,14 +142,13 @@
       <artifactId>org-openide-windows</artifactId>
       <version>${netbeans.api.version}</version>
     </dependency>
-    <!-- Test -->
-    <dependency>
+    <!-- Test in NetBeans Runtime Container Environment -->
+     <dependency>
       <groupId>org.netbeans.api</groupId>
       <artifactId>org-netbeans-libs-junit4</artifactId>
       <version>${netbeans.api.version}</version>
       <scope>test</scope>
     </dependency>
-    <!-- Dependencies to test in the NetBeans Runtime Container Environment -->
     <dependency>
       <groupId>org.netbeans.api</groupId>
       <artifactId>org-netbeans-modules-nbjunit</artifactId>
