@@ -61,37 +61,38 @@ public class TrimTrailingWhitespaceOperation {
         }
       }.call();
 
-      boolean wasWritten = writeFile(new WriteFileTask(fo) {
+      if (!content.equals(dataObject.getPrimaryFile().asText())) {
+        boolean wasWritten = writeFile(new WriteFileTask(fo) {
 
-        @Override
-        public void apply(OutputStreamWriter writer) {
-          try {
-            writer.write(content);
-            setFileAttribute(fo, FileAttributeName.ENCODING, ecCharset.name());
-          } catch (IOException ex) {
-            Exceptions.printStackTrace(ex);
+          @Override
+          public void apply(OutputStreamWriter writer) {
+            try {
+              writer.write(content);
+              setFileAttribute(fo, FileAttributeName.ENCODING, ecCharset.name());
+            } catch (IOException ex) {
+              Exceptions.printStackTrace(ex);
+            }
           }
-        }
 
-        private void setFileAttribute(FileObject fo, String key, String value) {
-          try {
-            fo.setAttribute(key, value);
-          } catch (IOException ex) {
-            LOG.log(Level.SEVERE, "Error setting file attribute \"{0}\" with value \"{1}\" for {2}. {3}",
-                    new Object[]{
-                      key,
-                      value,
-                      fo.getPath(),
-                      ex.getMessage()
-                    });
+          private void setFileAttribute(FileObject fo, String key, String value) {
+            try {
+              fo.setAttribute(key, value);
+            } catch (IOException ex) {
+              LOG.log(Level.SEVERE, "Error setting file attribute \"{0}\" with value \"{1}\" for {2}. {3}",
+                      new Object[]{
+                        key,
+                        value,
+                        fo.getPath(),
+                        ex.getMessage()
+                      });
+            }
           }
+
+        });
+        if (wasWritten) {
+          LOG.log(Level.INFO, "{0}Action: Successfully changed encoding to \"{1}\".", new Object[]{Tab.TWO, ecCharset.name()});
+          wasChanged = true;
         }
-
-      });
-
-      if (wasWritten) {
-        LOG.log(Level.INFO, "{0}Action: Successfully changed encoding to \"{1}\".", new Object[]{Tab.TWO, ecCharset.name()});
-        wasChanged = true;
       }
 
       return wasChanged;
