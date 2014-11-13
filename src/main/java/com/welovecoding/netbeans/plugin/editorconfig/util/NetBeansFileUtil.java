@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.stream.Collectors;
 import org.openide.filesystems.FileObject;
 import org.openide.util.Exceptions;
 
@@ -24,6 +25,11 @@ public class NetBeansFileUtil {
    */
   public static Charset getCharset(FileObject fo) {
     Charset charset = StandardCharsets.UTF_8;
+
+    // Try if the file is ASCII only
+    if (isASCII(fo)) {
+      charset = StandardCharsets.ISO_8859_1;
+    }
 
     // Read first four bytes and try to get the Byte Order Mark
     int tag = 0;
@@ -56,6 +62,26 @@ public class NetBeansFileUtil {
     }
 
     return charset;
+  }
+
+  private static boolean isASCII(FileObject fo) {
+    boolean isASCII = true;
+    String content;
+
+    try (BufferedReader reader = new BufferedReader(new InputStreamReader(fo.getInputStream()));) {
+      content = reader.lines().collect(Collectors.joining(System.lineSeparator()));
+      for (int i = 0; i < content.length(); i++) {
+        int c = content.charAt(i);
+        if (c > 0x7F) {
+          isASCII = false;
+          break;
+        }
+      }
+    } catch (IOException ex) {
+      Exceptions.printStackTrace(ex);
+    }
+
+    return isASCII;
   }
 
 }

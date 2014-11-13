@@ -8,7 +8,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import static junit.framework.Assert.assertEquals;
 import org.junit.Test;
-import static org.junit.Assert.*;
 import org.junit.Ignore;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
@@ -16,6 +15,18 @@ import org.openide.filesystems.FileUtil;
 public class NetBeansFileUtilTest {
 
   public NetBeansFileUtilTest() {
+  }
+
+  @Test
+  public void testISO_8859_1() throws URISyntaxException {
+    String path = "files/charsets/latin1.txt";
+    URL url = Thread.currentThread().getContextClassLoader().getResource(path);
+    Path testFilePath = Paths.get(url.toURI());
+    FileObject fo = FileUtil.toFileObject(testFilePath.toFile());
+
+    Charset charset = NetBeansFileUtil.getCharset(fo);
+
+    assertEquals(StandardCharsets.ISO_8859_1, charset);
   }
 
   @Test
