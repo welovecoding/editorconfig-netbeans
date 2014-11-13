@@ -6,7 +6,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import org.junit.Test;
 import org.netbeans.junit.NbTestCase;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
@@ -17,7 +16,6 @@ public class CharsetOperationTest extends NbTestCase {
     super("CharsetOperationTest");
   }
 
-  @Test
   public void testSetup() throws FileNotFoundException, IOException, URISyntaxException {
     String path = "files/charsets/utf-8-bom.txt";
     URL url = Thread.currentThread().getContextClassLoader().getResource(path);
