@@ -56,10 +56,7 @@ public class TrimTrailingWhitespaceOperation {
         @Override
         public String apply(BufferedReader reader) {
           return reader.lines().map((String t) -> {
-            while (t.endsWith(" ")) {
-              t = t.substring(0, t.length() - 1);
-            }
-            return t;
+            return t.replaceAll("\\s+$", "");
           }).collect(Collectors.joining(lineEnding));
         }
       }.call();
