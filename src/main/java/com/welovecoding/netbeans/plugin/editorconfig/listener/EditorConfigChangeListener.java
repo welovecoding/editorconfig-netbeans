@@ -18,13 +18,11 @@ public class EditorConfigChangeListener extends FileChangeAdapter {
   private static final Logger LOG = Logger.getLogger(EditorConfigChangeListener.class.getName());
   private final Project project;
   private final FileObject editorConfigFileObject;
-//  private final EditorConfigProcessor processor;
   private final FileChangeListener subsequentFilesListener;
 
   public EditorConfigChangeListener(Project project, FileObject editorConfigFileObject) {
     this.project = project;
     this.editorConfigFileObject = editorConfigFileObject;
-//    this.processor = EditorConfigProcessor.getInstance();
 
     LOG.log(Level.INFO, "Attached EditorConfigChangeListener to: {0}", editorConfigFileObject.getPath());
     this.subsequentFilesListener = new FileChangeListener(project, editorConfigFileObject);
@@ -55,7 +53,6 @@ public class EditorConfigChangeListener extends FileChangeAdapter {
   public void fileChanged(FileEvent event) {
     super.fileChanged(event);
     LOG.log(Level.INFO, "EDITORCONFIGCHANGELISTENER: EditorConfigs content changed: {0}", event.getFile().getPath());
-//    processor.applyEditorConfigRules(event.getFile());
 
     for (FileObject fo : Collections.list(editorConfigFileObject.getParent().getChildren(true))) {
       LOG.log(Level.INFO, "Updating subsequent file: {0}", fo.getPath());

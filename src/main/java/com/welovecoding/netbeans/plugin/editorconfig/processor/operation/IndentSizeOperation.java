@@ -1,6 +1,5 @@
 package com.welovecoding.netbeans.plugin.editorconfig.processor.operation;
 
-import com.welovecoding.netbeans.plugin.editorconfig.processor.Tab;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -47,17 +46,17 @@ public class IndentSizeOperation {
     public Boolean call() throws Exception {
       FileObject fileObject = dataObject.getPrimaryFile();
 
-      LOG.log(Level.INFO, "{0}Set indent size to \"{1}\".", new Object[]{Tab.TWO, indentSize});
+      LOG.log(Level.INFO, "Set indent size to \"{1}\".", new Object[]{indentSize});
 
       Preferences codeStyle = CodeStylePreferences.get(fileObject, fileObject.getMIMEType()).getPreferences();
       int currentValue = codeStyle.getInt(SimpleValueNames.INDENT_SHIFT_WIDTH, -1);
 
       if (currentValue != indentSize) {
         codeStyle.putInt(SimpleValueNames.INDENT_SHIFT_WIDTH, indentSize);
-        LOG.log(Level.INFO, "{0}Action: Change indent size to \"{1}\".", new Object[]{Tab.TWO, indentSize});
+        LOG.log(Level.INFO, "Action: Change indent size to \"{1}\".", new Object[]{indentSize});
         return true;
       } else {
-        LOG.log(Level.INFO, "{0}Action not needed: Value is already \"{1}\".", new Object[]{Tab.TWO, currentValue});
+        LOG.log(Level.INFO, "Action not needed: Value is already \"{1}\".", new Object[]{currentValue});
         return false;
       }
 

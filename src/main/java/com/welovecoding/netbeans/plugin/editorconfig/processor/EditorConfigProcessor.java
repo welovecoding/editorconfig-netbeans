@@ -4,8 +4,14 @@ import com.welovecoding.netbeans.plugin.editorconfig.mapper.EditorConfigProperty
 import com.welovecoding.netbeans.plugin.editorconfig.model.EditorConfigConstant;
 import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.IndentSizeOperation;
 import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.IndentStyleOperation;
-import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.MultipleFileWritesOperation;
-import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.TabWidthOperation;
+import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.XFinalNewLineOperation;
+import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.XLineEndingOperation;
+import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.XTabWidthOperation;
+import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.XTrimTrailingWhitespacesOperation;
+import com.welovecoding.netbeans.plugin.editorconfig.util.NetBeansFileUtil;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,11 +20,17 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.StyledDocument;
 import org.editorconfig.core.EditorConfig;
 import org.editorconfig.core.EditorConfigException;
 import org.netbeans.modules.editor.indent.spi.CodeStylePreferences;
+import org.openide.cookies.EditorCookie;
 import org.openide.filesystems.FileObject;
 import org.openide.loaders.DataObject;
+import org.openide.loaders.DataObjectNotFoundException;
+import org.openide.text.NbDocument;
+import org.openide.util.Exceptions;
 
 /**
  *
@@ -63,64 +75,134 @@ public class EditorConfigProcessor {
     HashMap<String, String> keyedRules = parseRulesForFile(dataObject);
 
     FileObject fileObject = dataObject.getPrimaryFile();
-    boolean changedStyle = false;
+
+    // Save file before appling any changes when opened in editor
+    EditorCookie cookie = getEditorCookie(fileObject);
+    boolean isOpenedInEditor = cookie != null && cookie.getDocument() != null;
+
+    if (isOpenedInEditor) {
+      LOG.log(Level.INFO, "File is opened in Editor! Saving all changes.");
+      StyledDocument document = cookie.getDocument();
+      NbDocument.runAtomicAsUser(document, () -> {
+        try {
+          cookie.saveDocument();
+        } catch (IOException ex) {
+          Exceptions.printStackTrace(ex);
+        }
+      });
+    }
+    StringBuilder content = new StringBuilder(fileObject.asText());
     boolean changed = false;
-    boolean fileOp = false;
+    boolean charsetChange = false;
+    boolean styleChanged = false;
 
     for (Map.Entry<String, String> rule : keyedRules.entrySet()) {
       final String key = rule.getKey();
       final String value = rule.getValue();
 
-      LOG.log(Level.INFO, "{0}Found rule \"{1}\" with value \"{2}\".", new Object[]{Tab.ONE, key, value});
+      LOG.log(Level.INFO, "Found rule \"{1}\" with value \"{2}\".", new Object[]{key, value});
 
       switch (key) {
         case EditorConfigConstant.CHARSET:
-          fileOp = true;
+          Charset currentCharset = NetBeansFileUtil.guessCharset(fileObject);
+          Charset requestedCharset = EditorConfigPropertyMapper.mapCharset(keyedRules.get(EditorConfigConstant.CHARSET));
+          if (!currentCharset.equals(requestedCharset)) {
+            charsetChange = true;
+          }
           break;
         case EditorConfigConstant.END_OF_LINE:
-          fileOp = true;
+          changed = XLineEndingOperation.doChangeLineEndings(
+                  content,
+                  EditorConfigPropertyMapper.normalizeLineEnding(keyedRules.get(EditorConfigConstant.END_OF_LINE))) || changed;
           break;
         case EditorConfigConstant.INDENT_SIZE:
-          changed = IndentSizeOperation.doIndentSize(dataObject, value);
-          changedStyle = changedStyle || changed;
+          //TODO this should happen in the file!!
+          styleChanged = IndentSizeOperation.doIndentSize(dataObject, value) || styleChanged;
           break;
         case EditorConfigConstant.INDENT_STYLE:
-          changed = IndentStyleOperation.doIndentStyle(dataObject, value);
-          changedStyle = changedStyle || changed;
+          //TODO this happens in the file!!
+          styleChanged = IndentStyleOperation.doIndentStyle(dataObject, key) || styleChanged;
           break;
         case EditorConfigConstant.INSERT_FINAL_NEWLINE:
-          fileOp = true;
+          changed = XFinalNewLineOperation.doFinalNewLine(
+                  content,
+                  value,
+                  EditorConfigPropertyMapper.normalizeLineEnding(keyedRules.get(EditorConfigConstant.END_OF_LINE))) || changed;
           break;
         case EditorConfigConstant.TAB_WIDTH:
-          changed = TabWidthOperation.doTabWidth(dataObject, value);
-          changedStyle = changedStyle || changed;
+          styleChanged = XTabWidthOperation.doTabWidth(dataObject, value) || styleChanged;
           break;
         case EditorConfigConstant.TRIM_TRAILING_WHITESPACE:
-          fileOp = true;
+          changed = XTrimTrailingWhitespacesOperation.doTrimTrailingWhitespaces(
+                  content,
+                  value,
+                  EditorConfigPropertyMapper.normalizeLineEnding(keyedRules.get(EditorConfigConstant.END_OF_LINE))) || changed;
           break;
         default:
           LOG.log(Level.WARNING, "Unknown property: {0}", key);
           break;
       }
     }
-    if (fileOp) {
-      MultipleFileWritesOperation.doMultipleFileWritesOperation(
-              dataObject,
-              EditorConfigPropertyMapper.normalizeLineEnding(keyedRules.get(EditorConfigConstant.END_OF_LINE)),
-              EditorConfigPropertyMapper.mapCharset(keyedRules.get(EditorConfigConstant.CHARSET)),
-              keyedRules.get(EditorConfigConstant.INSERT_FINAL_NEWLINE),
-              keyedRules.get(EditorConfigConstant.TRIM_TRAILING_WHITESPACE));
+
+    flushFile(
+            fileObject,
+            content,
+            changed,
+            charsetChange,
+            EditorConfigPropertyMapper.mapCharset(keyedRules.get(EditorConfigConstant.CHARSET)),
+            isOpenedInEditor,
+            cookie);
+
+    flushStyles(fileObject, styleChanged);
+
+  }
+
+  private void flushFile(FileObject fileObject, StringBuilder content, boolean changed, boolean charsetChange, Charset charset, boolean flushInEditor, EditorCookie cookie) throws BadLocationException {
+    if (changed || charsetChange) {
+      new WriteFileTask(fileObject, charset) {
+        @Override
+        public void apply(OutputStreamWriter writer) {
+          try {
+            writer.write(content.toString());
+          } catch (IOException ex) {
+            Exceptions.printStackTrace(ex);
+          }
+        }
+      }.run();
+      if (flushInEditor) {
+        LOG.log(Level.INFO, "Update changes in Editor window");
+        StyledDocument document = cookie.getDocument();
+        NbDocument.runAtomicAsUser(document, () -> {
+          try {
+            //TODO This is a workaround to update the content of an currently opened editor window
+            document.remove(0, document.getLength());
+            document.insertString(0, fileObject.asText(), null);
+            cookie.saveDocument();
+          } catch (BadLocationException | IOException ex) {
+            Exceptions.printStackTrace(ex);
+          }
+        });
+      }
     }
+  }
 
-    Preferences codeStyle = CodeStylePreferences.get(fileObject, fileObject.getMIMEType()).getPreferences();
-
-    if (changedStyle) {
+  private void flushStyles(FileObject fileObject, boolean styleChanged) {
+    if (styleChanged) {
       try {
+        Preferences codeStyle = CodeStylePreferences.get(fileObject, fileObject.getMIMEType()).getPreferences();
         codeStyle.flush();
       } catch (BackingStoreException ex) {
         LOG.log(Level.SEVERE, "Error applying code style: {0}", ex.getMessage());
       }
     }
+  }
 
+  private EditorCookie getEditorCookie(FileObject fileObject) {
+    try {
+      return (EditorCookie) DataObject.find(fileObject).getLookup().lookup(EditorCookie.class);
+    } catch (DataObjectNotFoundException ex) {
+      Exceptions.printStackTrace(ex);
+      return null;
+    }
   }
 }

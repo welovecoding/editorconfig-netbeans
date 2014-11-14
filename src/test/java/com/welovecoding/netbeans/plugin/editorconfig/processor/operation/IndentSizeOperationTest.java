@@ -9,7 +9,6 @@ import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.StyledDocument;
-import org.junit.Test;
 import org.netbeans.junit.NbTestCase;
 import org.netbeans.modules.editor.indent.spi.CodeStylePreferences;
 import org.openide.cookies.EditorCookie;
@@ -39,7 +38,6 @@ public class IndentSizeOperationTest extends NbTestCase {
   /**
    * Test of apply method, of class IndentSizeOperation.
    */
-  @Test
   public void testApply() throws Exception {
     System.out.println("########  " + getName() + "  #######");
 

@@ -1,0 +1,60 @@
+package com.welovecoding.netbeans.plugin.editorconfig.processor.operation;
+
+import java.io.BufferedReader;
+import java.io.StringReader;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
+
+/**
+ *
+ * @author Michael Koppen
+ */
+public class XLineEndingOperation {
+
+  private static final Logger LOG = Logger.getLogger(XLineEndingOperation.class.getName());
+
+  public static boolean doChangeLineEndings(StringBuilder content, final String lineEnding) throws Exception {
+
+    return new XLineEndingOperation().apply(content, lineEnding);
+  }
+
+  public boolean apply(StringBuilder content, final String lineEnding) {
+    boolean changed;
+    LOG.log(Level.INFO, "Executing ApplyTestTask");
+
+    LOG.log(Level.INFO, "LINE_ENDING = true");
+    String tempContent = content.toString();
+    LOG.log(Level.INFO, "OLDCONTENT: {0}.", tempContent);
+    content = replaceLineEndings(content, lineEnding);
+
+    if (tempContent.equals(content.toString())) {
+      LOG.log(Level.INFO, "LINE_ENDING : No changes");
+      changed = false;
+    } else {
+      LOG.log(Level.INFO, "LINE_ENDING : changed line endings");
+      changed = true;
+    }
+    LOG.log(Level.INFO, "NEWCONTENT: {0}.", content);
+
+    return changed;
+  }
+
+  private StringBuilder replaceLineEndings(StringBuilder content, String lineEnding) {
+    BufferedReader reader = new BufferedReader(new StringReader(content.toString()));
+
+    /**
+     * Note: As a side effect this will strip a final newline!
+     */
+    String tempContent = reader.lines().
+            collect(Collectors.joining(lineEnding));
+
+    /**
+     * appending lineending only if that was the case in the old content.
+     */
+    if (content.toString().endsWith("\n") || content.toString().endsWith("\r")) {
+      content = new StringBuilder(tempContent).append(lineEnding);
+    }
+    return content;
+  }
+}

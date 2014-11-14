@@ -1,7 +1,6 @@
 package com.welovecoding.netbeans.plugin.editorconfig.processor.operation;
 
 import com.welovecoding.netbeans.plugin.editorconfig.model.EditorConfigConstant;
-import com.welovecoding.netbeans.plugin.editorconfig.processor.Tab;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -47,7 +46,7 @@ public class IndentStyleOperation {
     @Override
     public Boolean call() throws Exception {
       FileObject fileObject = dataObject.getPrimaryFile();
-      LOG.log(Level.INFO, "{0}Set indent style to \"{1}\".", new Object[]{Tab.TWO, indentStyle});
+      LOG.log(Level.INFO, "Set indent style to \"{1}\".", new Object[]{indentStyle});
       boolean expandTabs = false;
       if (indentStyle.equals(EditorConfigConstant.INDENT_STYLE_SPACE)) {
         expandTabs = true;
@@ -60,10 +59,10 @@ public class IndentStyleOperation {
 
       if (currentValue != expandTabs) {
         codeStyle.putBoolean(SimpleValueNames.EXPAND_TABS, expandTabs);
-        LOG.log(Level.INFO, "{0}Action: Changed indent style to space? {1}", new Object[]{Tab.TWO, expandTabs});
+        LOG.log(Level.INFO, "Action: Changed indent style to space? {1}", new Object[]{expandTabs});
         return true;
       } else {
-        LOG.log(Level.INFO, "{0}Action not needed: Indent style is already set to spaces \"{1}\".", new Object[]{Tab.TWO, currentValue});
+        LOG.log(Level.INFO, "Action not needed: Indent style is already set to spaces \"{1}\".", new Object[]{currentValue});
         return false;
       }
     }
