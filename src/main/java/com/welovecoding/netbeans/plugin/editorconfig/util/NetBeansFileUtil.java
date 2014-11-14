@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.openide.filesystems.FileObject;
 import org.openide.util.Exceptions;
 
@@ -82,6 +83,12 @@ public class NetBeansFileUtil {
     }
 
     return isASCII;
+  }
+
+  public static String trimTrailingWhitespace(Stream<String> lines, String lineEnding) {
+    return lines.map((String content) -> {
+      return content.replaceAll("\\s+$", "");
+    }).collect(Collectors.joining(lineEnding));
   }
 
 }

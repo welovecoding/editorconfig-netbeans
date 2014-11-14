@@ -3,6 +3,7 @@ package com.welovecoding.netbeans.plugin.editorconfig.processor.operation;
 import com.welovecoding.netbeans.plugin.editorconfig.processor.ReadFileTask;
 import com.welovecoding.netbeans.plugin.editorconfig.processor.Tab;
 import com.welovecoding.netbeans.plugin.editorconfig.processor.WriteFileTask;
+import com.welovecoding.netbeans.plugin.editorconfig.util.NetBeansFileUtil;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -51,9 +52,7 @@ public class TrimTrailingWhitespaceOperation {
 
         @Override
         public String apply(BufferedReader reader) {
-          return reader.lines().map((String t) -> {
-            return t.replaceAll("\\s+$", "");
-          }).collect(Collectors.joining(lineEnding));
+          return NetBeansFileUtil.trimTrailingWhitespace(reader.lines(), lineEnding);
         }
       }.call();
 

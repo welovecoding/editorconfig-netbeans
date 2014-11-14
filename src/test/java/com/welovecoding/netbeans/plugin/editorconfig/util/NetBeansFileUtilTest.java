@@ -6,6 +6,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.stream.Stream;
 import static junit.framework.Assert.assertEquals;
 import org.junit.Test;
 import org.junit.Ignore;
@@ -77,6 +78,54 @@ public class NetBeansFileUtilTest {
     Charset charset = NetBeansFileUtil.getCharset(fo);
 
     assertEquals(StandardCharsets.UTF_16LE, charset);
+  }
+
+  @Test
+  public void testTrimTrailingWhitespace() {
+    Stream<String> stream = Stream.of("Hello ", "World");
+    String actual = NetBeansFileUtil.trimTrailingWhitespace(stream, System.lineSeparator());
+
+    assertEquals("Hello" + System.lineSeparator() + "World", actual);
+  }
+
+  @Test
+  public void testTrimTrailingTab() {
+    Stream<String> stream = Stream.of("Hello\t", "World");
+    String actual = NetBeansFileUtil.trimTrailingWhitespace(stream, System.lineSeparator());
+
+    assertEquals("Hello" + System.lineSeparator() + "World", actual);
+  }
+
+  @Test
+  public void testTrimTrailingTabs() {
+    Stream<String> stream = Stream.of("Hello\t\t", "World");
+    String actual = NetBeansFileUtil.trimTrailingWhitespace(stream, System.lineSeparator());
+
+    assertEquals("Hello" + System.lineSeparator() + "World", actual);
+  }
+
+  @Test
+  public void testTrimTrailingLineEndingCR() {
+    Stream<String> stream = Stream.of("Hello\r", "World");
+    String actual = NetBeansFileUtil.trimTrailingWhitespace(stream, "\r");
+
+    assertEquals("Hello\rWorld", actual);
+  }
+
+  @Test
+  public void testTrimTrailingLineEndingLF() {
+    Stream<String> stream = Stream.of("Hello\n", "World");
+    String actual = NetBeansFileUtil.trimTrailingWhitespace(stream, "\n");
+
+    assertEquals("Hello\nWorld", actual);
+  }
+
+  @Test
+  public void testTrimTrailingLineEndingCRLF() {
+    Stream<String> stream = Stream.of("Hello\r\n", "World");
+    String actual = NetBeansFileUtil.trimTrailingWhitespace(stream, "\r\n");
+
+    assertEquals("Hello\r\nWorld", actual);
   }
 
 }
