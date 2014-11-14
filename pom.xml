@@ -45,6 +45,12 @@
       <artifactId>org-netbeans-modules-editor-lib2</artifactId>
       <version>${netbeans.api.version}</version>
     </dependency>
+    <!-- SimpleValueNames & Co -->
+    <dependency>
+      <groupId>org.netbeans.api</groupId>
+      <artifactId>org-netbeans-modules-editor-settings</artifactId>
+      <version>${netbeans.api.version}</version>
+    </dependency>
     <dependency>
       <groupId>org.netbeans.api</groupId>
       <artifactId>org-netbeans-modules-editor-mimelookup</artifactId>
