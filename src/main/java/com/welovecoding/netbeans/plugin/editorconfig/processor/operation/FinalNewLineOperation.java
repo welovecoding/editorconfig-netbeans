@@ -132,7 +132,7 @@ public class FinalNewLineOperation {
                   LOG.log(Level.INFO, "Adding final newline \"{0}\"", lineEnding);
                   document.insertString(document.getEndPosition().getOffset() - 1, lineEnding, null);
                   String result = document.getText(document.getEndPosition().getOffset() - 10, 10);
-                  System.out.println("Result: " + result);
+                  LOG.log(Level.INFO, "Result: {0}", result);
                   LOG.log(Level.INFO, "Saving Document");
                   cookie.saveDocument();
                 }
