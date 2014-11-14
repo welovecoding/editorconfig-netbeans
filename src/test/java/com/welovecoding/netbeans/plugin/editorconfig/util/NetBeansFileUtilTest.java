@@ -1,5 +1,6 @@
 package com.welovecoding.netbeans.plugin.editorconfig.util;
 
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
@@ -9,7 +10,6 @@ import java.nio.file.Paths;
 import java.util.stream.Stream;
 import static junit.framework.Assert.assertEquals;
 import org.junit.Test;
-import org.junit.Ignore;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
 
@@ -25,7 +25,7 @@ public class NetBeansFileUtilTest {
     Path testFilePath = Paths.get(url.toURI());
     FileObject fo = FileUtil.toFileObject(testFilePath.toFile());
 
-    Charset charset = NetBeansFileUtil.getCharset(fo);
+    Charset charset = NetBeansFileUtil.guessCharset(fo);
 
     assertEquals(StandardCharsets.ISO_8859_1, charset);
   }
@@ -37,7 +37,7 @@ public class NetBeansFileUtilTest {
     Path testFilePath = Paths.get(url.toURI());
     FileObject fo = FileUtil.toFileObject(testFilePath.toFile());
 
-    Charset charset = NetBeansFileUtil.getCharset(fo);
+    Charset charset = NetBeansFileUtil.guessCharset(fo);
 
     assertEquals(StandardCharsets.UTF_8, charset);
   }
@@ -49,33 +49,31 @@ public class NetBeansFileUtilTest {
     Path testFilePath = Paths.get(url.toURI());
     FileObject fo = FileUtil.toFileObject(testFilePath.toFile());
 
-    Charset charset = NetBeansFileUtil.getCharset(fo);
+    Charset charset = NetBeansFileUtil.guessCharset(fo);
 
     assertEquals(StandardCharsets.UTF_8, charset);
   }
 
   @Test
-  @Ignore
   public void testUTF_16BE() throws URISyntaxException {
     String path = "files/charsets/utf-16-be.txt";
     URL url = Thread.currentThread().getContextClassLoader().getResource(path);
     Path testFilePath = Paths.get(url.toURI());
     FileObject fo = FileUtil.toFileObject(testFilePath.toFile());
 
-    Charset charset = NetBeansFileUtil.getCharset(fo);
+    Charset charset = NetBeansFileUtil.guessCharset(fo);
 
     assertEquals(StandardCharsets.UTF_16BE, charset);
   }
 
   @Test
-  @Ignore
-  public void testUTF_16LE() throws URISyntaxException {
+  public void testUTF_16LE() throws URISyntaxException, IOException {
     String path = "files/charsets/utf-16-le.txt";
     URL url = Thread.currentThread().getContextClassLoader().getResource(path);
     Path testFilePath = Paths.get(url.toURI());
     FileObject fo = FileUtil.toFileObject(testFilePath.toFile());
 
-    Charset charset = NetBeansFileUtil.getCharset(fo);
+    Charset charset = NetBeansFileUtil.guessCharset(fo);
 
     assertEquals(StandardCharsets.UTF_16LE, charset);
   }

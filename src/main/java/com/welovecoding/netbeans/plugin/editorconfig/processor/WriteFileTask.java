@@ -34,7 +34,7 @@ public abstract class WriteFileTask implements Runnable {
 
   public WriteFileTask(FileObject fileObject) {
     this.fileObject = fileObject;
-    this.charset = NetBeansFileUtil.getCharset(fileObject);
+    this.charset = NetBeansFileUtil.guessCharset(fileObject);
   }
 
   @Override

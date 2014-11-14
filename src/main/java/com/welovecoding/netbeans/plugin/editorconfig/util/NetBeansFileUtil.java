@@ -1,5 +1,6 @@
 package com.welovecoding.netbeans.plugin.editorconfig.util;
 
+import com.glaforge.i18n.io.CharsetToolkit;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -10,6 +11,7 @@ import java.util.stream.Stream;
 import org.netbeans.api.queries.FileEncodingQuery;
 import org.openide.filesystems.FileObject;
 import org.openide.util.Exceptions;
+import org.openide.util.Utilities;
 
 /**
  * @see
@@ -25,41 +27,15 @@ public class NetBeansFileUtil {
    * @param fo
    * @return
    */
-  public static Charset getCharset(FileObject fo) {
+  public static Charset guessCharset(FileObject fo) {
     Charset charset = StandardCharsets.UTF_8;
 
-    // Try if the file is ASCII only
-    if (isASCII(fo)) {
-      charset = StandardCharsets.ISO_8859_1;
-    }
-
-    // Read first four bytes and try to get the Byte Order Mark
-    int tag = 0;
-    try (BufferedReader reader = new BufferedReader(new InputStreamReader(fo.getInputStream()));) {
-      for (int i = 0; i < 4; i++) {
-        int b = reader.read();
-
-        if (b < 0) {
-          break;
-        }
-
-        tag = (tag << 8) | b;
+    try {
+      charset = CharsetToolkit.guessEncoding(Utilities.toFile(fo.toURI()), 4096);
+      if (charset.name().equals("US-ASCII")) {
+        charset = StandardCharsets.ISO_8859_1;
       }
-
-      if ((tag & 0xfeff0000) == 0xfeff0000) {
-        charset = StandardCharsets.UTF_16BE;
-      }
-
-      if ((tag & 0xfffe0000) == 0xfffe0000) {
-        charset = StandardCharsets.UTF_16LE;
-      }
-
-      if ((tag & 0xefbbbf00) == 0xefbbbf00) {
-        // UTF-8-BOM
-        charset = StandardCharsets.UTF_8;
-      }
-
-    } catch (IOException ex) {
+    } catch (IllegalArgumentException | IOException ex) {
       Exceptions.printStackTrace(ex);
     }
 
