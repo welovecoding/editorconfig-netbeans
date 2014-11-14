@@ -25,7 +25,7 @@ public class NetBeansFileUtilTest {
     Path testFilePath = Paths.get(url.toURI());
     FileObject fo = FileUtil.toFileObject(testFilePath.toFile());
 
-    Charset charset = NetBeansFileUtil.getCharset(fo);
+    Charset charset = NetBeansFileUtil.guessCharset(fo);
 
     assertEquals(StandardCharsets.ISO_8859_1, charset);
   }
@@ -37,7 +37,7 @@ public class NetBeansFileUtilTest {
     Path testFilePath = Paths.get(url.toURI());
     FileObject fo = FileUtil.toFileObject(testFilePath.toFile());
 
-    Charset charset = NetBeansFileUtil.getCharset(fo);
+    Charset charset = NetBeansFileUtil.guessCharset(fo);
 
     assertEquals(StandardCharsets.UTF_8, charset);
   }
@@ -49,7 +49,7 @@ public class NetBeansFileUtilTest {
     Path testFilePath = Paths.get(url.toURI());
     FileObject fo = FileUtil.toFileObject(testFilePath.toFile());
 
-    Charset charset = NetBeansFileUtil.getCharset(fo);
+    Charset charset = NetBeansFileUtil.guessCharset(fo);
 
     assertEquals(StandardCharsets.UTF_8, charset);
   }
@@ -62,7 +62,7 @@ public class NetBeansFileUtilTest {
     Path testFilePath = Paths.get(url.toURI());
     FileObject fo = FileUtil.toFileObject(testFilePath.toFile());
 
-    Charset charset = NetBeansFileUtil.getCharset(fo);
+    Charset charset = NetBeansFileUtil.guessCharset(fo);
 
     assertEquals(StandardCharsets.UTF_16BE, charset);
   }
@@ -75,7 +75,7 @@ public class NetBeansFileUtilTest {
     Path testFilePath = Paths.get(url.toURI());
     FileObject fo = FileUtil.toFileObject(testFilePath.toFile());
 
-    Charset charset = NetBeansFileUtil.getCharset(fo);
+    Charset charset = NetBeansFileUtil.guessCharset(fo);
 
     assertEquals(StandardCharsets.UTF_16LE, charset);
   }

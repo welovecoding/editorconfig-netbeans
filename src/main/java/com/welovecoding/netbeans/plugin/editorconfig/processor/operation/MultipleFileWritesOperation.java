@@ -285,7 +285,7 @@ public class MultipleFileWritesOperation {
 
   private void charset(FileObject fileObject, String content, Charset charset) {
     LOG.log(Level.INFO, "CHARSET : Saving content with charset");
-//    Charset currentCharset = getCharset(fileObject);
+//    Charset currentCharset = guessCharset(fileObject);
 //    if (!currentCharset.name().equals(charset.name())) {
     new WriteFileTask(fileObject, charset) {
       @Override

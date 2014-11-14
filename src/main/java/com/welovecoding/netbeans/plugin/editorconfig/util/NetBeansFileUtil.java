@@ -25,7 +25,7 @@ public class NetBeansFileUtil {
    * @param fo
    * @return
    */
-  public static Charset getCharset(FileObject fo) {
+  public static Charset guessCharset(FileObject fo) {
     Charset charset = StandardCharsets.UTF_8;
 
     // Try if the file is ASCII only
