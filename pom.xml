@@ -131,6 +131,13 @@
       <scope>test</scope>
       <type>jar</type>
     </dependency>
+    <dependency>
+      <groupId>org.codehaus.guessencoding</groupId>
+      <artifactId>guessencoding</artifactId>
+      <version>1.4</version>
+      <scope>test</scope>
+      <type>jar</type>
+    </dependency>
   </dependencies>
     
   <build>
