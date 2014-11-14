@@ -24,6 +24,7 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.StyledDocument;
 import org.editorconfig.core.EditorConfig;
 import org.editorconfig.core.EditorConfigException;
+import org.netbeans.editor.BaseDocument;
 import org.netbeans.modules.editor.indent.spi.CodeStylePreferences;
 import org.openide.cookies.EditorCookie;
 import org.openide.filesystems.FileObject;
@@ -77,7 +78,7 @@ public class EditorConfigProcessor {
     FileObject fileObject = dataObject.getPrimaryFile();
 
     // Save file before appling any changes when opened in editor
-    EditorCookie cookie = getEditorCookie(fileObject);
+    EditorCookie cookie = getEditorCookie(dataObject);
     boolean isOpenedInEditor = cookie != null && cookie.getDocument() != null;
 
     if (isOpenedInEditor) {
@@ -92,15 +93,15 @@ public class EditorConfigProcessor {
       });
     }
     StringBuilder content = new StringBuilder(fileObject.asText());
-    boolean changed = false;
+    boolean fileChange = false;
     boolean charsetChange = false;
-    boolean styleChanged = false;
+    boolean styleChange = false;
 
     for (Map.Entry<String, String> rule : keyedRules.entrySet()) {
       final String key = rule.getKey();
       final String value = rule.getValue();
 
-      LOG.log(Level.INFO, "Found rule \"{1}\" with value \"{2}\".", new Object[]{key, value});
+      LOG.log(Level.INFO, "Found rule \"{0}\" with value \"{1}\".", new Object[]{key, value});
 
       switch (key) {
         case EditorConfigConstant.CHARSET:
@@ -111,32 +112,43 @@ public class EditorConfigProcessor {
           }
           break;
         case EditorConfigConstant.END_OF_LINE:
-          changed = XLineEndingOperation.doChangeLineEndings(
+          fileChange = XLineEndingOperation.doChangeLineEndings(
                   content,
-                  EditorConfigPropertyMapper.normalizeLineEnding(keyedRules.get(EditorConfigConstant.END_OF_LINE))) || changed;
+                  EditorConfigPropertyMapper.normalizeLineEnding(keyedRules.get(EditorConfigConstant.END_OF_LINE))) || fileChange;
+
+          // changing lineendings in document aswell
+          StyledDocument document = NbDocument.getDocument(dataObject);
+          if (document != null) {
+            if (!document.getProperty(BaseDocument.READ_LINE_SEPARATOR_PROP).equals(EditorConfigPropertyMapper.normalizeLineEnding(keyedRules.get(EditorConfigConstant.END_OF_LINE)))) {
+              document.putProperty(BaseDocument.READ_LINE_SEPARATOR_PROP, EditorConfigPropertyMapper.normalizeLineEnding(keyedRules.get(EditorConfigConstant.END_OF_LINE)));
+              LOG.log(Level.INFO, "Action: Changed line endings in Document");
+            } else {
+              LOG.log(Level.INFO, "Action not needed: Line endings are already correct");
+            }
+          }
           break;
         case EditorConfigConstant.INDENT_SIZE:
           //TODO this should happen in the file!!
-          styleChanged = IndentSizeOperation.doIndentSize(dataObject, value) || styleChanged;
+          styleChange = IndentSizeOperation.doIndentSize(dataObject, value) || styleChange;
           break;
         case EditorConfigConstant.INDENT_STYLE:
           //TODO this happens in the file!!
-          styleChanged = IndentStyleOperation.doIndentStyle(dataObject, key) || styleChanged;
+          styleChange = IndentStyleOperation.doIndentStyle(dataObject, key) || styleChange;
           break;
         case EditorConfigConstant.INSERT_FINAL_NEWLINE:
-          changed = XFinalNewLineOperation.doFinalNewLine(
+          fileChange = XFinalNewLineOperation.doFinalNewLine(
                   content,
                   value,
-                  EditorConfigPropertyMapper.normalizeLineEnding(keyedRules.get(EditorConfigConstant.END_OF_LINE))) || changed;
+                  EditorConfigPropertyMapper.normalizeLineEnding(keyedRules.get(EditorConfigConstant.END_OF_LINE))) || fileChange;
           break;
         case EditorConfigConstant.TAB_WIDTH:
-          styleChanged = XTabWidthOperation.doTabWidth(dataObject, value) || styleChanged;
+          styleChange = XTabWidthOperation.doTabWidth(dataObject, value) || styleChange;
           break;
         case EditorConfigConstant.TRIM_TRAILING_WHITESPACE:
-          changed = XTrimTrailingWhitespacesOperation.doTrimTrailingWhitespaces(
+          fileChange = XTrimTrailingWhitespacesOperation.doTrimTrailingWhitespaces(
                   content,
                   value,
-                  EditorConfigPropertyMapper.normalizeLineEnding(keyedRules.get(EditorConfigConstant.END_OF_LINE))) || changed;
+                  EditorConfigPropertyMapper.normalizeLineEnding(keyedRules.get(EditorConfigConstant.END_OF_LINE))) || fileChange;
           break;
         default:
           LOG.log(Level.WARNING, "Unknown property: {0}", key);
@@ -147,13 +159,13 @@ public class EditorConfigProcessor {
     flushFile(
             fileObject,
             content,
-            changed,
+            fileChange,
             charsetChange,
             EditorConfigPropertyMapper.mapCharset(keyedRules.get(EditorConfigConstant.CHARSET)),
             isOpenedInEditor,
             cookie);
 
-    flushStyles(fileObject, styleChanged);
+    flushStyles(fileObject, styleChange);
 
   }
 
@@ -204,5 +216,9 @@ public class EditorConfigProcessor {
       Exceptions.printStackTrace(ex);
       return null;
     }
+  }
+
+  private EditorCookie getEditorCookie(DataObject dataObject) {
+    return dataObject.getLookup().lookup(EditorCookie.class);
   }
 }

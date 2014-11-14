@@ -46,17 +46,17 @@ public class IndentSizeOperation {
     public Boolean call() throws Exception {
       FileObject fileObject = dataObject.getPrimaryFile();
 
-      LOG.log(Level.INFO, "Set indent size to \"{1}\".", new Object[]{indentSize});
+      LOG.log(Level.INFO, "Set indent size to \"{0}\".", new Object[]{indentSize});
 
       Preferences codeStyle = CodeStylePreferences.get(fileObject, fileObject.getMIMEType()).getPreferences();
       int currentValue = codeStyle.getInt(SimpleValueNames.INDENT_SHIFT_WIDTH, -1);
 
       if (currentValue != indentSize) {
         codeStyle.putInt(SimpleValueNames.INDENT_SHIFT_WIDTH, indentSize);
-        LOG.log(Level.INFO, "Action: Change indent size to \"{1}\".", new Object[]{indentSize});
+        LOG.log(Level.INFO, "Action: Change indent size to \"{0}\".", new Object[]{indentSize});
         return true;
       } else {
-        LOG.log(Level.INFO, "Action not needed: Value is already \"{1}\".", new Object[]{currentValue});
+        LOG.log(Level.INFO, "Action not needed: Value is already \"{0}\".", new Object[]{currentValue});
         return false;
       }
 

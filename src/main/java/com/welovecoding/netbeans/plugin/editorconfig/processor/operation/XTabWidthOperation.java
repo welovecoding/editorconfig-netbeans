@@ -29,17 +29,17 @@ public class XTabWidthOperation {
 
   public boolean apply(final DataObject dataObject, final int tabWidth) {
     FileObject fileObject = dataObject.getPrimaryFile();
-    LOG.log(Level.INFO, "Set tab width to \"{1}\".", new Object[]{tabWidth});
+    LOG.log(Level.INFO, "Set tab width to \"{0}\".", new Object[]{tabWidth});
 
     Preferences codeStyle = CodeStylePreferences.get(fileObject, fileObject.getMIMEType()).getPreferences();
     int actualTabWidth = codeStyle.getInt(SimpleValueNames.TAB_SIZE, -1);
 
     if (actualTabWidth != tabWidth) {
       codeStyle.putInt(SimpleValueNames.TAB_SIZE, tabWidth);
-      LOG.log(Level.INFO, "Action: Changed tab width to \"{1}\".", new Object[]{tabWidth});
+      LOG.log(Level.INFO, "Action: Changed tab width to \"{0}\".", new Object[]{tabWidth});
       return true;
     } else {
-      LOG.log(Level.INFO, "Action not needed: Value is already \"{1}\".", new Object[]{tabWidth});
+      LOG.log(Level.INFO, "Action not needed: Value is already \"{0}\".", new Object[]{tabWidth});
       return false;
     }
   }

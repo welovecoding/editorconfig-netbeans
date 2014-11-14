@@ -53,7 +53,11 @@ public class XLineEndingOperation {
      * appending lineending only if that was the case in the old content.
      */
     if (content.toString().endsWith("\n") || content.toString().endsWith("\r")) {
-      content = new StringBuilder(tempContent).append(lineEnding);
+      content.delete(0, content.length());
+      content.append(tempContent).append(lineEnding);
+    } else {
+      content.delete(0, content.length());
+      content.append(tempContent);
     }
     return content;
   }

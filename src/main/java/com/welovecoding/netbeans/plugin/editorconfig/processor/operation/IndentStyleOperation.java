@@ -46,7 +46,7 @@ public class IndentStyleOperation {
     @Override
     public Boolean call() throws Exception {
       FileObject fileObject = dataObject.getPrimaryFile();
-      LOG.log(Level.INFO, "Set indent style to \"{1}\".", new Object[]{indentStyle});
+      LOG.log(Level.INFO, "Set indent style to \"{0}\".", new Object[]{indentStyle});
       boolean expandTabs = false;
       if (indentStyle.equals(EditorConfigConstant.INDENT_STYLE_SPACE)) {
         expandTabs = true;
@@ -59,10 +59,10 @@ public class IndentStyleOperation {
 
       if (currentValue != expandTabs) {
         codeStyle.putBoolean(SimpleValueNames.EXPAND_TABS, expandTabs);
-        LOG.log(Level.INFO, "Action: Changed indent style to space? {1}", new Object[]{expandTabs});
+        LOG.log(Level.INFO, "Action: Changed indent style to space? {0}", new Object[]{expandTabs});
         return true;
       } else {
-        LOG.log(Level.INFO, "Action not needed: Indent style is already set to spaces \"{1}\".", new Object[]{currentValue});
+        LOG.log(Level.INFO, "Action not needed: Indent style is already set to spaces \"{0}\".", new Object[]{currentValue});
         return false;
       }
     }
