@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.StringReader;
 import java.nio.charset.Charset;
-import java.util.Arrays;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -51,7 +50,7 @@ public class MultipleFileWritesOperation {
     private boolean trimwhitespace;
 
     public ApplyMultipleFileWritesTask(final DataObject dataObject, final String lineEnding, final Charset charset, final boolean finalnewline, final boolean trimwhitespace) {
-      LOG.log(Level.INFO, "Created new ApplyCharsetANDFinalNewLineANDTrimTrailingWhitespaceTask for File {0}", dataObject.getPrimaryFile().getPath());
+      LOG.log(Level.INFO, "Created new ApplyMultipleFileWritesTask for File {0}", dataObject.getPrimaryFile().getPath());
       this.dataObject = dataObject;
       this.lineEnding = lineEnding;
       this.charset = charset;
@@ -61,7 +60,7 @@ public class MultipleFileWritesOperation {
 
     @Override
     public Boolean call() throws Exception {
-      LOG.log(Level.INFO, "Executing ApplyCharsetANDFinalNewLineANDTrimTrailingWhitespaceTask");
+      LOG.log(Level.INFO, "Executing ApplyMultipleFileWritesTask");
 
       FileObject fileObject = dataObject.getPrimaryFile();
       String oldContent = getFileContent(fileObject);
@@ -83,10 +82,34 @@ public class MultipleFileWritesOperation {
       } else {
         String content = oldContent;
         LOG.log(Level.INFO, "File is NOT opened in Editor! Appling changes on filesystem.");
-        // Change file on filesystem
+        if (trimwhitespace) {
+          LOG.log(Level.INFO, "TRIM_TRAILING_WHITESPACE = true");
+          String tempContent = content;
+          LOG.log(Level.INFO, "OLDCONTENT: {0}.", tempContent);
+          content = trimWhitespaces(content, lineEnding);
+
+          /**
+           * appending lineending only if that was the case in the old content.
+           */
+          if (tempContent.endsWith("\n") || tempContent.endsWith("\r")) {
+            content = content + lineEnding;
+          }
+          /**
+           * If the content has not changed we can set boolean trimwhitespace to
+           * false since no changes were made. Thus the file may not be saved.
+           */
+          if (tempContent.equals(content)) {
+            LOG.log(Level.INFO, "TRIM_TRAILING_WHITESPACE : No changes");
+            trimwhitespace = false;
+          } else {
+            LOG.log(Level.INFO, "TRIM_TRAILING_WHITESPACE : trimmed trailing whitespaces");
+          }
+          LOG.log(Level.INFO, "NEWCONTENT: {0}.", content);
+        }
         if (finalnewline) {
           LOG.log(Level.INFO, "INSERT_FINAL_NEWLINE = true");
           String tempContent = content;
+          LOG.log(Level.INFO, "OLDCONTENT: {0}.", tempContent);
           content = finalNewline(content, lineEnding);
           /**
            * If the content has not changed we can set boolean finalnewline to
@@ -98,22 +121,9 @@ public class MultipleFileWritesOperation {
           } else {
             LOG.log(Level.INFO, "INSERT_FINAL_NEWLINE : appended final new line");
           }
+          LOG.log(Level.INFO, "NEWCONTENT: {0}.", content);
         }
-        if (trimwhitespace) {
-          LOG.log(Level.INFO, "TRIM_TRAILING_WHITESPACE = true");
-          String tempContent = content;
-          content = trimWhitespaces(content, lineEnding);
-          /**
-           * If the content has not changed we can set boolean trimwhitespace to
-           * false since no changes were made. Thus the file may not be saved.
-           */
-          if (tempContent.equals(content)) {
-            LOG.log(Level.INFO, "TRIM_TRAILING_WHITESPACE : No changes");
-            trimwhitespace = false;
-          } else {
-            LOG.log(Level.INFO, "TRIM_TRAILING_WHITESPACE : trimmed trailing whitespaces");
-          }
-        }
+
         if (!finalnewline && !trimwhitespace) {
           charsetIfChanged(fileObject, content, charset);
         } else {
@@ -227,7 +237,7 @@ public class MultipleFileWritesOperation {
   }
 
   private String finalNewline(String content, String lineEnding) {
-    if (!content.endsWith("\n") && content.endsWith("\r")) {
+    if (!content.endsWith("\n") && !content.endsWith("\r")) {
       LOG.log(Level.INFO, "INSERT_FINAL_NEWLINE : Adding final newline");
       return content + lineEnding;
     } else {
@@ -237,7 +247,12 @@ public class MultipleFileWritesOperation {
   }
 
   private String trimWhitespaces(String content, String lineEnding) {
-    return Arrays.stream(content.split("\n")).
+    BufferedReader reader = new BufferedReader(new StringReader(content));
+
+    /**
+     * Note: As a side effect this will strip a final newline!
+     */
+    return reader.lines().
             map((String t) -> {
               return t.replaceAll("\\s+$", "");
             }).

@@ -50,7 +50,6 @@ public class FileChangeListener extends FileChangeAdapter {
   public void fileChanged(FileEvent event) {
     super.fileChanged(event);
     LOG.log(Level.INFO, "FILECHANGELISTENER: File content changed: {0}", event.getFile().getPath());
-    LOG.log(Level.INFO, "FILECHANGELISTENER: Event expected? {0}", event.isExpected());
     if (!event.getFile().isFolder() && !event.isExpected()) {
       try {
         new EditorConfigProcessor().applyRulesToFile(DataObject.find(event.getFile()));

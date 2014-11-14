@@ -16,6 +16,10 @@ public class ProjectChangeListener extends FileChangeAdapter {
   private static final Logger LOG = Logger.getLogger(ProjectChangeListener.class.getName());
   private final Project project;
 
+  static {
+    LOG.setLevel(Level.OFF);
+  }
+
   public ProjectChangeListener(Project project) {
     this.project = project;
   }
