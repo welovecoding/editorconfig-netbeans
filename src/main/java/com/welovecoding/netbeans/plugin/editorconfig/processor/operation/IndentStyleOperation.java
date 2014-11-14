@@ -55,6 +55,8 @@ public class IndentStyleOperation {
 
       Preferences codeStyle = CodeStylePreferences.get(fileObject, fileObject.getMIMEType()).getPreferences();
       boolean currentValue = codeStyle.getBoolean(SimpleValueNames.EXPAND_TABS, false);
+      LOG.log(Level.INFO, "Should expand tabs? {0}", expandTabs);
+      LOG.log(Level.INFO, "current value for expand tabs? {0}", currentValue);
 
       if (currentValue != expandTabs) {
         codeStyle.putBoolean(SimpleValueNames.EXPAND_TABS, expandTabs);

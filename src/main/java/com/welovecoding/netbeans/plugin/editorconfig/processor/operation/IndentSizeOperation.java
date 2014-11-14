@@ -29,8 +29,8 @@ public class IndentSizeOperation {
     return new IndentSizeOperation().apply(dataObject, indentSize).call();
   }
 
-  public Callable<Boolean> apply(final DataObject dataObject, final String lineEnding) {
-    return new ApplyIndentSizeTask(dataObject, lineEnding);
+  public Callable<Boolean> apply(final DataObject dataObject, final String indentSize) {
+    return new ApplyIndentSizeTask(dataObject, indentSize);
   }
 
   private class ApplyIndentSizeTask implements Callable<Boolean> {
