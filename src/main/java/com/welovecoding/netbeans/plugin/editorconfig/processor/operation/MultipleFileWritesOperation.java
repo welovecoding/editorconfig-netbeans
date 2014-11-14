@@ -23,26 +23,26 @@ import org.openide.util.Exceptions;
 import org.openide.windows.WindowManager;
 
 /**
- * Ja, der name is echt doof XD
+ *
  *
  * @author Michael Koppen
  */
-public class CharsetANDFinalNewLineANDTrimTrailingWhitespaceOperation {
+public class MultipleFileWritesOperation {
 
-  private static final Logger LOG = Logger.getLogger(CharsetANDFinalNewLineANDTrimTrailingWhitespaceOperation.class.getName());
+  private static final Logger LOG = Logger.getLogger(MultipleFileWritesOperation.class.getName());
 
-  public static boolean doCharsetANDFinalNewLineANDTrimTrailingWhitespace(final DataObject dataObject, final String lineEnding, final Charset charset, final String finalnewline, final String trimwhitespace) throws Exception {
+  public static boolean doMultipleFileWritesOperation(final DataObject dataObject, final String lineEnding, final Charset charset, final String finalnewline, final String trimwhitespace) throws Exception {
 
-    return new CharsetANDFinalNewLineANDTrimTrailingWhitespaceOperation().apply(dataObject, lineEnding, charset, finalnewline, trimwhitespace).call();
+    return new MultipleFileWritesOperation().apply(dataObject, lineEnding, charset, finalnewline, trimwhitespace).call();
   }
 
   public Callable<Boolean> apply(final DataObject dataObject, final String lineEnding, final Charset charset, final String finalnewline, final String trimwhitespace) {
     boolean newline = Boolean.valueOf(finalnewline);
     boolean whitespace = Boolean.valueOf(trimwhitespace);
-    return new ApplyCharsetANDFinalNewLineANDTrimTrailingWhitespaceTask(dataObject, lineEnding, charset, newline, whitespace);
+    return new ApplyMultipleFileWritesTask(dataObject, lineEnding, charset, newline, whitespace);
   }
 
-  private class ApplyCharsetANDFinalNewLineANDTrimTrailingWhitespaceTask implements Callable<Boolean> {
+  private class ApplyMultipleFileWritesTask implements Callable<Boolean> {
 
     private final DataObject dataObject;
     private final String lineEnding;
@@ -50,7 +50,7 @@ public class CharsetANDFinalNewLineANDTrimTrailingWhitespaceOperation {
     private boolean finalnewline;
     private boolean trimwhitespace;
 
-    public ApplyCharsetANDFinalNewLineANDTrimTrailingWhitespaceTask(final DataObject dataObject, final String lineEnding, final Charset charset, final boolean finalnewline, final boolean trimwhitespace) {
+    public ApplyMultipleFileWritesTask(final DataObject dataObject, final String lineEnding, final Charset charset, final boolean finalnewline, final boolean trimwhitespace) {
       LOG.log(Level.INFO, "Created new ApplyCharsetANDFinalNewLineANDTrimTrailingWhitespaceTask for File {0}", dataObject.getPrimaryFile().getPath());
       this.dataObject = dataObject;
       this.lineEnding = lineEnding;
@@ -71,8 +71,8 @@ public class CharsetANDFinalNewLineANDTrimTrailingWhitespaceOperation {
       if (isOpenedInEditor) {
         LOG.log(Level.INFO, "File is opened in Editor! Appling changes on Editor.");
 
-        CharsetANDFinalNewLineANDTrimTrailingWhitespaceUITask action
-                = new CharsetANDFinalNewLineANDTrimTrailingWhitespaceUITask(
+        MultipleFileWritesUITask action
+                = new MultipleFileWritesUITask(
                         fileObject,
                         cookie,
                         lineEnding,
@@ -124,7 +124,7 @@ public class CharsetANDFinalNewLineANDTrimTrailingWhitespaceOperation {
       return true;
     }
 
-    private class CharsetANDFinalNewLineANDTrimTrailingWhitespaceUITask implements Runnable {
+    private class MultipleFileWritesUITask implements Runnable {
 
       private final FileObject fileObject;
       private final EditorCookie cookie;
@@ -133,7 +133,7 @@ public class CharsetANDFinalNewLineANDTrimTrailingWhitespaceOperation {
       private final boolean finalnewline;
       private final boolean trimwhitespace;
 
-      private CharsetANDFinalNewLineANDTrimTrailingWhitespaceUITask(final FileObject fileObject, EditorCookie cookie, final String lineEnding, final boolean finalnewline, final boolean trimwhitespace) {
+      private MultipleFileWritesUITask(final FileObject fileObject, EditorCookie cookie, final String lineEnding, final boolean finalnewline, final boolean trimwhitespace) {
         this.fileObject = fileObject;
         this.cookie = cookie;
         this.lineEnding = lineEnding;

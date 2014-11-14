@@ -2,9 +2,9 @@ package com.welovecoding.netbeans.plugin.editorconfig.processor;
 
 import com.welovecoding.netbeans.plugin.editorconfig.mapper.EditorConfigPropertyMapper;
 import com.welovecoding.netbeans.plugin.editorconfig.model.EditorConfigConstant;
-import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.CharsetANDFinalNewLineANDTrimTrailingWhitespaceOperation;
 import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.IndentSizeOperation;
 import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.IndentStyleOperation;
+import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.MultipleFileWritesOperation;
 import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.TabWidthOperation;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -76,14 +76,9 @@ public class EditorConfigProcessor {
       switch (key) {
         case EditorConfigConstant.CHARSET:
           fileOp = true;
-//          CharsetOperation.doCharset(dataObject, value,
-//                  EditorConfigPropertyMapper.normalizeLineEnding(
-//                          keyedRules.get(EditorConfigConstant.END_OF_LINE)));
           break;
         case EditorConfigConstant.END_OF_LINE:
           fileOp = true;
-//          LineEndingOperation.doLineEnding(dataObject,
-//                  EditorConfigPropertyMapper.normalizeLineEnding(value));
           break;
         case EditorConfigConstant.INDENT_SIZE:
           changed = IndentSizeOperation.doIndentSize(dataObject, value);
@@ -95,9 +90,6 @@ public class EditorConfigProcessor {
           break;
         case EditorConfigConstant.INSERT_FINAL_NEWLINE:
           fileOp = true;
-//          FinalNewLineOperation.doFinalNewLine(dataObject, value,
-//                  EditorConfigPropertyMapper.normalizeLineEnding(
-//                          keyedRules.get(EditorConfigConstant.END_OF_LINE)));
           break;
         case EditorConfigConstant.TAB_WIDTH:
           changed = TabWidthOperation.doTabWidth(dataObject, value);
@@ -105,10 +97,6 @@ public class EditorConfigProcessor {
           break;
         case EditorConfigConstant.TRIM_TRAILING_WHITESPACE:
           fileOp = true;
-//          TrimTrailingWhitespaceOperation.doTrimTrailingWhitespaces(
-//                  dataObject,
-//                  EditorConfigPropertyMapper.mapCharset(keyedRules.get(EditorConfigConstant.CHARSET)),
-//                  EditorConfigPropertyMapper.normalizeLineEnding(keyedRules.get(EditorConfigConstant.END_OF_LINE)));
           break;
         default:
           LOG.log(Level.WARNING, "Unknown property: {0}", key);
@@ -116,7 +104,7 @@ public class EditorConfigProcessor {
       }
     }
     if (fileOp) {
-      CharsetANDFinalNewLineANDTrimTrailingWhitespaceOperation.doCharsetANDFinalNewLineANDTrimTrailingWhitespace(
+      MultipleFileWritesOperation.doMultipleFileWritesOperation(
               dataObject,
               EditorConfigPropertyMapper.normalizeLineEnding(keyedRules.get(EditorConfigConstant.END_OF_LINE)),
               EditorConfigPropertyMapper.mapCharset(keyedRules.get(EditorConfigConstant.CHARSET)),
