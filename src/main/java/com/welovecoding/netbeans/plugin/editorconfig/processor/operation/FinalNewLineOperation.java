@@ -67,7 +67,7 @@ public class FinalNewLineOperation {
 
       EditorCookie cookie = null;
       try {
-        cookie = (EditorCookie) DataObject.find(fileObject).getCookie(EditorCookie.class);
+        cookie = (EditorCookie) DataObject.find(fileObject).getLookup().lookup(EditorCookie.class);
       } catch (DataObjectNotFoundException ex) {
         Exceptions.printStackTrace(ex);
       }
