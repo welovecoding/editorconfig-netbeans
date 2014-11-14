@@ -1,7 +1,7 @@
 package com.welovecoding.netbeans.plugin.editorconfig.processor.operation;
 
-import com.welovecoding.netbeans.plugin.editorconfig.model.FileAttributeName;
 import com.welovecoding.netbeans.plugin.editorconfig.processor.WriteFileTask;
+import com.welovecoding.netbeans.plugin.editorconfig.util.NetBeansFileUtil;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -14,7 +14,6 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.StyledDocument;
-import org.netbeans.api.queries.FileEncodingQuery;
 import org.openide.cookies.EditorCookie;
 import org.openide.filesystems.FileObject;
 import org.openide.loaders.DataObject;
@@ -246,7 +245,7 @@ public class CharsetANDFinalNewLineANDTrimTrailingWhitespaceOperation {
   }
 
   private void charsetIfChanged(FileObject fileObject, Charset charset) {
-    Charset currentCharset = getCharset(fileObject);
+    Charset currentCharset = NetBeansFileUtil.getCharset(fileObject, true);
     String content = getFileContent(fileObject);
     if (!currentCharset.name().equals(charset.name())) {
       LOG.log(Level.INFO, "CHARSET : Saving file with new charset");
@@ -266,7 +265,7 @@ public class CharsetANDFinalNewLineANDTrimTrailingWhitespaceOperation {
   }
 
   private void charsetIfChanged(FileObject fileObject, String content, Charset charset) {
-    Charset currentCharset = getCharset(fileObject);
+    Charset currentCharset = NetBeansFileUtil.getCharset(fileObject, true);
     if (!currentCharset.name().equals(charset.name())) {
       LOG.log(Level.INFO, "CHARSET : Saving content with new charset");
       new WriteFileTask(fileObject, charset) {
@@ -303,7 +302,7 @@ public class CharsetANDFinalNewLineANDTrimTrailingWhitespaceOperation {
 
   private EditorCookie getEditorCookie(FileObject fileObject) {
     try {
-      return (EditorCookie) DataObject.find(fileObject).getCookie(EditorCookie.class);
+      return (EditorCookie) DataObject.find(fileObject).getLookup().lookup(EditorCookie.class);
     } catch (DataObjectNotFoundException ex) {
       Exceptions.printStackTrace(ex);
       return null;
@@ -319,27 +318,4 @@ public class CharsetANDFinalNewLineANDTrimTrailingWhitespaceOperation {
     }
   }
 
-  /**
-   * TODO: It looks like "FileEncodingQuery.getEncoding" always returns "UTF-8".
-   *
-   * Even if the charset of that file is already UTF-16LE. Therefore we should
-   * change our charset lookup. After the charset has been changed by us, we add
-   * a file attribute which helps us to detect the charset in future.
-   *
-   * Maybe we should use a CharsetDetector:
-   * http://userguide.icu-project.org/conversion/detection
-   *
-   * @param fo
-   * @return
-   */
-  private Charset getCharset(FileObject fo) {
-    Object fileEncoding = fo.getAttribute(FileAttributeName.ENCODING);
-
-    if (fileEncoding == null) {
-      Charset currentCharset = FileEncodingQuery.getEncoding(fo);
-      fileEncoding = currentCharset.name();
-    }
-
-    return Charset.forName((String) fileEncoding);
-  }
 }

@@ -5,14 +5,13 @@
  */
 package com.welovecoding.netbeans.plugin.editorconfig.processor;
 
-import com.welovecoding.netbeans.plugin.editorconfig.model.FileAttributeName;
+import com.welovecoding.netbeans.plugin.editorconfig.util.NetBeansFileUtil;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.netbeans.api.queries.FileEncodingQuery;
 import org.openide.filesystems.FileLock;
 import org.openide.filesystems.FileObject;
 import org.openide.util.Exceptions;
@@ -25,28 +24,28 @@ public abstract class WriteFileTask implements Runnable {
 
   private static final Logger LOG = Logger.getLogger(WriteFileTask.class.getName());
 
-  private final FileObject fo;
-  private final Charset cs;
+  private final FileObject fileObject;
+  private final Charset charset;
 
-  public WriteFileTask(FileObject fo, Charset cs) {
-    this.fo = fo;
-    this.cs = cs;
+  public WriteFileTask(FileObject fileObject, Charset charset) {
+    this.fileObject = fileObject;
+    this.charset = charset;
   }
 
-  public WriteFileTask(FileObject fo) {
-    this.fo = fo;
-    this.cs = FileEncodingQuery.getEncoding(fo);
+  public WriteFileTask(FileObject fileObject) {
+    this.fileObject = fileObject;
+    this.charset = NetBeansFileUtil.getCharset(fileObject);
   }
 
   @Override
   public void run() {
     FileLock lock = FileLock.NONE;
     try {
-      try (OutputStream outputStream = fo.getOutputStream(lock); OutputStreamWriter writer = new OutputStreamWriter(outputStream, cs)) {
+      try (OutputStream outputStream = fileObject.getOutputStream(lock); OutputStreamWriter writer = new OutputStreamWriter(outputStream, charset)) {
         // #####################
         apply(writer);
         // #####################
-        setFileAttribute(fo, FileAttributeName.ENCODING, cs.name());
+        setFileAttribute(fileObject, "ec.encoding", charset.name());
         writer.flush();
         outputStream.flush();
       }

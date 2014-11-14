@@ -7,6 +7,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.netbeans.api.queries.FileEncodingQuery;
 import org.openide.filesystems.FileObject;
 import org.openide.util.Exceptions;
 
@@ -89,6 +90,30 @@ public class NetBeansFileUtil {
     return lines.map((String content) -> {
       return content.replaceAll("\\s+$", "");
     }).collect(Collectors.joining(lineEnding));
+  }
+
+  /**
+   * TODO: It looks like "FileEncodingQuery.getEncoding" always returns "UTF-8".
+   *
+   * Even if the charset of that file is already UTF-16LE. Therefore we should
+   * change our charset lookup. After the charset has been changed by us, we add
+   * a file attribute which helps us to detect the charset in future.
+   *
+   * Maybe we should use a CharsetDetector:
+   * http://userguide.icu-project.org/conversion/detection
+   *
+   * @param fo
+   * @return
+   */
+  public static Charset getCharset(FileObject fo, boolean bla) {
+    Object fileEncoding = fo.getAttribute("ec.encoding");
+
+    if (fileEncoding == null) {
+      Charset currentCharset = FileEncodingQuery.getEncoding(fo);
+      fileEncoding = currentCharset.name();
+    }
+
+    return Charset.forName((String) fileEncoding);
   }
 
 }
