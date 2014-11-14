@@ -131,12 +131,18 @@
       <scope>test</scope>
       <type>jar</type>
     </dependency>
+    <!-- https://xircles.codehaus.org/p/guessencoding -->
     <dependency>
       <groupId>org.codehaus.guessencoding</groupId>
       <artifactId>guessencoding</artifactId>
       <version>1.4</version>
-      <scope>test</scope>
       <type>jar</type>
+    </dependency>
+    <!-- TikaEncodingDetector -->
+    <dependency>
+      <groupId>org.apache.any23</groupId>
+      <artifactId>apache-any23-encoding</artifactId>
+      <version>1.1</version>
     </dependency>
   </dependencies>
     

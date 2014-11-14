@@ -1,7 +1,5 @@
 package com.welovecoding.netbeans.plugin.editorconfig.util;
 
-import com.glaforge.i18n.io.CharsetToolkit;
-import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -12,10 +10,8 @@ import java.nio.file.Paths;
 import java.util.stream.Stream;
 import static junit.framework.Assert.assertEquals;
 import org.junit.Test;
-import org.junit.Ignore;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
-import org.openide.util.Utilities;
 
 public class NetBeansFileUtilTest {
 
@@ -59,7 +55,6 @@ public class NetBeansFileUtilTest {
   }
 
   @Test
-  @Ignore
   public void testUTF_16BE() throws URISyntaxException {
     String path = "files/charsets/utf-16-be.txt";
     URL url = Thread.currentThread().getContextClassLoader().getResource(path);
@@ -78,10 +73,9 @@ public class NetBeansFileUtilTest {
     Path testFilePath = Paths.get(url.toURI());
     FileObject fo = FileUtil.toFileObject(testFilePath.toFile());
 
-    Charset guessEncoding = CharsetToolkit.guessEncoding(Utilities.toFile(url.toURI()), 4096);
     Charset charset = NetBeansFileUtil.guessCharset(fo);
 
-    assertEquals(StandardCharsets.UTF_16LE, guessEncoding);
+    assertEquals(StandardCharsets.UTF_16LE, charset);
   }
 
   @Test
