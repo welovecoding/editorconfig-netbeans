@@ -260,7 +260,7 @@ public class MultipleFileWritesOperation {
   }
 
   private void charsetIfChanged(FileObject fileObject, Charset charset) {
-    Charset currentCharset = NetBeansFileUtil.getCharset(fileObject, true);
+    Charset currentCharset = NetBeansFileUtil.guessCharset(fileObject);
     String content = getFileContent(fileObject);
     if (!currentCharset.name().equals(charset.name())) {
       LOG.log(Level.INFO, "CHARSET : Saving file with new charset");
@@ -280,7 +280,7 @@ public class MultipleFileWritesOperation {
   }
 
   private void charsetIfChanged(FileObject fileObject, String content, Charset charset) {
-    Charset currentCharset = NetBeansFileUtil.getCharset(fileObject, true);
+    Charset currentCharset = NetBeansFileUtil.guessCharset(fileObject);
     if (!currentCharset.name().equals(charset.name())) {
       LOG.log(Level.INFO, "CHARSET : Saving content with new charset");
       new WriteFileTask(fileObject, charset) {
