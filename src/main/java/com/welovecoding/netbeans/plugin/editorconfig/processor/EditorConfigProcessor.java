@@ -81,17 +81,17 @@ public class EditorConfigProcessor {
     EditorCookie cookie = getEditorCookie(dataObject);
     boolean isOpenedInEditor = cookie != null && cookie.getDocument() != null;
 
-    if (isOpenedInEditor) {
-      LOG.log(Level.INFO, "File is opened in Editor! Saving all changes.");
-      StyledDocument document = cookie.getDocument();
-      NbDocument.runAtomicAsUser(document, () -> {
-        try {
-          cookie.saveDocument();
-        } catch (IOException ex) {
-          Exceptions.printStackTrace(ex);
-        }
-      });
-    }
+//    if (isOpenedInEditor) {
+//      LOG.log(Level.INFO, "File is opened in Editor! Saving all changes.");
+//      StyledDocument document = cookie.getDocument();
+//      NbDocument.runAtomicAsUser(document, () -> {
+//        try {
+//          cookie.saveDocument();
+//        } catch (IOException ex) {
+//          Exceptions.printStackTrace(ex);
+//        }
+//      });
+//    }
     StringBuilder content = new StringBuilder(fileObject.asText());
     boolean fileChange = false;
     boolean charsetChange = false;
@@ -112,16 +112,17 @@ public class EditorConfigProcessor {
           }
           break;
         case EditorConfigConstant.END_OF_LINE:
-          fileChange = XLineEndingOperation.doChangeLineEndings(
+          boolean tempFileChange = XLineEndingOperation.doChangeLineEndings(
                   content,
-                  EditorConfigPropertyMapper.normalizeLineEnding(keyedRules.get(EditorConfigConstant.END_OF_LINE))) || fileChange;
+                  EditorConfigPropertyMapper.normalizeLineEnding(keyedRules.get(EditorConfigConstant.END_OF_LINE)));
 
           // changing lineendings in document aswell
           StyledDocument document = NbDocument.getDocument(dataObject);
-          if (document != null) {
+          if (tempFileChange && document != null) {
             if (!document.getProperty(BaseDocument.READ_LINE_SEPARATOR_PROP).equals(EditorConfigPropertyMapper.normalizeLineEnding(keyedRules.get(EditorConfigConstant.END_OF_LINE)))) {
               document.putProperty(BaseDocument.READ_LINE_SEPARATOR_PROP, EditorConfigPropertyMapper.normalizeLineEnding(keyedRules.get(EditorConfigConstant.END_OF_LINE)));
               LOG.log(Level.INFO, "Action: Changed line endings in Document");
+              fileChange = tempFileChange || fileChange;
             } else {
               LOG.log(Level.INFO, "Action not needed: Line endings are already correct");
             }
@@ -171,24 +172,25 @@ public class EditorConfigProcessor {
 
   private void flushFile(FileObject fileObject, StringBuilder content, boolean changed, boolean charsetChange, Charset charset, boolean flushInEditor, EditorCookie cookie) throws BadLocationException {
     if (changed || charsetChange) {
-      new WriteFileTask(fileObject, charset) {
-        @Override
-        public void apply(OutputStreamWriter writer) {
-          try {
-            writer.write(content.toString());
-          } catch (IOException ex) {
-            Exceptions.printStackTrace(ex);
+      if (!flushInEditor) {
+        new WriteFileTask(fileObject, charset) {
+          @Override
+          public void apply(OutputStreamWriter writer) {
+            try {
+              writer.write(content.toString());
+            } catch (IOException ex) {
+              Exceptions.printStackTrace(ex);
+            }
           }
-        }
-      }.run();
-      if (flushInEditor) {
+        }.run();
+      } else {
         LOG.log(Level.INFO, "Update changes in Editor window");
-        StyledDocument document = cookie.getDocument();
-        NbDocument.runAtomicAsUser(document, () -> {
+
+        NbDocument.runAtomic(cookie.getDocument(), () -> {
           try {
-            //TODO This is a workaround to update the content of an currently opened editor window
-            document.remove(0, document.getLength());
-            document.insertString(0, fileObject.asText(), null);
+            StyledDocument newDocument = cookie.openDocument();
+            newDocument.remove(0, newDocument.getLength());
+            newDocument.insertString(0, new String(content.toString().getBytes(charset)), null);
             cookie.saveDocument();
           } catch (BadLocationException | IOException ex) {
             Exceptions.printStackTrace(ex);
@@ -220,5 +222,19 @@ public class EditorConfigProcessor {
 
   private EditorCookie getEditorCookie(DataObject dataObject) {
     return dataObject.getLookup().lookup(EditorCookie.class);
+  }
+
+  private void setFileAttribute(FileObject fo, String key, String value) {
+    try {
+      fo.setAttribute(key, value);
+    } catch (IOException ex) {
+      LOG.log(Level.SEVERE, "Error setting file attribute \"{0}\" with value \"{1}\" for {2}. {3}",
+              new Object[]{
+                key,
+                value,
+                fo.getPath(),
+                ex.getMessage()
+              });
+    }
   }
 }
