@@ -37,15 +37,15 @@ public class IndentSizeOperationTest extends NbTestCase {
 
   /**
    * Test of apply method, of class IndentSizeOperation.
+   *
+   * @throws java.lang.Exception
    */
   public void testApply() throws Exception {
     System.out.println("########  " + getName() + "  #######");
 
-    String previous = testDataObject.getPrimaryFile().asText();
-
-    String result = "<html>\n"
-            + "  <body>\n"
-            + "  </body>\n"
+    String expected = "<html>" + System.lineSeparator()
+            + "  <body>" + System.lineSeparator()
+            + "  </body>" + System.lineSeparator()
             + "</html>";
 
     boolean change = IndentSizeOperation.doIndentSize(testDataObject, "4");
@@ -65,15 +65,15 @@ public class IndentSizeOperationTest extends NbTestCase {
         System.out.println("Saving Document!");
         cookie.saveDocument();
         System.out.println(document.getText(0, document.getLength()));
-      } catch (IOException ex) {
-        Exceptions.printStackTrace(ex);
-      } catch (BadLocationException ex) {
+      } catch (IOException | BadLocationException ex) {
         Exceptions.printStackTrace(ex);
       }
     });
-    assertEquals(true, change);
+
     System.out.println(testDataObject.getPrimaryFile().asText());
-    assertEquals(result, testDataObject.getPrimaryFile().asText());
+
+    assertEquals(true, change);
+    assertEquals(expected, testDataObject.getPrimaryFile().asText());
   }
 
   private EditorCookie getEditorCookie(FileObject fileObject) {
