@@ -1,5 +1,6 @@
 package com.welovecoding.netbeans.plugin.editorconfig.processor.operation;
 
+import static com.welovecoding.netbeans.plugin.editorconfig.processor.EditorConfigProcessor.OPERATION_LOG_LEVEL;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -16,6 +17,10 @@ import org.openide.loaders.DataObject;
 public class IndentSizeOperation {
 
   private static final Logger LOG = Logger.getLogger(IndentSizeOperation.class.getName());
+
+  static {
+    LOG.setLevel(OPERATION_LOG_LEVEL);
+  }
 
   /**
    * Changes {@code CodeStylePreferences}.

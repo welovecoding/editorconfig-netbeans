@@ -40,6 +40,7 @@ import org.openide.util.Exceptions;
 public class EditorConfigProcessor {
 
   private static final Logger LOG = Logger.getLogger(EditorConfigProcessor.class.getName());
+  public static final Level OPERATION_LOG_LEVEL = Level.WARNING;
   private final EditorConfig ec;
 
   public EditorConfigProcessor() {
@@ -109,6 +110,7 @@ public class EditorConfigProcessor {
           Charset requestedCharset = EditorConfigPropertyMapper.mapCharset(keyedRules.get(EditorConfigConstant.CHARSET));
           if (!currentCharset.equals(requestedCharset)) {
             charsetChange = true;
+            LOG.log(Level.INFO, "Action: Charset changed");
           }
           break;
         case EditorConfigConstant.END_OF_LINE:
@@ -130,26 +132,47 @@ public class EditorConfigProcessor {
           break;
         case EditorConfigConstant.INDENT_SIZE:
           //TODO this should happen in the file!!
-          styleChange = IndentSizeOperation.doIndentSize(dataObject, value) || styleChange;
+          boolean indentSizeChanged = IndentSizeOperation.doIndentSize(dataObject, value);
+          if (indentSizeChanged) {
+            LOG.log(Level.INFO, "Action: Indent size changed");
+          }
+          styleChange = indentSizeChanged || styleChange;
           break;
         case EditorConfigConstant.INDENT_STYLE:
           //TODO this happens in the file!!
-          styleChange = IndentStyleOperation.doIndentStyle(dataObject, key) || styleChange;
+          boolean indentStyleChanged = IndentStyleOperation.doIndentStyle(dataObject, key);
+          if (indentStyleChanged) {
+            LOG.log(Level.INFO, "Action: Indent style changed");
+          }
+          styleChange = indentStyleChanged || styleChange;
+
           break;
         case EditorConfigConstant.INSERT_FINAL_NEWLINE:
-          fileChange = XFinalNewLineOperation.doFinalNewLine(
+          boolean newlineChanged = XFinalNewLineOperation.doFinalNewLine(
                   content,
                   value,
-                  EditorConfigPropertyMapper.normalizeLineEnding(keyedRules.get(EditorConfigConstant.END_OF_LINE))) || fileChange;
+                  EditorConfigPropertyMapper.normalizeLineEnding(keyedRules.get(EditorConfigConstant.END_OF_LINE)));
+          if (newlineChanged) {
+            LOG.log(Level.INFO, "Action: Final new line changed");
+          }
+          fileChange = newlineChanged || fileChange;
           break;
         case EditorConfigConstant.TAB_WIDTH:
-          styleChange = XTabWidthOperation.doTabWidth(dataObject, value) || styleChange;
+          boolean tabWidthChanged = XTabWidthOperation.doTabWidth(dataObject, value);
+          if (tabWidthChanged) {
+            LOG.log(Level.INFO, "Action: Tab width changed");
+          }
+          styleChange = tabWidthChanged || styleChange;
           break;
         case EditorConfigConstant.TRIM_TRAILING_WHITESPACE:
-          fileChange = XTrimTrailingWhitespacesOperation.doTrimTrailingWhitespaces(
+          boolean trimTrailingWhitespacesChanged = XTrimTrailingWhitespacesOperation.doTrimTrailingWhitespaces(
                   content,
                   value,
-                  EditorConfigPropertyMapper.normalizeLineEnding(keyedRules.get(EditorConfigConstant.END_OF_LINE))) || fileChange;
+                  EditorConfigPropertyMapper.normalizeLineEnding(keyedRules.get(EditorConfigConstant.END_OF_LINE)));
+          if (trimTrailingWhitespacesChanged) {
+            LOG.log(Level.INFO, "Action: Trailing whitespaces changed");
+          }
+          fileChange = trimTrailingWhitespacesChanged || fileChange;
           break;
         default:
           LOG.log(Level.WARNING, "Unknown property: {0}", key);
@@ -191,6 +214,7 @@ public class EditorConfigProcessor {
             StyledDocument newDocument = cookie.openDocument();
             newDocument.remove(0, newDocument.getLength());
             newDocument.insertString(0, new String(content.toString().getBytes(charset)), null);
+            setFileAttribute(fileObject, "ec.encoding", charset.name());
             cookie.saveDocument();
           } catch (BadLocationException | IOException ex) {
             Exceptions.printStackTrace(ex);

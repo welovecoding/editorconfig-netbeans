@@ -1,5 +1,6 @@
 package com.welovecoding.netbeans.plugin.editorconfig.processor.operation;
 
+import static com.welovecoding.netbeans.plugin.editorconfig.processor.EditorConfigProcessor.OPERATION_LOG_LEVEL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -10,6 +11,10 @@ import java.util.logging.Logger;
 public class XFinalNewLineOperation {
 
   private static final Logger LOG = Logger.getLogger(XFinalNewLineOperation.class.getName());
+
+  static {
+    LOG.setLevel(OPERATION_LOG_LEVEL);
+  }
 
   public static boolean doFinalNewLine(StringBuilder content, final String finalnewline, final String lineEnding) throws Exception {
 

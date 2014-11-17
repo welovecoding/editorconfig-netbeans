@@ -1,5 +1,6 @@
 package com.welovecoding.netbeans.plugin.editorconfig.processor.operation;
 
+import static com.welovecoding.netbeans.plugin.editorconfig.processor.EditorConfigProcessor.OPERATION_LOG_LEVEL;
 import java.io.BufferedReader;
 import java.io.StringReader;
 import java.util.logging.Level;
@@ -14,6 +15,10 @@ public class XTrimTrailingWhitespacesOperation {
 
   private static final Logger LOG = Logger.getLogger(XTrimTrailingWhitespacesOperation.class.getName());
 
+  static {
+    LOG.setLevel(OPERATION_LOG_LEVEL);
+  }
+
   public static boolean doTrimTrailingWhitespaces(StringBuilder content, final String trimwhitespaces, final String lineEnding) throws Exception {
 
     return new XTrimTrailingWhitespacesOperation().apply(content, trimwhitespaces, lineEnding);
@@ -27,7 +32,7 @@ public class XTrimTrailingWhitespacesOperation {
     if (bTrimwhitespaces) {
       LOG.log(Level.INFO, "TRIM_TRAILING_WHITESPACE = true");
       String tempContent = content.toString();
-      LOG.log(Level.INFO, "OLDCONTENT: {0}.", tempContent);
+      LOG.log(Level.FINEST, "OLDCONTENT: {0}.", tempContent);
       content = trimWhitespaces(content, lineEnding);
 
       if (tempContent.equals(content.toString())) {
@@ -37,7 +42,7 @@ public class XTrimTrailingWhitespacesOperation {
         LOG.log(Level.INFO, "TRIM_TRAILING_WHITESPACE : trimmed trailing whitespaces");
         changed = true;
       }
-      LOG.log(Level.INFO, "NEWCONTENT: {0}.", content);
+      LOG.log(Level.FINEST, "NEWCONTENT: {0}.", content);
     }
 
     return changed;

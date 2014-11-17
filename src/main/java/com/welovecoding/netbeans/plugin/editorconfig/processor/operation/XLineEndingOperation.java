@@ -1,5 +1,6 @@
 package com.welovecoding.netbeans.plugin.editorconfig.processor.operation;
 
+import static com.welovecoding.netbeans.plugin.editorconfig.processor.EditorConfigProcessor.OPERATION_LOG_LEVEL;
 import java.io.BufferedReader;
 import java.io.StringReader;
 import java.util.logging.Level;
@@ -14,6 +15,10 @@ public class XLineEndingOperation {
 
   private static final Logger LOG = Logger.getLogger(XLineEndingOperation.class.getName());
 
+  static {
+    LOG.setLevel(OPERATION_LOG_LEVEL);
+  }
+
   public static boolean doChangeLineEndings(StringBuilder content, final String lineEnding) throws Exception {
 
     return new XLineEndingOperation().apply(content, lineEnding);
@@ -25,7 +30,7 @@ public class XLineEndingOperation {
 
     LOG.log(Level.INFO, "LINE_ENDING = true");
     String tempContent = content.toString();
-    LOG.log(Level.INFO, "OLDCONTENT: {0}.", tempContent);
+    LOG.log(Level.FINEST, "OLDCONTENT: {0}.", tempContent);
     content = replaceLineEndings(content, lineEnding);
 
     if (tempContent.equals(content.toString())) {
@@ -35,7 +40,7 @@ public class XLineEndingOperation {
       LOG.log(Level.INFO, "LINE_ENDING : changed line endings");
       changed = true;
     }
-    LOG.log(Level.INFO, "NEWCONTENT: {0}.", content);
+    LOG.log(Level.FINEST, "NEWCONTENT: {0}.", content);
 
     return changed;
   }
