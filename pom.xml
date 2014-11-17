@@ -81,30 +81,30 @@
       <groupId>org.netbeans.api</groupId>
       <artifactId>org-openide-filesystems</artifactId>
       <type>jar</type>
-      <version>${netbeans.api.version}</version>
+      <version>RELEASE80</version>
     </dependency>
     <dependency>
       <groupId>org.netbeans.api</groupId>
       <artifactId>org-openide-loaders</artifactId>
       <type>jar</type>
-      <version>${netbeans.api.version}</version>
+      <version>RELEASE80</version>
     </dependency>
     <dependency>
       <groupId>org.netbeans.api</groupId>
       <artifactId>org-openide-util</artifactId>
       <type>jar</type>
-      <version>${netbeans.api.version}</version>
+      <version>RELEASE80</version>
     </dependency>
     <dependency>
       <groupId>org.netbeans.api</groupId>
       <artifactId>org-openide-util-lookup</artifactId>
       <type>jar</type>
-      <version>${netbeans.api.version}</version>
+      <version>RELEASE80</version>
     </dependency>
     <dependency>
       <groupId>org.netbeans.api</groupId>
       <artifactId>org-openide-text</artifactId>
-      <version>${netbeans.api.version}</version>
+      <version>RELEASE80</version>
     </dependency>
     <!-- FileEncodingQuery & Co. -->
     <dependency>
@@ -115,7 +115,7 @@
     <dependency>
       <groupId>org.netbeans.api</groupId>
       <artifactId>org-openide-windows</artifactId>
-      <version>${netbeans.api.version}</version>
+      <version>RELEASE80</version>
     </dependency>
     <!-- Test in NetBeans Runtime Container Environment -->
      <dependency>
@@ -137,6 +137,26 @@
       <artifactId>guessencoding</artifactId>
       <version>1.4</version>
       <type>jar</type>
+    </dependency>
+    <dependency>
+      <groupId>org.netbeans.api</groupId>
+      <artifactId>org-openide-nodes</artifactId>
+      <version>RELEASE80</version>
+    </dependency>
+    <dependency>
+      <groupId>org.netbeans.api</groupId>
+      <artifactId>org-netbeans-core-multiview</artifactId>
+      <version>RELEASE80</version>
+    </dependency>
+    <dependency>
+      <groupId>org.netbeans.api</groupId>
+      <artifactId>org-openide-awt</artifactId>
+      <version>RELEASE80</version>
+    </dependency>
+    <dependency>
+      <groupId>org.netbeans.api</groupId>
+      <artifactId>org-openide-dialogs</artifactId>
+      <version>RELEASE80</version>
     </dependency>
   </dependencies>
     
