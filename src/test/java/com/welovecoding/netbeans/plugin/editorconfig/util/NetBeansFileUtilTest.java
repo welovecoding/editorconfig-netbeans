@@ -83,17 +83,11 @@ public class NetBeansFileUtilTest {
     assertEquals(StandardCharsets.UTF_16LE, charset);
   }
 
-  /**
-   * Test will fail when file mark is not written to the file.
-   *
-   * @throws java.io.IOException
-   */
   @Test(expected = AssertionError.class)
-  public void itFailsOnUTF_16LEWhenNotWritingTheFileMark() throws IOException {
+  public void itDoesntRecognize_UTF_16LE_withoutFileMark() throws IOException {
     // Create temp file
     File file = File.createTempFile("utf-16-le", ".txt");
     Path path = Paths.get(Utilities.toURI(file));
-    System.out.println("Temp file: " + file.getAbsolutePath());
 
     // Write temp file
     ArrayList<String> lines = new ArrayList<>();
@@ -106,6 +100,66 @@ public class NetBeansFileUtilTest {
 
     assertEquals(true, file.delete());
     assertEquals(StandardCharsets.UTF_16LE, charset);
+  }
+
+  @Test
+  public void itRecognizes_UTF_8_withFileMark() throws IOException {
+    // Create temp file
+    File file = File.createTempFile("utf-8-bom", ".txt");
+    Path path = Paths.get(Utilities.toURI(file));
+
+    // Write temp file
+    ArrayList<String> lines = new ArrayList<>();
+    lines.add("\uFEFF"); // -> generates "EF BB BF"
+    lines.add("Hello World");
+    Files.write(path, lines, StandardCharsets.UTF_8, StandardOpenOption.CREATE);
+
+    // Inspect file object
+    FileObject fo = FileUtil.toFileObject(file);
+    Charset charset = NetBeansFileUtil.guessCharset(fo);
+
+//    assertEquals(true, file.delete());
+    assertEquals(StandardCharsets.UTF_8, charset);
+  }
+
+  @Test
+  public void itRecognizes_UTF_16LE_withFileMark() throws IOException {
+    // Create temp file
+    File file = File.createTempFile("utf-16-le", ".txt");
+    Path path = Paths.get(Utilities.toURI(file));
+
+    // Write temp file
+    ArrayList<String> lines = new ArrayList<>();
+    lines.add("\uFEFF"); // -> generates "FF FE" (it's a bit confusing!)
+    lines.add("Hello World");
+    Files.write(path, lines, StandardCharsets.UTF_16LE, StandardOpenOption.CREATE);
+
+    // Inspect file object
+    FileObject fo = FileUtil.toFileObject(file);
+    Charset charset = NetBeansFileUtil.guessCharset(fo);
+
+    assertEquals(true, file.delete());
+    assertEquals(StandardCharsets.UTF_16LE, charset);
+  }
+
+  @Test
+  public void itRecognizes_UTF_16BE_withFileMark() throws IOException {
+    // Create temp file
+    File file = File.createTempFile("utf-16-be", ".txt");
+    Path path = Paths.get(Utilities.toURI(file));
+
+    // Write temp file
+    ArrayList<String> lines = new ArrayList<>();
+    lines.add("\uFEFF"); // -> generates "FE FF"
+    lines.add("Hello World");
+    Files.write(path, lines, StandardCharsets.UTF_16BE, StandardOpenOption.CREATE);
+
+    // Inspect file object
+    FileObject fo = FileUtil.toFileObject(file);
+    Charset charset = NetBeansFileUtil.guessCharset(fo);
+
+    assertEquals(true, file.delete());
+    assertEquals(StandardCharsets.UTF_16BE, charset);
   }
 
   @Test
