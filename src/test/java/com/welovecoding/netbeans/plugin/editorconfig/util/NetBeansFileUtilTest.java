@@ -1,17 +1,22 @@
 package com.welovecoding.netbeans.plugin.editorconfig.util;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
 import java.util.stream.Stream;
 import static junit.framework.Assert.assertEquals;
 import org.junit.Test;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
+import org.openide.util.Utilities;
 
 public class NetBeansFileUtilTest {
 
@@ -75,6 +80,31 @@ public class NetBeansFileUtilTest {
 
     Charset charset = NetBeansFileUtil.guessCharset(fo);
 
+    assertEquals(StandardCharsets.UTF_16LE, charset);
+  }
+
+  /**
+   * Test will fail when file mark is not written to the file.
+   *
+   * @throws java.io.IOException
+   */
+  @Test(expected = AssertionError.class)
+  public void itFailsOnUTF_16LEWhenNotWritingTheFileMark() throws IOException {
+    // Create temp file
+    File file = File.createTempFile("utf-16-le", ".txt");
+    Path path = Paths.get(Utilities.toURI(file));
+    System.out.println("Temp file: " + file.getAbsolutePath());
+
+    // Write temp file
+    ArrayList<String> lines = new ArrayList<>();
+    lines.add("Hello World");
+    Files.write(path, lines, StandardCharsets.UTF_16LE, StandardOpenOption.CREATE);
+
+    // Inspect file object
+    FileObject fo = FileUtil.toFileObject(file);
+    Charset charset = NetBeansFileUtil.guessCharset(fo);
+
+    assertEquals(true, file.delete());
     assertEquals(StandardCharsets.UTF_16LE, charset);
   }
 
