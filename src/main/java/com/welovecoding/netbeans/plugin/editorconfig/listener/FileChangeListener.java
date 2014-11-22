@@ -56,7 +56,6 @@ public class FileChangeListener extends FileChangeAdapter {
 
     if (applyRulesToFile(event)) {
       try {
-        LOG.log(Level.INFO, "Applying rules to file: {0}", path);
         new EditorConfigProcessor().applyRulesToFile(DataObject.find(event.getFile()));
       } catch (DataObjectNotFoundException ex) {
         Exceptions.printStackTrace(ex);

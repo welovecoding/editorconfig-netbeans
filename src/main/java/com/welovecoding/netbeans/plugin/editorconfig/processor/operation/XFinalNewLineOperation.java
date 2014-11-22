@@ -16,14 +16,15 @@ public class XFinalNewLineOperation {
     LOG.setLevel(OPERATION_LOG_LEVEL);
   }
 
-  public static boolean doFinalNewLine(StringBuilder content, final String finalNewLine, final String lineEnding) throws Exception {
+  public static boolean doFinalNewLine(StringBuilder content, final String finalNewLine, final String lineEnding) {
 
     return new XFinalNewLineOperation().apply(content, finalNewLine, lineEnding);
   }
 
-  public boolean apply(StringBuilder content, final String finalnewline, final String lineEnding) {
-    boolean newline = Boolean.valueOf(finalnewline);
+  public boolean apply(StringBuilder content, final String finalNewLine, final String lineEnding) {
+    boolean newline = Boolean.valueOf(finalNewLine);
     boolean changed = false;
+
     LOG.log(Level.INFO, "Executing ApplyTestTask");
 
     if (newline) {

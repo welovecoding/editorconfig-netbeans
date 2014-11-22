@@ -11,7 +11,6 @@ import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.XTabWid
 import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.XTrimTrailingWhitespacesOperation;
 import com.welovecoding.netbeans.plugin.editorconfig.util.NetBeansFileUtil;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -112,14 +111,10 @@ public class EditorConfigProcessor {
 
           break;
         case EditorConfigConstant.INSERT_FINAL_NEWLINE:
-          boolean newlineChanged = XFinalNewLineOperation.doFinalNewLine(
-                  content,
-                  value,
-                  EditorConfigPropertyMapper.mapLineEnding(keyedRules.get(EditorConfigConstant.END_OF_LINE)));
-          if (newlineChanged) {
-            LOG.log(Level.INFO, "Action: Final new line changed");
-          }
-          fileChange = newlineChanged || fileChange;
+          String lineEnding = keyedRules.get(EditorConfigConstant.END_OF_LINE);
+          String javaLineEnding = EditorConfigPropertyMapper.mapLineEnding(lineEnding);
+          boolean newLineChanged = XFinalNewLineOperation.doFinalNewLine(content, value, javaLineEnding);
+          fileChange = newLineChanged || fileChange;
           break;
         case EditorConfigConstant.TAB_WIDTH:
           boolean tabWidthChanged = XTabWidthOperation.doTabWidth(dataObject, value);
@@ -144,32 +139,28 @@ public class EditorConfigProcessor {
       }
     }
 
-    flushFile(
-            fileObject,
-            content,
-            fileChange,
-            charsetChange,
-            EditorConfigPropertyMapper.mapCharset(keyedRules.get(EditorConfigConstant.CHARSET)),
-            isOpenedInEditor,
-            cookie);
+    FlushFileInfo fileInfo = new FlushFileInfo(fileObject);
+    fileInfo.setContent(content);
+    fileInfo.setChanged(fileChange);
+    fileInfo.setCharsetChange(charsetChange);
+    fileInfo.setCharset(EditorConfigPropertyMapper.mapCharset(keyedRules.get(EditorConfigConstant.CHARSET)));
+    fileInfo.setFlushInEditor(isOpenedInEditor);
+    fileInfo.setCookie(cookie);
 
+    flushFile(fileInfo);
     flushStyles(fileObject, styleChange);
-
   }
 
-  private void flushFile(FileObject fileObject, StringBuilder content, boolean changed, boolean charsetChange, Charset charset, boolean flushInEditor, EditorCookie cookie) throws BadLocationException {
-    if (changed || charsetChange) {
-      if (!flushInEditor) {
-        new WriteFileTask(fileObject, charset) {
-          @Override
-          public void apply(OutputStreamWriter writer) {
-            try {
-              writer.write(content.toString());
-            } catch (IOException ex) {
-              Exceptions.printStackTrace(ex);
-            }
-          }
-        }.run();
+  private void flushFile(FlushFileInfo info) {
+    EditorCookie cookie = info.getCookie();
+    Charset charset = info.getCharset();
+    FileObject fileObject = info.getFileObject();
+
+    if (info.isChanged() || info.isCharsetChange()) {
+      if (!info.isFlushInEditor()) {
+        LOG.log(Level.INFO, "Write content (with all rules applied) to file: {0}", fileObject.getPath());
+        WriteStringToFileTask task = new WriteStringToFileTask(info);
+        task.run();
       } else {
         LOG.log(Level.INFO, "Update changes in Editor window");
 
@@ -177,7 +168,7 @@ public class EditorConfigProcessor {
           try {
             StyledDocument newDocument = cookie.openDocument();
             newDocument.remove(0, newDocument.getLength());
-            newDocument.insertString(0, new String(content.toString().getBytes(charset)), null);
+            newDocument.insertString(0, info.getStringWithCharset(), null);
             setFileAttribute(fileObject, ENCODING_SETTING, charset.name());
             cookie.saveDocument();
           } catch (BadLocationException | IOException ex) {
