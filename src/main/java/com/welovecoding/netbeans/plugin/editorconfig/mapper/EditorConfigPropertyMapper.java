@@ -63,4 +63,24 @@ public class EditorConfigPropertyMapper {
     LOG.log(Level.INFO, "Using charset: \"{0}\"", javaCharset);
     return javaCharset;
   }
+
+  public synchronized static String getFileMark(String editorConfigCharset) {
+    String fileMark = null;
+
+    if (editorConfigCharset != null) {
+      switch (editorConfigCharset) {
+        case EditorConfigConstant.CHARSET_UTF_8_BOM:
+          fileMark = "\uFEFF"; // "EF BB BF"
+          break;
+        case EditorConfigConstant.CHARSET_UTF_16_BE:
+          fileMark = "\uFEFF"; // "FE FF"
+          break;
+        case EditorConfigConstant.CHARSET_UTF_16_LE:
+          fileMark = "\uFEFF"; // "FF FE" (reverse)
+          break;
+      }
+    }
+
+    return fileMark;
+  }
 }

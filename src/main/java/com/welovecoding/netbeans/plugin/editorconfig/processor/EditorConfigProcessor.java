@@ -144,6 +144,15 @@ public class EditorConfigProcessor {
     fileInfo.setOpenedInEditor(isOpenedInEditor);
     fileInfo.setCookie(cookie);
 
+    if (charsetChangeNeeded) {
+      String ecCharset = keyedRules.get(EditorConfigConstant.CHARSET);
+      String fileMark = EditorConfigPropertyMapper.getFileMark(ecCharset);
+      Charset charset = EditorConfigPropertyMapper.mapCharset(ecCharset);
+
+      fileInfo.setCharset(charset);
+      fileInfo.setFileMark(fileMark);
+    }
+
     if (fileChangeNeeded || charsetChangeNeeded) {
       flushFile(fileInfo);
     }

@@ -6,27 +6,42 @@ import org.openide.filesystems.FileObject;
 
 public class FileInfo {
 
-  private FileObject fileObject;
-  private StringBuilder content;
   private Charset charset;
-  private boolean openedInEditor;
   private EditorCookie cookie;
+  private FileObject fileObject;
+  private String fileMark;
+  private StringBuilder sb;
+  private boolean openedInEditor;
 
   public FileInfo(FileObject fileObject) {
     this.fileObject = fileObject;
   }
 
   public String getStringWithCharset() {
-    return new String(content.toString().getBytes(charset));
+    String content = sb.toString();
+
+    if (fileMark != null && !content.startsWith(fileMark)) {
+      content = fileMark + content;
+    }
+
+    return new String(content.getBytes(charset));
   }
 
   // <editor-fold defaultstate="collapsed" desc="Generated Getter and Setter...">
+  public String getFileMark() {
+    return fileMark;
+  }
+
+  public void setFileMark(String fileMark) {
+    this.fileMark = fileMark;
+  }
+
   public StringBuilder getContent() {
-    return content;
+    return sb;
   }
 
   public void setContent(StringBuilder content) {
-    this.content = content;
+    this.sb = content;
   }
 
   public FileObject getFileObject() {

@@ -32,19 +32,19 @@ public class EditorConfigChangeListener extends FileChangeAdapter {
   @Override
   public void fileAttributeChanged(FileAttributeEvent event) {
     super.fileAttributeChanged(event);
-    LOG.log(Level.INFO, "EDITORCONFIGCHANGELISTENER: Attribute changed: {0}", event.getFile().getPath());
+    LOG.log(Level.INFO, "Attribute changed: {0}", event.getFile().getPath());
   }
 
   @Override
   public void fileRenamed(FileRenameEvent event) {
     super.fileRenamed(event);
-    LOG.log(Level.INFO, "EDITORCONFIGCHANGELISTENER: Renamed file: {0}", event.getFile().getPath());
+    LOG.log(Level.INFO, "Renamed file: {0}", event.getFile().getPath());
   }
 
   @Override
   public void fileDeleted(FileEvent event) {
     super.fileDeleted(event);
-    LOG.log(Level.INFO, "EDITORCONFIGCHANGELISTENER: Deleted file: {0}", event.getFile().getPath());
+    LOG.log(Level.INFO, "Deleted file: {0}", event.getFile().getPath());
     //TODO processDeletedEditorConfig
     //TODO processDeletedFolderWhichMayContainsFoldersWithListeners -> remove them
   }
@@ -52,7 +52,7 @@ public class EditorConfigChangeListener extends FileChangeAdapter {
   @Override
   public void fileChanged(FileEvent event) {
     super.fileChanged(event);
-    LOG.log(Level.INFO, "EDITORCONFIGCHANGELISTENER: EditorConfigs content changed: {0}", event.getFile().getPath());
+    LOG.log(Level.INFO, "EditorConfigs content changed: {0}", event.getFile().getPath());
 
     for (FileObject fo : Collections.list(editorConfigFileObject.getParent().getChildren(true))) {
       LOG.log(Level.INFO, "Updating subsequent file: {0}", fo.getPath());
@@ -63,7 +63,7 @@ public class EditorConfigChangeListener extends FileChangeAdapter {
   @Override
   public void fileFolderCreated(FileEvent event) {
     super.fileFolderCreated(event);
-    LOG.log(Level.INFO, "EDITORCONFIGCHANGELISTENER: Created folder: {0}", event.getFile().getPath());
+    LOG.log(Level.INFO, "Created folder: {0}", event.getFile().getPath());
     //TODO search for editor-configs and attach listeners
   }
 
@@ -76,7 +76,7 @@ public class EditorConfigChangeListener extends FileChangeAdapter {
   @Override
   public void fileDataCreated(FileEvent event) {
     super.fileDataCreated(event);
-    LOG.log(Level.INFO, "EDITORCONFIGCHANGELISTENER: fileDataCreated: {0}", event.getFile().getPath());
+    LOG.log(Level.INFO, "fileDataCreated: {0}", event.getFile().getPath());
   }
 
 }
