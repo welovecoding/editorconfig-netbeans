@@ -153,7 +153,6 @@ public class EditorConfigProcessor {
 
   private void flushFile(FlushFileInfo info) {
     EditorCookie cookie = info.getCookie();
-    Charset charset = info.getCharset();
     FileObject fileObject = info.getFileObject();
 
     if (info.isChanged() || info.isCharsetChange()) {
@@ -165,17 +164,25 @@ public class EditorConfigProcessor {
         LOG.log(Level.INFO, "Update changes in Editor window");
 
         NbDocument.runAtomic(cookie.getDocument(), () -> {
-          try {
-            StyledDocument newDocument = cookie.openDocument();
-            newDocument.remove(0, newDocument.getLength());
-            newDocument.insertString(0, info.getStringWithCharset(), null);
-            setFileAttribute(fileObject, ENCODING_SETTING, charset.name());
-            cookie.saveDocument();
-          } catch (BadLocationException | IOException ex) {
-            Exceptions.printStackTrace(ex);
-          }
+          updateChangesInEditorWindow(info);
         });
       }
+    }
+  }
+
+  private static void updateChangesInEditorWindow(FlushFileInfo info) {
+    EditorCookie cookie = info.getCookie();
+    Charset charset = info.getCharset();
+    FileObject fileObject = info.getFileObject();
+
+    try {
+      StyledDocument newDocument = cookie.openDocument();
+      newDocument.remove(0, newDocument.getLength());
+      newDocument.insertString(0, info.getStringWithCharset(), null);
+      fileObject.setAttribute(ENCODING_SETTING, charset.name());
+      cookie.saveDocument();
+    } catch (BadLocationException | IOException ex) {
+      Exceptions.printStackTrace(ex);
     }
   }
 
