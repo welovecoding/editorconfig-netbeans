@@ -11,13 +11,13 @@ public class EditorConfigPropertyMapper {
 
   private static final Logger LOG = Logger.getLogger(EditorConfigPropertyMapper.class.getName());
 
-  public synchronized static String normalizeLineEnding(String lineEnding) throws EditorConfigPropertyMappingException {
+  public synchronized static String mapLineEnding(String ecLineEnding) {
     String normalizedLineEnding;
 
-    if (lineEnding == null) {
-      lineEnding = "";
+    if (ecLineEnding == null) {
+      ecLineEnding = "";
     }
-    switch (lineEnding) {
+    switch (ecLineEnding) {
       case EditorConfigConstant.END_OF_LINE_LF:
         normalizedLineEnding = BaseDocument.LS_LF;
         break;

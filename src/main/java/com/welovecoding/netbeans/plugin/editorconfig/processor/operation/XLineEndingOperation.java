@@ -19,7 +19,7 @@ public class XLineEndingOperation {
     LOG.setLevel(OPERATION_LOG_LEVEL);
   }
 
-  public static boolean doChangeLineEndings(StringBuilder content, final String lineEnding) throws Exception {
+  public static boolean doLineEndings(StringBuilder content, final String lineEnding) {
 
     return new XLineEndingOperation().apply(content, lineEnding);
   }

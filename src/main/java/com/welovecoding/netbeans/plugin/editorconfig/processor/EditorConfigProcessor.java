@@ -73,27 +73,15 @@ public class EditorConfigProcessor {
    * @param dataObject
    */
   public void applyRulesToFile(DataObject dataObject) throws Exception {
-
     HashMap<String, String> keyedRules = parseRulesForFile(dataObject);
-
-    FileObject fileObject = dataObject.getPrimaryFile();
 
     // Save file before appling any changes when opened in editor
     EditorCookie cookie = getEditorCookie(dataObject);
-    boolean isOpenedInEditor = cookie != null && cookie.getDocument() != null;
+    boolean isOpenedInEditor = (cookie != null) && (cookie.getDocument() != null);
 
-//    if (isOpenedInEditor) {
-//      LOG.log(Level.INFO, "File is opened in Editor! Saving all changes.");
-//      StyledDocument document = cookie.getDocument();
-//      NbDocument.runAtomicAsUser(document, () -> {
-//        try {
-//          cookie.saveDocument();
-//        } catch (IOException ex) {
-//          Exceptions.printStackTrace(ex);
-//        }
-//      });
-//    }
+    FileObject fileObject = dataObject.getPrimaryFile();
     StringBuilder content = new StringBuilder(fileObject.asText());
+
     boolean fileChange = false;
     boolean charsetChange = false;
     boolean styleChange = false;
@@ -106,29 +94,12 @@ public class EditorConfigProcessor {
 
       switch (key) {
         case EditorConfigConstant.CHARSET:
-          Charset currentCharset = NetBeansFileUtil.guessCharset(fileObject);
-          Charset requestedCharset = EditorConfigPropertyMapper.mapCharset(keyedRules.get(EditorConfigConstant.CHARSET));
-          if (!currentCharset.equals(requestedCharset)) {
-            charsetChange = true;
-            LOG.log(Level.INFO, "Action: Charset changed");
-          }
+          charsetChange = doCharset(fileObject, keyedRules.get(EditorConfigConstant.CHARSET));
           break;
         case EditorConfigConstant.END_OF_LINE:
-          boolean tempFileChange = XLineEndingOperation.doChangeLineEndings(
-                  content,
-                  EditorConfigPropertyMapper.normalizeLineEnding(keyedRules.get(EditorConfigConstant.END_OF_LINE)));
-
-          // changing lineendings in document aswell
-          StyledDocument document = NbDocument.getDocument(dataObject);
-          if (tempFileChange && document != null) {
-            if (!document.getProperty(BaseDocument.READ_LINE_SEPARATOR_PROP).equals(EditorConfigPropertyMapper.normalizeLineEnding(keyedRules.get(EditorConfigConstant.END_OF_LINE)))) {
-              document.putProperty(BaseDocument.READ_LINE_SEPARATOR_PROP, EditorConfigPropertyMapper.normalizeLineEnding(keyedRules.get(EditorConfigConstant.END_OF_LINE)));
-              LOG.log(Level.INFO, "Action: Changed line endings in Document");
-              fileChange = tempFileChange || fileChange;
-            } else {
-              LOG.log(Level.INFO, "Action not needed: Line endings are already correct");
-            }
-          }
+          String ecLineEnding = keyedRules.get(EditorConfigConstant.END_OF_LINE);
+          boolean changedLineEndings = doEndOfLine(dataObject, ecLineEnding);
+          fileChange = fileChange || changedLineEndings;
           break;
         case EditorConfigConstant.INDENT_SIZE:
           //TODO this should happen in the file!!
@@ -151,7 +122,7 @@ public class EditorConfigProcessor {
           boolean newlineChanged = XFinalNewLineOperation.doFinalNewLine(
                   content,
                   value,
-                  EditorConfigPropertyMapper.normalizeLineEnding(keyedRules.get(EditorConfigConstant.END_OF_LINE)));
+                  EditorConfigPropertyMapper.mapLineEnding(keyedRules.get(EditorConfigConstant.END_OF_LINE)));
           if (newlineChanged) {
             LOG.log(Level.INFO, "Action: Final new line changed");
           }
@@ -168,7 +139,7 @@ public class EditorConfigProcessor {
           boolean trimTrailingWhitespacesChanged = XTrimTrailingWhitespacesOperation.doTrimTrailingWhitespaces(
                   content,
                   value,
-                  EditorConfigPropertyMapper.normalizeLineEnding(keyedRules.get(EditorConfigConstant.END_OF_LINE)));
+                  EditorConfigPropertyMapper.mapLineEnding(keyedRules.get(EditorConfigConstant.END_OF_LINE)));
           if (trimTrailingWhitespacesChanged) {
             LOG.log(Level.INFO, "Action: Trailing whitespaces changed");
           }
@@ -222,6 +193,45 @@ public class EditorConfigProcessor {
         });
       }
     }
+  }
+
+  private boolean doCharset(FileObject fileObject, String charset) {
+    boolean wasChanged = false;
+
+    Charset currentCharset = NetBeansFileUtil.guessCharset(fileObject);
+    Charset requestedCharset = EditorConfigPropertyMapper.mapCharset(charset);
+    if (!currentCharset.equals(requestedCharset)) {
+      wasChanged = true;
+      LOG.log(Level.INFO, "Action: Charset changed");
+    }
+
+    return wasChanged;
+  }
+
+  private boolean doEndOfLine(DataObject dataObject, String ecLineEnding) {
+    FileObject fileObject = dataObject.getPrimaryFile();
+    String javaLineEnding = EditorConfigPropertyMapper.mapLineEnding(ecLineEnding);
+    boolean wasChanged = false;
+
+    try {
+      StringBuilder content = new StringBuilder(fileObject.asText());
+      wasChanged = XLineEndingOperation.doLineEndings(content, javaLineEnding);
+    } catch (IOException ex) {
+      Exceptions.printStackTrace(ex);
+    }
+
+    StyledDocument document = NbDocument.getDocument(dataObject);
+    if (document != null && wasChanged) {
+      if (!document.getProperty(BaseDocument.READ_LINE_SEPARATOR_PROP).equals(javaLineEnding)) {
+        document.putProperty(BaseDocument.READ_LINE_SEPARATOR_PROP, javaLineEnding);
+        LOG.log(Level.INFO, "Action: Changed line endings in Document.");
+
+      } else {
+        LOG.log(Level.INFO, "Action not needed: Line endings are already set to: {0}", ecLineEnding);
+      }
+    }
+
+    return wasChanged;
   }
 
   private void flushStyles(FileObject fileObject, boolean styleChanged) {

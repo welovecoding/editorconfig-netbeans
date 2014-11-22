@@ -13,7 +13,7 @@ public class EditorConfigPropertyMapperTest {
   public void itConvertsLineFeed() throws EditorConfigPropertyMappingException {
     String ecProperty = "lf";
     String javaProperty = "\n";
-    String mappedProperty = EditorConfigPropertyMapper.normalizeLineEnding(ecProperty);
+    String mappedProperty = EditorConfigPropertyMapper.mapLineEnding(ecProperty);
 
     assertEquals(mappedProperty, javaProperty);
   }
@@ -22,7 +22,7 @@ public class EditorConfigPropertyMapperTest {
   public void itConvertsCarriageReturn() throws EditorConfigPropertyMappingException {
     String ecProperty = "cr";
     String javaProperty = "\r";
-    String mappedProperty = EditorConfigPropertyMapper.normalizeLineEnding(ecProperty);
+    String mappedProperty = EditorConfigPropertyMapper.mapLineEnding(ecProperty);
 
     assertEquals(mappedProperty, javaProperty);
   }
@@ -31,7 +31,7 @@ public class EditorConfigPropertyMapperTest {
   public void itConvertsCRLF() throws EditorConfigPropertyMappingException {
     String ecProperty = "crlf";
     String javaProperty = "\r\n";
-    String mappedProperty = EditorConfigPropertyMapper.normalizeLineEnding(ecProperty);
+    String mappedProperty = EditorConfigPropertyMapper.mapLineEnding(ecProperty);
 
     assertEquals(mappedProperty, javaProperty);
   }
@@ -41,7 +41,7 @@ public class EditorConfigPropertyMapperTest {
     String ecProperty = "something";
     String javaProperty = System.lineSeparator();
 
-    String mappedProperty = EditorConfigPropertyMapper.normalizeLineEnding(ecProperty);
+    String mappedProperty = EditorConfigPropertyMapper.mapLineEnding(ecProperty);
 
     assertEquals(mappedProperty, javaProperty);
   }
@@ -51,7 +51,7 @@ public class EditorConfigPropertyMapperTest {
     String ecProperty = null;
     String javaProperty = System.lineSeparator();
 
-    String mappedProperty = EditorConfigPropertyMapper.normalizeLineEnding(ecProperty);
+    String mappedProperty = EditorConfigPropertyMapper.mapLineEnding(ecProperty);
 
     assertEquals(mappedProperty, javaProperty);
   }
