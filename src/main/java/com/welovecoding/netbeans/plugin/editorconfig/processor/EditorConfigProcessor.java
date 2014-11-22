@@ -237,30 +237,7 @@ public class EditorConfigProcessor {
     }
   }
 
-  private EditorCookie getEditorCookie(FileObject fileObject) {
-    try {
-      return (EditorCookie) DataObject.find(fileObject).getLookup().lookup(EditorCookie.class);
-    } catch (DataObjectNotFoundException ex) {
-      Exceptions.printStackTrace(ex);
-      return null;
-    }
-  }
-
   private EditorCookie getEditorCookie(DataObject dataObject) {
     return dataObject.getLookup().lookup(EditorCookie.class);
-  }
-
-  private void setFileAttribute(FileObject fo, String key, String value) {
-    try {
-      fo.setAttribute(key, value);
-    } catch (IOException ex) {
-      LOG.log(Level.SEVERE, "Error setting file attribute \"{0}\" with value \"{1}\" for {2}. {3}",
-              new Object[]{
-                key,
-                value,
-                fo.getPath(),
-                ex.getMessage()
-              });
-    }
   }
 }
