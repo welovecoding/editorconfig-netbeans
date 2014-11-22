@@ -8,8 +8,6 @@ public class FlushFileInfo {
 
   private FileObject fileObject;
   private StringBuilder content;
-  private boolean changed;
-  private boolean charsetChange;
   private Charset charset;
   private boolean flushInEditor;
   private EditorCookie cookie;
@@ -37,22 +35,6 @@ public class FlushFileInfo {
 
   public void setFileObject(FileObject fileObject) {
     this.fileObject = fileObject;
-  }
-
-  public boolean isChanged() {
-    return changed;
-  }
-
-  public void setChanged(boolean changed) {
-    this.changed = changed;
-  }
-
-  public boolean isCharsetChange() {
-    return charsetChange;
-  }
-
-  public void setCharsetChange(boolean charsetChange) {
-    this.charsetChange = charsetChange;
   }
 
   public Charset getCharset() {

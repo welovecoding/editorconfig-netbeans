@@ -29,7 +29,6 @@ import org.netbeans.modules.editor.indent.spi.CodeStylePreferences;
 import org.openide.cookies.EditorCookie;
 import org.openide.filesystems.FileObject;
 import org.openide.loaders.DataObject;
-import org.openide.loaders.DataObjectNotFoundException;
 import org.openide.text.NbDocument;
 import org.openide.util.Exceptions;
 
@@ -74,9 +73,9 @@ public class EditorConfigProcessor {
     FileObject fileObject = dataObject.getPrimaryFile();
     StringBuilder content = new StringBuilder(fileObject.asText());
 
-    boolean fileChange = false;
-    boolean charsetChange = false;
-    boolean styleChange = false;
+    boolean fileChangeNeeded = false;
+    boolean charsetChangeNeeded = false;
+    boolean styleChangeNeeded = false;
 
     for (Map.Entry<String, String> rule : keyedRules.entrySet()) {
       final String key = rule.getKey();
@@ -86,12 +85,12 @@ public class EditorConfigProcessor {
 
       switch (key) {
         case EditorConfigConstant.CHARSET:
-          charsetChange = doCharset(fileObject, keyedRules.get(EditorConfigConstant.CHARSET));
+          charsetChangeNeeded = doCharset(fileObject, keyedRules.get(EditorConfigConstant.CHARSET));
           break;
         case EditorConfigConstant.END_OF_LINE:
           String ecLineEnding = keyedRules.get(EditorConfigConstant.END_OF_LINE);
           boolean changedLineEndings = doEndOfLine(dataObject, ecLineEnding);
-          fileChange = fileChange || changedLineEndings;
+          fileChangeNeeded = fileChangeNeeded || changedLineEndings;
           break;
         case EditorConfigConstant.INDENT_SIZE:
           //TODO this should happen in the file!!
@@ -99,7 +98,7 @@ public class EditorConfigProcessor {
           if (indentSizeChanged) {
             LOG.log(Level.INFO, "Action: Indent size changed");
           }
-          styleChange = indentSizeChanged || styleChange;
+          styleChangeNeeded = indentSizeChanged || styleChangeNeeded;
           break;
         case EditorConfigConstant.INDENT_STYLE:
           //TODO this happens in the file!!
@@ -107,21 +106,21 @@ public class EditorConfigProcessor {
           if (indentStyleChanged) {
             LOG.log(Level.INFO, "Action: Indent style changed");
           }
-          styleChange = indentStyleChanged || styleChange;
+          styleChangeNeeded = indentStyleChanged || styleChangeNeeded;
 
           break;
         case EditorConfigConstant.INSERT_FINAL_NEWLINE:
           String lineEnding = keyedRules.get(EditorConfigConstant.END_OF_LINE);
           String javaLineEnding = EditorConfigPropertyMapper.mapLineEnding(lineEnding);
           boolean newLineChanged = XFinalNewLineOperation.doFinalNewLine(content, value, javaLineEnding);
-          fileChange = newLineChanged || fileChange;
+          fileChangeNeeded = newLineChanged || fileChangeNeeded;
           break;
         case EditorConfigConstant.TAB_WIDTH:
           boolean tabWidthChanged = XTabWidthOperation.doTabWidth(dataObject, value);
           if (tabWidthChanged) {
             LOG.log(Level.INFO, "Action: Tab width changed");
           }
-          styleChange = tabWidthChanged || styleChange;
+          styleChangeNeeded = tabWidthChanged || styleChangeNeeded;
           break;
         case EditorConfigConstant.TRIM_TRAILING_WHITESPACE:
           boolean trimTrailingWhitespacesChanged = XTrimTrailingWhitespacesOperation.doTrimTrailingWhitespaces(
@@ -131,7 +130,7 @@ public class EditorConfigProcessor {
           if (trimTrailingWhitespacesChanged) {
             LOG.log(Level.INFO, "Action: Trailing whitespaces changed");
           }
-          fileChange = trimTrailingWhitespacesChanged || fileChange;
+          fileChangeNeeded = trimTrailingWhitespacesChanged || fileChangeNeeded;
           break;
         default:
           LOG.log(Level.WARNING, "Unknown property: {0}", key);
@@ -141,63 +140,67 @@ public class EditorConfigProcessor {
 
     FlushFileInfo fileInfo = new FlushFileInfo(fileObject);
     fileInfo.setContent(content);
-    fileInfo.setChanged(fileChange);
-    fileInfo.setCharsetChange(charsetChange);
     fileInfo.setCharset(EditorConfigPropertyMapper.mapCharset(keyedRules.get(EditorConfigConstant.CHARSET)));
     fileInfo.setFlushInEditor(isOpenedInEditor);
     fileInfo.setCookie(cookie);
 
-    flushFile(fileInfo);
-    flushStyles(fileObject, styleChange);
-  }
+    if (fileChangeNeeded || charsetChangeNeeded) {
+      flushFile(fileInfo);
+    }
 
-  private void flushFile(FlushFileInfo info) {
-    EditorCookie cookie = info.getCookie();
-    FileObject fileObject = info.getFileObject();
-
-    if (info.isChanged() || info.isCharsetChange()) {
-      if (!info.isFlushInEditor()) {
-        LOG.log(Level.INFO, "Write content (with all rules applied) to file: {0}", fileObject.getPath());
-        WriteStringToFileTask task = new WriteStringToFileTask(info);
-        task.run();
-      } else {
-        LOG.log(Level.INFO, "Update changes in Editor window");
-
-        NbDocument.runAtomic(cookie.getDocument(), () -> {
-          updateChangesInEditorWindow(info);
-        });
-      }
+    if (styleChangeNeeded) {
+      flushStyles(fileObject);
     }
   }
 
-  private static void updateChangesInEditorWindow(FlushFileInfo info) {
+  private void flushFile(FlushFileInfo info) {
+    if (!info.isFlushInEditor()) {
+      updateChangesInFile(info);
+    } else {
+      updateChangesInEditorWindow(info);
+    }
+  }
+
+  private void updateChangesInFile(FlushFileInfo info) {
+    LOG.log(Level.INFO, "Write content (with all rules applied) to file: {0}", info.getFileObject().getPath());
+
+    WriteStringToFileTask task = new WriteStringToFileTask(info);
+    task.run();
+  }
+
+  private void updateChangesInEditorWindow(FlushFileInfo info) {
     EditorCookie cookie = info.getCookie();
     Charset charset = info.getCharset();
     FileObject fileObject = info.getFileObject();
 
-    try {
-      StyledDocument newDocument = cookie.openDocument();
-      newDocument.remove(0, newDocument.getLength());
-      newDocument.insertString(0, info.getStringWithCharset(), null);
-      fileObject.setAttribute(ENCODING_SETTING, charset.name());
-      cookie.saveDocument();
-    } catch (BadLocationException | IOException ex) {
-      Exceptions.printStackTrace(ex);
-    }
+    LOG.log(Level.INFO, "Update changes in Editor window for: {0}", fileObject.getPath());
+
+    NbDocument.runAtomic(cookie.getDocument(), () -> {
+      try {
+        StyledDocument newDocument = cookie.openDocument();
+        newDocument.remove(0, newDocument.getLength());
+        newDocument.insertString(0, info.getStringWithCharset(), null);
+        fileObject.setAttribute(ENCODING_SETTING, charset.name());
+        cookie.saveDocument();
+      } catch (BadLocationException | IOException ex) {
+        Exceptions.printStackTrace(ex);
+      }
+    });
   }
 
   private boolean doCharset(FileObject fileObject, String charset) {
-    boolean wasChanged = false;
+    boolean hasToBeChanged = false;
 
     Charset currentCharset = NetBeansFileUtil.guessCharset(fileObject);
     Charset requestedCharset = EditorConfigPropertyMapper.mapCharset(charset);
 
     if (!currentCharset.equals(requestedCharset)) {
-      LOG.log(Level.INFO, "Charset change needed.");
-      wasChanged = true;
+      LOG.log(Level.INFO, "Charset change needed from {0} to {1}",
+              new Object[]{currentCharset.name(), requestedCharset.name()});
+      hasToBeChanged = true;
     }
 
-    return wasChanged;
+    return hasToBeChanged;
   }
 
   private boolean doEndOfLine(DataObject dataObject, String ecLineEnding) {
@@ -226,14 +229,12 @@ public class EditorConfigProcessor {
     return wasChanged;
   }
 
-  private void flushStyles(FileObject fileObject, boolean styleChanged) {
-    if (styleChanged) {
-      try {
-        Preferences codeStyle = CodeStylePreferences.get(fileObject, fileObject.getMIMEType()).getPreferences();
-        codeStyle.flush();
-      } catch (BackingStoreException ex) {
-        LOG.log(Level.SEVERE, "Error applying code style: {0}", ex.getMessage());
-      }
+  private void flushStyles(FileObject fileObject) {
+    try {
+      Preferences codeStyle = CodeStylePreferences.get(fileObject, fileObject.getMIMEType()).getPreferences();
+      codeStyle.flush();
+    } catch (BackingStoreException ex) {
+      LOG.log(Level.SEVERE, "Error applying code style: {0}", ex.getMessage());
     }
   }
 
