@@ -16,7 +16,7 @@ import org.openide.loaders.DataObject;
  */
 public class IndentSizeOperation {
 
-  private static final Logger LOG = Logger.getLogger(IndentSizeOperation.class.getName());
+  private static final Logger LOG = Logger.getLogger(IndentSizeOperation.class.getSimpleName());
 
   static {
     LOG.setLevel(OPERATION_LOG_LEVEL);

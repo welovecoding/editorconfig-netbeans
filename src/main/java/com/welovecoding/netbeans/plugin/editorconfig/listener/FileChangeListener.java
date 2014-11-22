@@ -1,6 +1,7 @@
 package com.welovecoding.netbeans.plugin.editorconfig.listener;
 
 import com.welovecoding.netbeans.plugin.editorconfig.processor.EditorConfigProcessor;
+import com.welovecoding.netbeans.plugin.editorconfig.processor.SmartSkip;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.netbeans.api.project.Project;
@@ -18,7 +19,7 @@ import org.openide.util.Exceptions;
  */
 public class FileChangeListener extends FileChangeAdapter {
 
-  private static final Logger LOG = Logger.getLogger(FileChangeListener.class.getName());
+  private static final Logger LOG = Logger.getLogger(FileChangeListener.class.getSimpleName());
   private final Project project;
 
   public FileChangeListener(Project project, FileObject editorConfigFileObject) {
@@ -29,19 +30,19 @@ public class FileChangeListener extends FileChangeAdapter {
   @Override
   public void fileAttributeChanged(FileAttributeEvent event) {
     super.fileAttributeChanged(event);
-    LOG.log(Level.INFO, "FILECHANGELISTENER: Attribute changed: {0}", event.getFile().getPath());
+    LOG.log(Level.INFO, "Attribute changed: {0}", event.getFile().getPath());
   }
 
   @Override
   public void fileRenamed(FileRenameEvent event) {
     super.fileRenamed(event);
-    LOG.log(Level.INFO, "FILECHANGELISTENER: Renamed file: {0}", event.getFile().getPath());
+    LOG.log(Level.INFO, "Renamed file: {0}", event.getFile().getPath());
   }
 
   @Override
   public void fileDeleted(FileEvent event) {
     super.fileDeleted(event);
-    LOG.log(Level.INFO, "FILECHANGELISTENER: Deleted file: {0}", event.getFile().getPath());
+    LOG.log(Level.INFO, "Deleted file: {0}", event.getFile().getPath());
     //TODO processDeletedEditorConfig
     //TODO processDeletedFolderWhichMayContainsFoldersWithListeners -> remove them
   }
@@ -49,22 +50,43 @@ public class FileChangeListener extends FileChangeAdapter {
   @Override
   public void fileChanged(FileEvent event) {
     super.fileChanged(event);
-    LOG.log(Level.INFO, "FILECHANGELISTENER: File content changed: {0}", event.getFile().getPath());
-    if (!event.getFile().isFolder() && !event.isExpected()) {
+    String path = event.getFile().getPath();
+
+    LOG.log(Level.INFO, "File content changed: {0}", path);
+
+    if (applyRulesToFile(event)) {
       try {
+        LOG.log(Level.INFO, "Applying rules to file: {0}", path);
         new EditorConfigProcessor().applyRulesToFile(DataObject.find(event.getFile()));
       } catch (DataObjectNotFoundException ex) {
         Exceptions.printStackTrace(ex);
       } catch (Exception ex) {
         Exceptions.printStackTrace(ex);
       }
+    } else {
+      LOG.log(Level.INFO, "Rules will not be applied to: {0}", path);
     }
+  }
+
+  private boolean applyRulesToFile(FileEvent event) {
+    FileObject file = event.getFile();
+
+    boolean applyRules = false;
+    boolean isntFolder = !file.isFolder();
+    boolean isUnexpected = !event.isExpected();
+    boolean isntSkipped = !SmartSkip.skipFile(file);
+
+    if (isUnexpected && isntFolder && isntSkipped) {
+      applyRules = true;
+    }
+
+    return applyRules;
   }
 
   @Override
   public void fileFolderCreated(FileEvent event) {
     super.fileFolderCreated(event);
-    LOG.log(Level.INFO, "FILECHANGELISTENER: Created folder: {0}", event.getFile().getPath());
+    LOG.log(Level.INFO, "Created folder: {0}", event.getFile().getPath());
     //TODO search for editor-configs and attach listeners
   }
 
@@ -77,7 +99,7 @@ public class FileChangeListener extends FileChangeAdapter {
   @Override
   public void fileDataCreated(FileEvent event) {
     super.fileDataCreated(event);
-    LOG.log(Level.INFO, "FILECHANGELISTENER: fileDataCreated: {0}", event.getFile().getPath());
+    LOG.log(Level.INFO, "fileDataCreated: {0}", event.getFile().getPath());
   }
 
 }

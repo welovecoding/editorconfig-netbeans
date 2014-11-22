@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
  */
 public class XTrimTrailingWhitespacesOperation {
 
-  private static final Logger LOG = Logger.getLogger(XTrimTrailingWhitespacesOperation.class.getName());
+  private static final Logger LOG = Logger.getLogger(XTrimTrailingWhitespacesOperation.class.getSimpleName());
 
   static {
     LOG.setLevel(OPERATION_LOG_LEVEL);

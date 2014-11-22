@@ -9,7 +9,7 @@ import org.netbeans.editor.BaseDocument;
 
 public class EditorConfigPropertyMapper {
 
-  private static final Logger LOG = Logger.getLogger(EditorConfigPropertyMapper.class.getName());
+  private static final Logger LOG = Logger.getLogger(EditorConfigPropertyMapper.class.getSimpleName());
 
   public synchronized static String mapLineEnding(String ecLineEnding) {
     String normalizedLineEnding;

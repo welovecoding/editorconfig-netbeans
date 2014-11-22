@@ -15,7 +15,7 @@ import org.openide.loaders.DataObject;
  */
 public class XTabWidthOperation {
 
-  private static final Logger LOG = Logger.getLogger(XTabWidthOperation.class.getName());
+  private static final Logger LOG = Logger.getLogger(XTabWidthOperation.class.getSimpleName());
 
   static {
     LOG.setLevel(OPERATION_LOG_LEVEL);

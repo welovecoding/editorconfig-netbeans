@@ -12,7 +12,7 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = MIMEResolver.class, position = 3214328)
 public class FilenameResolver extends MIMEResolver {
 
-  private static final Logger LOG = Logger.getLogger(FilenameResolver.class.getName());
+  private static final Logger LOG = Logger.getLogger(FilenameResolver.class.getSimpleName());
   private static final String mimetype = "text/plain+ec";
 
   public FilenameResolver() {

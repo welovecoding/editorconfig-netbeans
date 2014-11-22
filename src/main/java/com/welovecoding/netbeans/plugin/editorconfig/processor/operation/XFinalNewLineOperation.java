@@ -10,7 +10,7 @@ import java.util.logging.Logger;
  */
 public class XFinalNewLineOperation {
 
-  private static final Logger LOG = Logger.getLogger(XFinalNewLineOperation.class.getName());
+  private static final Logger LOG = Logger.getLogger(XFinalNewLineOperation.class.getSimpleName());
 
   static {
     LOG.setLevel(OPERATION_LOG_LEVEL);

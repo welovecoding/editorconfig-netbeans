@@ -27,7 +27,7 @@ import org.openide.util.lookup.Lookups;
  */
 public class EditorConfigHookLookup implements LookupProvider {
 
-  private static final Logger LOG = Logger.getLogger(EditorConfigHookLookup.class.getName());
+  private static final Logger LOG = Logger.getLogger(EditorConfigHookLookup.class.getSimpleName());
 
   @Override
   public Lookup createAdditionalLookup(Lookup lookup) {

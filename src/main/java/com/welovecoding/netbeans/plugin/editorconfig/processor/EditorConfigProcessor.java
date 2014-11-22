@@ -33,13 +33,9 @@ import org.openide.loaders.DataObjectNotFoundException;
 import org.openide.text.NbDocument;
 import org.openide.util.Exceptions;
 
-/**
- *
- * @author Michael Koppen
- */
 public class EditorConfigProcessor {
 
-  private static final Logger LOG = Logger.getLogger(EditorConfigProcessor.class.getName());
+  private static final Logger LOG = Logger.getLogger(EditorConfigProcessor.class.getSimpleName());
   public static final Level OPERATION_LOG_LEVEL = Level.WARNING;
   private final EditorConfig ec;
 

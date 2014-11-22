@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
  */
 public class XLineEndingOperation {
 
-  private static final Logger LOG = Logger.getLogger(XLineEndingOperation.class.getName());
+  private static final Logger LOG = Logger.getLogger(XLineEndingOperation.class.getSimpleName());
 
   static {
     LOG.setLevel(OPERATION_LOG_LEVEL);
