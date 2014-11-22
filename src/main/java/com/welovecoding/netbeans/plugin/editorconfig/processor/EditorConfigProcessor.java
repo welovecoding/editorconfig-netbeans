@@ -1,5 +1,6 @@
 package com.welovecoding.netbeans.plugin.editorconfig.processor;
 
+import static com.welovecoding.netbeans.plugin.editorconfig.config.Settings.ENCODING_SETTING;
 import com.welovecoding.netbeans.plugin.editorconfig.mapper.EditorConfigPropertyMapper;
 import com.welovecoding.netbeans.plugin.editorconfig.model.EditorConfigConstant;
 import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.IndentSizeOperation;
@@ -49,26 +50,21 @@ public class EditorConfigProcessor {
     LOG.log(Level.INFO, "Apply rules for: {0}", filePath);
 
     List<EditorConfig.OutPair> rules = new ArrayList<>();
+    HashMap<String, String> keyedRules = new HashMap<>();
 
     try {
       rules = ec.getProperties(filePath);
+
+      for (EditorConfig.OutPair rule : rules) {
+        keyedRules.put(rule.getKey().toLowerCase(), rule.getVal().toLowerCase());
+      }
     } catch (EditorConfigException ex) {
       LOG.log(Level.SEVERE, ex.getMessage());
-    }
-
-    HashMap<String, String> keyedRules = new HashMap<>();
-    for (EditorConfig.OutPair rule : rules) {
-      keyedRules.put(rule.getKey().toLowerCase(), rule.getVal().toLowerCase());
     }
 
     return keyedRules;
   }
 
-  /**
-   * Applies EditorConfig rules for the given file.
-   *
-   * @param dataObject
-   */
   public void applyRulesToFile(DataObject dataObject) throws Exception {
     HashMap<String, String> keyedRules = parseRulesForFile(dataObject);
 
@@ -182,7 +178,7 @@ public class EditorConfigProcessor {
             StyledDocument newDocument = cookie.openDocument();
             newDocument.remove(0, newDocument.getLength());
             newDocument.insertString(0, new String(content.toString().getBytes(charset)), null);
-            setFileAttribute(fileObject, "ec.encoding", charset.name());
+            setFileAttribute(fileObject, ENCODING_SETTING, charset.name());
             cookie.saveDocument();
           } catch (BadLocationException | IOException ex) {
             Exceptions.printStackTrace(ex);
@@ -197,9 +193,10 @@ public class EditorConfigProcessor {
 
     Charset currentCharset = NetBeansFileUtil.guessCharset(fileObject);
     Charset requestedCharset = EditorConfigPropertyMapper.mapCharset(charset);
+
     if (!currentCharset.equals(requestedCharset)) {
+      LOG.log(Level.INFO, "Charset change needed.");
       wasChanged = true;
-      LOG.log(Level.INFO, "Action: Charset changed");
     }
 
     return wasChanged;

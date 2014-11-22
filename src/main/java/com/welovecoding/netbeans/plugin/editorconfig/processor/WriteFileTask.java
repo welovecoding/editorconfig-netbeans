@@ -1,10 +1,6 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.welovecoding.netbeans.plugin.editorconfig.processor;
 
+import static com.welovecoding.netbeans.plugin.editorconfig.config.Settings.ENCODING_SETTING;
 import com.welovecoding.netbeans.plugin.editorconfig.util.NetBeansFileUtil;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -45,7 +41,7 @@ public abstract class WriteFileTask implements Runnable {
         // #####################
         apply(writer);
         // #####################
-        setFileAttribute(fileObject, "ec.encoding", charset.name());
+        setFileAttribute(fileObject, ENCODING_SETTING, charset.name());
         writer.flush();
         outputStream.flush();
       }

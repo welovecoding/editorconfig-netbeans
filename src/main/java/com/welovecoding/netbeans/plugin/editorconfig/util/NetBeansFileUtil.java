@@ -1,6 +1,7 @@
 package com.welovecoding.netbeans.plugin.editorconfig.util;
 
 import com.glaforge.i18n.io.CharsetToolkit;
+import static com.welovecoding.netbeans.plugin.editorconfig.config.Settings.ENCODING_SETTING;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -26,7 +27,7 @@ public class NetBeansFileUtil {
    */
   public static Charset guessCharset(FileObject fo) {
     Charset charset = StandardCharsets.UTF_8;
-    Object fileEncoding = fo.getAttribute("ec.encoding");
+    Object fileEncoding = fo.getAttribute(ENCODING_SETTING);
 
     if (fileEncoding == null) {
       try {
