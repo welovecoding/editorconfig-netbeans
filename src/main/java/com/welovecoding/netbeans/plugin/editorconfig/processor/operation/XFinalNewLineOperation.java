@@ -16,9 +16,9 @@ public class XFinalNewLineOperation {
     LOG.setLevel(OPERATION_LOG_LEVEL);
   }
 
-  public static boolean doFinalNewLine(StringBuilder content, final String finalnewline, final String lineEnding) throws Exception {
+  public static boolean doFinalNewLine(StringBuilder content, final String finalNewLine, final String lineEnding) throws Exception {
 
-    return new XFinalNewLineOperation().apply(content, finalnewline, lineEnding);
+    return new XFinalNewLineOperation().apply(content, finalNewLine, lineEnding);
   }
 
   public boolean apply(StringBuilder content, final String finalnewline, final String lineEnding) {
@@ -30,7 +30,7 @@ public class XFinalNewLineOperation {
       LOG.log(Level.INFO, "INSERT_FINAL_NEWLINE = true");
       String tempContent = content.toString();
       LOG.log(Level.INFO, "OLDCONTENT: {0}.", tempContent);
-      content = finalNewline(content, lineEnding);
+      content = addFinalNewLine(content, lineEnding);
 
       if (tempContent.equals(content.toString())) {
         LOG.log(Level.INFO, "INSERT_FINAL_NEWLINE : No changes");
@@ -45,7 +45,7 @@ public class XFinalNewLineOperation {
     return changed;
   }
 
-  private StringBuilder finalNewline(StringBuilder content, String lineEnding) {
+  private StringBuilder addFinalNewLine(StringBuilder content, String lineEnding) {
     if (!content.toString().endsWith("\n") && !content.toString().endsWith("\r")) {
       LOG.log(Level.INFO, "INSERT_FINAL_NEWLINE : Adding final newline");
       return content.append(lineEnding);
