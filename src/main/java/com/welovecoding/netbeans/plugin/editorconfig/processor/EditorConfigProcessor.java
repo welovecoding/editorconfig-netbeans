@@ -60,6 +60,7 @@ public class EditorConfigProcessor {
     for (EditorConfig.OutPair rule : rules) {
       keyedRules.put(rule.getKey().toLowerCase(), rule.getVal().toLowerCase());
     }
+
     return keyedRules;
   }
 

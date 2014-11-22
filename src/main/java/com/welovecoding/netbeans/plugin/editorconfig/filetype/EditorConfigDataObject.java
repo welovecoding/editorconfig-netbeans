@@ -13,15 +13,17 @@ import org.openide.loaders.DataObjectExistsException;
 import org.openide.loaders.MultiDataObject;
 import org.openide.loaders.MultiFileLoader;
 import org.openide.util.NbBundle.Messages;
+import static com.welovecoding.netbeans.plugin.editorconfig.config.Settings.LOGO_PATH;
+import static com.welovecoding.netbeans.plugin.editorconfig.config.Settings.MIME_TYPE;
 
 @MIMEResolver.ExtensionRegistration(
         displayName = "#LBL_EditorConfig_LOADER",
-        mimeType = "text/plain+ec",
+        mimeType = MIME_TYPE,
         extension = {"editorconfig"}
 )
 @DataObject.Registration(
-        mimeType = "text/plain+ec",
-        iconBase = "com/welovecoding/netbeans/plugin/editorconfig/filetype/ec.png",
+        mimeType = MIME_TYPE,
+        iconBase = LOGO_PATH,
         displayName = "#LBL_EditorConfig_LOADER",
         position = 300
 )
@@ -100,7 +102,7 @@ public class EditorConfigDataObject extends MultiDataObject {
           folder = "Other",
           targetName = "",
           content = ".editorconfig",
-          iconBase = "com/welovecoding/netbeans/plugin/editorconfig/filetype/ec.png")
+          iconBase = LOGO_PATH)
   public static WizardDescriptor.InstantiatingIterator templateIterator() {
     return null;
   }

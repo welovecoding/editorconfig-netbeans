@@ -13,18 +13,18 @@ import org.openide.util.lookup.ServiceProvider;
 public class FilenameResolver extends MIMEResolver {
 
   private static final Logger LOG = Logger.getLogger(FilenameResolver.class.getSimpleName());
-  private static final String mimetype = "text/plain+ec";
+  private static final String MIME_TYPE = "text/plain+ec";
 
   public FilenameResolver() {
-    super(mimetype);
+    super(MIME_TYPE);
   }
 
   @Override
   public String findMIMEType(FileObject fo) {
     String nameExt = fo.getNameExt();
-//    LOG.log(Level.INFO, "Found file with nameExt: {0}", nameExt);
+
     if (".editorconfig".equalsIgnoreCase(nameExt)) {
-      return mimetype;
+      return MIME_TYPE;
     }
 
     return null;
