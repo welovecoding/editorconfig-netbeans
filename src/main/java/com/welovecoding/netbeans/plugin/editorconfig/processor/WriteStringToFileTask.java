@@ -13,7 +13,7 @@ public class WriteStringToFileTask extends WriteFileTask {
   private static final Logger LOG = Logger.getLogger(WriteStringToFileTask.class.getSimpleName());
   private final String content;
 
-  public WriteStringToFileTask(FlushFileInfo info) {
+  public WriteStringToFileTask(FileInfo info) {
     super(info.getFileObject(), info.getCharset());
     this.content = info.getContent().toString();
   }

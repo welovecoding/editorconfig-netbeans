@@ -138,7 +138,7 @@ public class EditorConfigProcessor {
       }
     }
 
-    FlushFileInfo fileInfo = new FlushFileInfo(fileObject);
+    FileInfo fileInfo = new FileInfo(fileObject);
     fileInfo.setContent(content);
     fileInfo.setCharset(EditorConfigPropertyMapper.mapCharset(keyedRules.get(EditorConfigConstant.CHARSET)));
     fileInfo.setOpenedInEditor(isOpenedInEditor);
@@ -153,7 +153,7 @@ public class EditorConfigProcessor {
     }
   }
 
-  private void flushFile(FlushFileInfo info) {
+  private void flushFile(FileInfo info) {
     if (info.isOpenedInEditor()) {
       updateChangesInEditorWindow(info);
     } else {
@@ -161,14 +161,14 @@ public class EditorConfigProcessor {
     }
   }
 
-  private void updateChangesInFile(FlushFileInfo info) {
+  private void updateChangesInFile(FileInfo info) {
     LOG.log(Level.INFO, "Write content (with all rules applied) to file: {0}", info.getFileObject().getPath());
 
     WriteStringToFileTask task = new WriteStringToFileTask(info);
     task.run();
   }
 
-  private void updateChangesInEditorWindow(FlushFileInfo info) {
+  private void updateChangesInEditorWindow(FileInfo info) {
     EditorCookie cookie = info.getCookie();
     Charset charset = info.getCharset();
     FileObject fileObject = info.getFileObject();

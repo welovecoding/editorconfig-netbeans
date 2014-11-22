@@ -4,7 +4,7 @@ import java.nio.charset.Charset;
 import org.openide.cookies.EditorCookie;
 import org.openide.filesystems.FileObject;
 
-public class FlushFileInfo {
+public class FileInfo {
 
   private FileObject fileObject;
   private StringBuilder content;
@@ -12,7 +12,7 @@ public class FlushFileInfo {
   private boolean openedInEditor;
   private EditorCookie cookie;
 
-  public FlushFileInfo(FileObject fileObject) {
+  public FileInfo(FileObject fileObject) {
     this.fileObject = fileObject;
   }
 
