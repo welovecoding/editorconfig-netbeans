@@ -52,12 +52,12 @@ public class EditorConfigProcessor {
 
     try {
       rules = ec.getProperties(filePath);
-
-      for (EditorConfig.OutPair rule : rules) {
-        keyedRules.put(rule.getKey().toLowerCase(), rule.getVal().toLowerCase());
-      }
     } catch (EditorConfigException ex) {
       LOG.log(Level.SEVERE, ex.getMessage());
+    }
+
+    for (EditorConfig.OutPair rule : rules) {
+      keyedRules.put(rule.getKey().toLowerCase(), rule.getVal().toLowerCase());
     }
 
     return keyedRules;
@@ -141,7 +141,7 @@ public class EditorConfigProcessor {
     FlushFileInfo fileInfo = new FlushFileInfo(fileObject);
     fileInfo.setContent(content);
     fileInfo.setCharset(EditorConfigPropertyMapper.mapCharset(keyedRules.get(EditorConfigConstant.CHARSET)));
-    fileInfo.setFlushInEditor(isOpenedInEditor);
+    fileInfo.setOpenedInEditor(isOpenedInEditor);
     fileInfo.setCookie(cookie);
 
     if (fileChangeNeeded || charsetChangeNeeded) {
@@ -154,10 +154,10 @@ public class EditorConfigProcessor {
   }
 
   private void flushFile(FlushFileInfo info) {
-    if (!info.isFlushInEditor()) {
-      updateChangesInFile(info);
-    } else {
+    if (info.isOpenedInEditor()) {
       updateChangesInEditorWindow(info);
+    } else {
+      updateChangesInFile(info);
     }
   }
 

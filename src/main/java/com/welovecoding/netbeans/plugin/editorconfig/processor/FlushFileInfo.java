@@ -9,7 +9,7 @@ public class FlushFileInfo {
   private FileObject fileObject;
   private StringBuilder content;
   private Charset charset;
-  private boolean flushInEditor;
+  private boolean openedInEditor;
   private EditorCookie cookie;
 
   public FlushFileInfo(FileObject fileObject) {
@@ -45,12 +45,12 @@ public class FlushFileInfo {
     this.charset = charset;
   }
 
-  public boolean isFlushInEditor() {
-    return flushInEditor;
+  public boolean isOpenedInEditor() {
+    return openedInEditor;
   }
 
-  public void setFlushInEditor(boolean flushInEditor) {
-    this.flushInEditor = flushInEditor;
+  public void setOpenedInEditor(boolean openedInEditor) {
+    this.openedInEditor = openedInEditor;
   }
 
   public EditorCookie getCookie() {
