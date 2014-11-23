@@ -203,6 +203,44 @@ public class EditorConfigProcessor {
     });
   }
 
+  private void updateChangesInEditorWindowWithStringBuilder(FileInfo info) throws IOException {
+    EditorCookie cookie = info.getCookie();
+    StyledDocument doc = cookie.openDocument();
+    FileObject fo = info.getFileObject();
+    Charset charset = info.getCharset();
+
+    OutputStream os = new OutputStream() {
+      private final StringBuilder string = info.getContent();
+
+      @Override
+      public void write(int b) throws IOException {
+        this.string.append((char) b);
+      }
+    };
+
+    FilterOutputStream fos = new FilterOutputStream(os) {
+      @Override
+      public void close() throws IOException {
+        flush();
+      }
+    };
+
+    Writer w = new OutputStreamWriter(fos, charset);
+    EditorKit kit = NetBeansFileUtil.getEditorKit(fo);
+
+    try {
+      kit.write(w, doc, 0, doc.getLength());
+    } catch (IOException | BadLocationException ex) {
+      Exceptions.printStackTrace(ex);
+    } finally {
+      try {
+        w.close();
+      } catch (IOException ex) {
+        Exceptions.printStackTrace(ex);
+      }
+    }
+  }
+
   private boolean doCharset(FileObject fileObject, String charset) {
     boolean hasToBeChanged = false;
 
@@ -255,30 +293,5 @@ public class EditorConfigProcessor {
 
   private EditorCookie getEditorCookie(DataObject dataObject) {
     return dataObject.getLookup().lookup(EditorCookie.class);
-  }
-
-  private void saveFromKitToStream(FileObject fo, StyledDocument doc, Charset charset, OutputStream stream) {
-    EditorKit kit = NetBeansFileUtil.getEditorKit(fo);
-
-    FilterOutputStream fos = new FilterOutputStream(stream) {
-      @Override
-      public void close() throws IOException {
-        flush();
-      }
-    };
-
-    Writer w = new OutputStreamWriter(fos, charset);
-
-    try {
-      kit.write(w, doc, 0, doc.getLength());
-    } catch (IOException | BadLocationException ex) {
-      Exceptions.printStackTrace(ex);
-    } finally {
-      try {
-        w.close();
-      } catch (IOException ex) {
-        Exceptions.printStackTrace(ex);
-      }
-    }
   }
 }
