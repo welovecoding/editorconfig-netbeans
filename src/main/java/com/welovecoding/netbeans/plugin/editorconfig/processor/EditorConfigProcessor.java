@@ -10,7 +10,11 @@ import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.XLineEn
 import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.XTabWidthOperation;
 import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.XTrimTrailingWhitespacesOperation;
 import com.welovecoding.netbeans.plugin.editorconfig.util.NetBeansFileUtil;
+import java.io.FilterOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,6 +25,7 @@ import java.util.logging.Logger;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.EditorKit;
 import javax.swing.text.StyledDocument;
 import org.editorconfig.core.EditorConfig;
 import org.editorconfig.core.EditorConfigException;
@@ -29,6 +34,7 @@ import org.netbeans.modules.editor.indent.spi.CodeStylePreferences;
 import org.openide.cookies.EditorCookie;
 import org.openide.filesystems.FileObject;
 import org.openide.loaders.DataObject;
+import org.openide.text.DataEditorSupport;
 import org.openide.text.NbDocument;
 import org.openide.util.Exceptions;
 
@@ -186,9 +192,9 @@ public class EditorConfigProcessor {
 
     NbDocument.runAtomic(cookie.getDocument(), () -> {
       try {
-        StyledDocument newDocument = cookie.openDocument();
-        newDocument.remove(0, newDocument.getLength());
-        newDocument.insertString(0, info.getStringWithCharset(), null);
+        StyledDocument document = cookie.openDocument();
+        document.remove(0, document.getLength());
+        document.insertString(0, info.getStringWithCharset(), null);
         fileObject.setAttribute(ENCODING_SETTING, charset.name());
         cookie.saveDocument();
       } catch (BadLocationException | IOException ex) {
@@ -249,5 +255,30 @@ public class EditorConfigProcessor {
 
   private EditorCookie getEditorCookie(DataObject dataObject) {
     return dataObject.getLookup().lookup(EditorCookie.class);
+  }
+
+  private void saveFromKitToStream(FileObject fo, StyledDocument doc, Charset charset, OutputStream stream) {
+    EditorKit kit = NetBeansFileUtil.getEditorKit(fo);
+
+    FilterOutputStream fos = new FilterOutputStream(stream) {
+      @Override
+      public void close() throws IOException {
+        flush();
+      }
+    };
+
+    Writer w = new OutputStreamWriter(fos, charset);
+
+    try {
+      kit.write(w, doc, 0, doc.getLength());
+    } catch (IOException | BadLocationException ex) {
+      Exceptions.printStackTrace(ex);
+    } finally {
+      try {
+        w.close();
+      } catch (IOException ex) {
+        Exceptions.printStackTrace(ex);
+      }
+    }
   }
 }

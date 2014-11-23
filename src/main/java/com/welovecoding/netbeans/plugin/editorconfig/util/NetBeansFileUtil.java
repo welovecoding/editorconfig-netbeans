@@ -7,8 +7,12 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javax.swing.text.EditorKit;
+import org.netbeans.api.editor.mimelookup.MimeLookup;
+import org.netbeans.api.editor.mimelookup.MimePath;
 import org.openide.filesystems.FileObject;
 import org.openide.util.Exceptions;
+import org.openide.util.Lookup;
 import org.openide.util.Utilities;
 
 /**
@@ -49,5 +53,19 @@ public class NetBeansFileUtil {
     return lines.map((String content) -> {
       return content.replaceAll("\\s+$", "");
     }).collect(Collectors.joining(lineEnding));
+  }
+
+  public static EditorKit getEditorKit(FileObject fo) {
+    String mimePath = fo.getMIMEType();
+    Lookup lookup = MimeLookup.getLookup(MimePath.parse(mimePath));
+    EditorKit kit = lookup.lookup(EditorKit.class);
+
+    if (kit == null) {
+      lookup = MimeLookup.getLookup(MimePath.parse("text/plain"));
+      kit = lookup.lookup(EditorKit.class);
+    }
+
+    // Don't use the prototype instance straightaway
+    return (EditorKit) kit.clone();
   }
 }
