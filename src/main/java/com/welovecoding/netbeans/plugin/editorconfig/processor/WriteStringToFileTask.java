@@ -26,7 +26,6 @@ public class WriteStringToFileTask extends WriteFileTask {
   @Override
   public void apply(OutputStreamWriter writer) {
     try {
-      LOG.log(Level.INFO, "BENNY IST EIN GENIEEEE!");
       writer.write(content);
     } catch (IOException ex) {
       Exceptions.printStackTrace(ex);
