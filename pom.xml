@@ -158,13 +158,6 @@
       <artifactId>org-openide-dialogs</artifactId>
       <version>${netbeans.api.version}</version>
     </dependency>
-    <!-- http://bits.netbeans.org/7.2/javadoc/org-netbeans-modules-editor-guards/overview-summary.html -->
-    <dependency>
-      <groupId>org.netbeans.api</groupId>
-      <artifactId>org-netbeans-modules-editor-guards</artifactId>
-      <version>${netbeans.api.version}</version>
-      <type>jar</type>
-    </dependency>
   </dependencies>
     
   <build>
