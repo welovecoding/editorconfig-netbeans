@@ -192,9 +192,9 @@ public class EditorConfigProcessor {
 
     NbDocument.runAtomic(cookie.getDocument(), () -> {
       try {
-        StyledDocument document = cookie.openDocument();
-        document.remove(0, document.getLength());
-        document.insertString(0, info.getStringWithCharset(), null);
+        StyledDocument doc = cookie.openDocument();
+        doc.remove(0, doc.getLength());
+        doc.insertString(0, info.getStringWithCharset(), null);
         fileObject.setAttribute(ENCODING_SETTING, charset.name());
         cookie.saveDocument();
       } catch (BadLocationException | IOException ex) {
