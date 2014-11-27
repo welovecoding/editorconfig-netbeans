@@ -3,12 +3,14 @@ package com.welovecoding.netbeans.plugin.editorconfig.processor;
 import static com.welovecoding.netbeans.plugin.editorconfig.config.Settings.ENCODING_SETTING;
 import com.welovecoding.netbeans.plugin.editorconfig.mapper.EditorConfigPropertyMapper;
 import com.welovecoding.netbeans.plugin.editorconfig.model.EditorConfigConstant;
+import com.welovecoding.netbeans.plugin.editorconfig.processor.io.DocumentReaderWriter;
 import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.IndentSizeOperation;
 import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.IndentStyleOperation;
 import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.XFinalNewLineOperation;
 import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.XLineEndingOperation;
 import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.XTabWidthOperation;
 import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.XTrimTrailingWhitespacesOperation;
+import com.welovecoding.netbeans.plugin.editorconfig.util.FileAccessException;
 import com.welovecoding.netbeans.plugin.editorconfig.util.NetBeansFileUtil;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -179,20 +181,14 @@ public class EditorConfigProcessor {
 
   private void updateChangesInEditorWindow(FileInfo info) {
     EditorCookie cookie = info.getCookie();
-    Charset charset = info.getCharset();
-    FileObject fileObject = info.getFileObject();
 
-    LOG.log(Level.INFO, "Update changes in Editor window for: {0}", fileObject.getPath());
+    LOG.log(Level.INFO, "Update changes in Editor window for: {0}", info.getPath());
 
     NbDocument.runAtomic(cookie.getDocument(), () -> {
       try {
-        StyledDocument doc = cookie.openDocument();
-        doc.remove(0, doc.getLength());
-        doc.insertString(0, info.getContentAsString(), null);
-        fileObject.setAttribute(ENCODING_SETTING, charset.name());
-        cookie.saveDocument();
-      } catch (BadLocationException | IOException ex) {
-        Exceptions.printStackTrace(ex);
+        DocumentReaderWriter.writeWithString(info);
+      } catch (FileAccessException ex) {
+        LOG.log(Level.SEVERE, ex.getMessage());
       }
     });
   }

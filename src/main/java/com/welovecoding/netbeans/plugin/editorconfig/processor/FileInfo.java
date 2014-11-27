@@ -17,6 +17,10 @@ public class FileInfo {
   public FileInfo(DataObject dataObject) {
     this.dataObject = dataObject;
   }
+  
+  public String getPath() {
+    return this.getFileObject().getPath();
+  }
 
   public FileObject getFileObject() {
     return this.dataObject.getPrimaryFile();

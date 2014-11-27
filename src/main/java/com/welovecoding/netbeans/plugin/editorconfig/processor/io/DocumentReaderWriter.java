@@ -1,5 +1,6 @@
 package com.welovecoding.netbeans.plugin.editorconfig.processor.io;
 
+import com.welovecoding.netbeans.plugin.editorconfig.processor.FileInfo;
 import com.welovecoding.netbeans.plugin.editorconfig.util.FileAccessException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -34,10 +35,10 @@ public class DocumentReaderWriter {
     return kit;
   }
 
-  public static void writeWithEditorKit(DataObject dataObject, byte[] content)
+  public static void writeWithEditorKit(FileInfo info)
           throws FileAccessException {
-    EditorCookie cookie = getEditorCookie(dataObject);
-    EditorKit kit = getEditorKit(dataObject);
+    EditorCookie cookie = info.getCookie();
+    EditorKit kit = getEditorKit(info.getDataObject());
     StyledDocument document = null;
     int caretPosition = -1;
 
@@ -47,7 +48,7 @@ public class DocumentReaderWriter {
       throw new FileAccessException("Document could not be loaded: " + ex.getMessage());
     }
 
-    try (InputStream is = new ByteArrayInputStream(content)) {
+    try (InputStream is = new ByteArrayInputStream(info.getContentAsBytes())) {
       Caret caret = kit.createCaret();
       caretPosition = caret.getDot();
 
@@ -74,9 +75,9 @@ public class DocumentReaderWriter {
 
   }
 
-  public static void writeWithString(DataObject dataObject, String content)
+  public static void writeWithString(FileInfo info)
           throws FileAccessException {
-    EditorCookie cookie = getEditorCookie(dataObject);
+    EditorCookie cookie = getEditorCookie(info.getDataObject());
     StyledDocument document = null;
 
     try {
@@ -87,7 +88,7 @@ public class DocumentReaderWriter {
 
     try {
       document.remove(0, document.getLength());
-      document.insertString(0, content, null);
+      document.insertString(0, info.getContentAsString(), null);
       cookie.saveDocument();
     } catch (BadLocationException | IOException ex) {
       throw new FileAccessException("Document could not be written: " + ex.getMessage());
