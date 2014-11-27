@@ -34,7 +34,6 @@ import org.netbeans.modules.editor.indent.spi.CodeStylePreferences;
 import org.openide.cookies.EditorCookie;
 import org.openide.filesystems.FileObject;
 import org.openide.loaders.DataObject;
-import org.openide.text.DataEditorSupport;
 import org.openide.text.NbDocument;
 import org.openide.util.Exceptions;
 
@@ -144,23 +143,23 @@ public class EditorConfigProcessor {
       }
     }
 
-    FileInfo fileInfo = new FileInfo(fileObject);
-    fileInfo.setContent(content);
-    fileInfo.setCharset(EditorConfigPropertyMapper.mapCharset(keyedRules.get(EditorConfigConstant.CHARSET)));
-    fileInfo.setOpenedInEditor(isOpenedInEditor);
-    fileInfo.setCookie(cookie);
+    FileInfo info = new FileInfo(dataObject);
+    info.setContent(content);
+    info.setCharset(EditorConfigPropertyMapper.mapCharset(keyedRules.get(EditorConfigConstant.CHARSET)));
+    info.setOpenedInEditor(isOpenedInEditor);
+    info.setCookie(cookie);
 
     if (charsetChangeNeeded) {
       String ecCharset = keyedRules.get(EditorConfigConstant.CHARSET);
       String fileMark = EditorConfigPropertyMapper.getFileMark(ecCharset);
       Charset charset = EditorConfigPropertyMapper.mapCharset(ecCharset);
 
-      fileInfo.setCharset(charset);
-      fileInfo.setFileMark(fileMark);
+      info.setCharset(charset);
+      info.setFileMark(fileMark);
     }
 
     if (fileChangeNeeded || charsetChangeNeeded) {
-      flushFile(fileInfo);
+      flushFile(info);
     }
 
     if (styleChangeNeeded) {

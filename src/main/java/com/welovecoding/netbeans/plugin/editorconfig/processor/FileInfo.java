@@ -3,18 +3,23 @@ package com.welovecoding.netbeans.plugin.editorconfig.processor;
 import java.nio.charset.Charset;
 import org.openide.cookies.EditorCookie;
 import org.openide.filesystems.FileObject;
+import org.openide.loaders.DataObject;
 
 public class FileInfo {
 
   private Charset charset;
   private EditorCookie cookie;
-  private FileObject fileObject;
+  private DataObject dataObject;
   private String fileMark;
   private StringBuilder sb;
   private boolean openedInEditor;
 
-  public FileInfo(FileObject fileObject) {
-    this.fileObject = fileObject;
+  public FileInfo(DataObject dataObject) {
+    this.dataObject = dataObject;
+  }
+
+  public FileObject getFileObject() {
+    return this.dataObject.getPrimaryFile();
   }
 
   public String getStringWithCharset() {
@@ -28,6 +33,14 @@ public class FileInfo {
   }
 
   // <editor-fold defaultstate="collapsed" desc="Generated Getter and Setter...">
+  public DataObject getDataObject() {
+    return dataObject;
+  }
+
+  public void setDataObject(DataObject dataObject) {
+    this.dataObject = dataObject;
+  }
+
   public String getFileMark() {
     return fileMark;
   }
@@ -42,14 +55,6 @@ public class FileInfo {
 
   public void setContent(StringBuilder content) {
     this.sb = content;
-  }
-
-  public FileObject getFileObject() {
-    return fileObject;
-  }
-
-  public void setFileObject(FileObject fileObject) {
-    this.fileObject = fileObject;
   }
 
   public Charset getCharset() {
