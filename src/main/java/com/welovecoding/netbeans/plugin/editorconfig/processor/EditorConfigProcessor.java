@@ -186,7 +186,7 @@ public class EditorConfigProcessor {
 
     NbDocument.runAtomic(cookie.getDocument(), () -> {
       try {
-        DocumentReaderWriter.writeWithString(info);
+        DocumentReaderWriter.writeWithEditorKit(info);
       } catch (FileAccessException ex) {
         LOG.log(Level.SEVERE, ex.getMessage());
       }
