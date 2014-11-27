@@ -77,6 +77,25 @@ public class DocumentReaderWriter {
 
   }
 
+  public static void writeWithFilesystemAPI(FileInfo info, List<String> lines)
+          throws FileAccessException {
+    FileLock lock = FileLock.NONE;
+    FileObject fo = info.getFileObject();
+    
+    // write file
+    try {
+      lock = fo.lock();
+      if (fo.isLocked()) {
+        Files.write(Paths.get(fo.toURI()), lines, info.getCharset());
+        fo.setAttribute(ENCODING_SETTING, info.getCharset().name());
+      }
+    } catch (IOException ex) {
+      throw new FileAccessException("Document could not be written: " + ex.getMessage());
+    } finally {
+      lock.releaseLock();
+    }
+  }
+
   public static void writeWithString(FileInfo info)
           throws FileAccessException {
     EditorCookie cookie = getEditorCookie(info.getDataObject());
@@ -106,25 +125,6 @@ public class DocumentReaderWriter {
       }
     } catch (BadLocationException | IOException ex) {
       throw new FileAccessException("Document could not be written: " + ex.getMessage());
-    }
-  }
-
-  public static void writeWithFilesystemAPI(FileInfo info, List<String> lines)
-          throws FileAccessException {
-    FileLock lock = FileLock.NONE;
-    FileObject fo = info.getFileObject();
-
-    // write file
-    try {
-      lock = fo.lock();
-      if (fo.isLocked()) {
-        Files.write(Paths.get(fo.toURI()), lines, info.getCharset());
-        fo.setAttribute(ENCODING_SETTING, info.getCharset().name());
-      }
-    } catch (IOException ex) {
-      throw new FileAccessException("Document could not be written: " + ex.getMessage());
-    } finally {
-      lock.releaseLock();
     }
   }
 
