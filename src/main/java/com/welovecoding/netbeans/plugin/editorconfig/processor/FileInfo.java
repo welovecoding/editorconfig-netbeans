@@ -22,14 +22,18 @@ public class FileInfo {
     return this.dataObject.getPrimaryFile();
   }
 
-  public String getStringWithCharset() {
+  public String getContentAsString() {
     String content = sb.toString();
 
     if (fileMark != null && !content.startsWith(fileMark)) {
       content = fileMark + content;
     }
 
-    return new String(content.getBytes(charset));
+    return content;
+  }
+
+  public byte[] getContentAsBytes() {
+    return getContentAsString().getBytes(charset);
   }
 
   // <editor-fold defaultstate="collapsed" desc="Generated Getter and Setter...">

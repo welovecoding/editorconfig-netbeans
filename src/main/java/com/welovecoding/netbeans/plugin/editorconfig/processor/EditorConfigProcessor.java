@@ -193,7 +193,7 @@ public class EditorConfigProcessor {
       try {
         StyledDocument doc = cookie.openDocument();
         doc.remove(0, doc.getLength());
-        doc.insertString(0, info.getStringWithCharset(), null);
+        doc.insertString(0, info.getContentAsString(), null);
         fileObject.setAttribute(ENCODING_SETTING, charset.name());
         cookie.saveDocument();
       } catch (BadLocationException | IOException ex) {
