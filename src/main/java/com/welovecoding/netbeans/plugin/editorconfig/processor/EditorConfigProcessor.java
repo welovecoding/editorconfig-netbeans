@@ -180,10 +180,9 @@ public class EditorConfigProcessor {
   }
 
   private void updateChangesInEditorWindow(FileInfo info) {
-    EditorCookie cookie = info.getCookie();
-
     LOG.log(Level.INFO, "Update changes in Editor window for: {0}", info.getPath());
 
+    EditorCookie cookie = info.getCookie();
     NbDocument.runAtomic(cookie.getDocument(), () -> {
       try {
         DocumentReaderWriter.writeWithEditorKit(info);
