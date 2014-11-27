@@ -6,6 +6,9 @@ import com.welovecoding.netbeans.plugin.editorconfig.util.FileAccessException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
 import java.util.logging.Logger;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Caret;
@@ -14,6 +17,7 @@ import javax.swing.text.StyledDocument;
 import org.netbeans.api.editor.mimelookup.MimeLookup;
 import org.netbeans.api.editor.mimelookup.MimePath;
 import org.openide.cookies.EditorCookie;
+import org.openide.filesystems.FileLock;
 import org.openide.filesystems.FileObject;
 import org.openide.loaders.DataObject;
 import org.openide.util.Lookup;
@@ -100,4 +104,24 @@ public class DocumentReaderWriter {
       throw new FileAccessException("Document could not be written: " + ex.getMessage());
     }
   }
+
+  public static void writeWithFilesystemAPI(FileInfo info, List<String> lines)
+          throws FileAccessException {
+    FileLock lock = FileLock.NONE;
+    FileObject fo = info.getFileObject();
+
+    // write file
+    try {
+      lock = fo.lock();
+      if (fo.isLocked()) {
+        Files.write(Paths.get(fo.toURI()), lines, info.getCharset());
+        fo.setAttribute(ENCODING_SETTING, info.getCharset().name());
+      }
+    } catch (IOException ex) {
+      throw new FileAccessException("Document could not be written: " + ex.getMessage());
+    } finally {
+      lock.releaseLock();
+    }
+  }
+
 }
