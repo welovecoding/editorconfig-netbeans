@@ -10,11 +10,7 @@ import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.XLineEn
 import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.XTabWidthOperation;
 import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.XTrimTrailingWhitespacesOperation;
 import com.welovecoding.netbeans.plugin.editorconfig.util.NetBeansFileUtil;
-import java.io.FilterOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,7 +21,6 @@ import java.util.logging.Logger;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import javax.swing.text.BadLocationException;
-import javax.swing.text.EditorKit;
 import javax.swing.text.StyledDocument;
 import org.editorconfig.core.EditorConfig;
 import org.editorconfig.core.EditorConfigException;
@@ -200,44 +195,6 @@ public class EditorConfigProcessor {
         Exceptions.printStackTrace(ex);
       }
     });
-  }
-
-  private void updateChangesInEditorWindowWithStringBuilder(FileInfo info) throws IOException {
-    EditorCookie cookie = info.getCookie();
-    StyledDocument doc = cookie.openDocument();
-    FileObject fo = info.getFileObject();
-    Charset charset = info.getCharset();
-
-    OutputStream os = new OutputStream() {
-      private final StringBuilder string = info.getContent();
-
-      @Override
-      public void write(int b) throws IOException {
-        this.string.append((char) b);
-      }
-    };
-
-    FilterOutputStream fos = new FilterOutputStream(os) {
-      @Override
-      public void close() throws IOException {
-        flush();
-      }
-    };
-
-    Writer w = new OutputStreamWriter(fos, charset);
-    EditorKit kit = NetBeansFileUtil.getEditorKit(fo);
-
-    try {
-      kit.write(w, doc, 0, doc.getLength());
-    } catch (IOException | BadLocationException ex) {
-      Exceptions.printStackTrace(ex);
-    } finally {
-      try {
-        w.close();
-      } catch (IOException ex) {
-        Exceptions.printStackTrace(ex);
-      }
-    }
   }
 
   private boolean doCharset(FileObject fileObject, String charset) {

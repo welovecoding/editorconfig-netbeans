@@ -54,18 +54,4 @@ public class NetBeansFileUtil {
       return content.replaceAll("\\s+$", "");
     }).collect(Collectors.joining(lineEnding));
   }
-
-  public static EditorKit getEditorKit(FileObject fo) {
-    String mimePath = fo.getMIMEType();
-    Lookup lookup = MimeLookup.getLookup(MimePath.parse(mimePath));
-    EditorKit kit = lookup.lookup(EditorKit.class);
-
-    if (kit == null) {
-      lookup = MimeLookup.getLookup(MimePath.parse("text/plain"));
-      kit = lookup.lookup(EditorKit.class);
-    }
-
-    // Don't use the prototype instance straightaway
-    return (EditorKit) kit.clone();
-  }
 }
