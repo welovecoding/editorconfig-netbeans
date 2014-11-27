@@ -1,11 +1,11 @@
 package com.welovecoding.netbeans.plugin.editorconfig.processor.io;
 
+import static com.welovecoding.netbeans.plugin.editorconfig.config.Settings.ENCODING_SETTING;
 import com.welovecoding.netbeans.plugin.editorconfig.processor.FileInfo;
 import com.welovecoding.netbeans.plugin.editorconfig.util.FileAccessException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Caret;
@@ -49,26 +49,20 @@ public class DocumentReaderWriter {
     }
 
     try (InputStream is = new ByteArrayInputStream(info.getContentAsBytes())) {
-      Caret caret = kit.createCaret();
+      // save caret position
+      Caret caret = cookie.getOpenedPanes()[0].getCaret();
       caretPosition = caret.getDot();
 
-      LOG.log(Level.INFO, "#1 Document length is: {0}", document.getLength());
-      LOG.log(Level.INFO, "#1 Caret is at position: {0}", caretPosition);
-
+      // write file
       document.remove(0, document.getLength());
       kit.read(is, document, document.getLength());
       cookie.saveDocument();
+      info.getFileObject().setAttribute(ENCODING_SETTING, info.getCharset().name());
 
-      int newCaretPosition = kit.createCaret().getDot();
-      int newDocumentLength = document.getLength();
-
-      LOG.log(Level.INFO, "#2 Document length is: {0}", document.getLength());
-      LOG.log(Level.INFO, "#2 Caret is at position: {0}", newCaretPosition);
-
-      if (caretPosition > -1 && caretPosition < newDocumentLength) {
-        LOG.log(Level.INFO, "#3 We should place the caret to a new position.");
+      // reset the caret positon
+      if (caretPosition > -1 && caretPosition < document.getLength()) {
+        caret.setDot(caretPosition);
       }
-
     } catch (BadLocationException | IOException ex) {
       throw new FileAccessException("Document could not be written: " + ex.getMessage());
     }
@@ -79,6 +73,7 @@ public class DocumentReaderWriter {
           throws FileAccessException {
     EditorCookie cookie = getEditorCookie(info.getDataObject());
     StyledDocument document = null;
+    int caretPosition = -1;
 
     try {
       document = cookie.openDocument();
@@ -87,9 +82,20 @@ public class DocumentReaderWriter {
     }
 
     try {
+      // save caret position
+      Caret caret = cookie.getOpenedPanes()[0].getCaret();
+      caretPosition = caret.getDot();
+
+      // write file
       document.remove(0, document.getLength());
       document.insertString(0, info.getContentAsString(), null);
       cookie.saveDocument();
+      info.getFileObject().setAttribute(ENCODING_SETTING, info.getCharset().name());
+
+      // reset the caret positon
+      if (caretPosition > -1 && caretPosition < document.getLength()) {
+        caret.setDot(caretPosition);
+      }
     } catch (BadLocationException | IOException ex) {
       throw new FileAccessException("Document could not be written: " + ex.getMessage());
     }
