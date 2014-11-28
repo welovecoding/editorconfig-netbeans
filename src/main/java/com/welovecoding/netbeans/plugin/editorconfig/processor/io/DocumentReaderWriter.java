@@ -4,7 +4,9 @@ import static com.welovecoding.netbeans.plugin.editorconfig.config.Settings.ENCO
 import com.welovecoding.netbeans.plugin.editorconfig.processor.FileInfo;
 import com.welovecoding.netbeans.plugin.editorconfig.util.FileAccessException;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -22,9 +24,9 @@ import org.netbeans.api.editor.mimelookup.MimeLookup;
 import org.netbeans.api.editor.mimelookup.MimePath;
 import org.openide.cookies.EditorCookie;
 import org.openide.filesystems.FileLock;
-import org.openide.filesystems.FileObject;
 import org.openide.loaders.DataObject;
 import org.openide.util.Lookup;
+import org.openide.filesystems.FileObject;
 
 public class DocumentReaderWriter {
 
@@ -41,6 +43,17 @@ public class DocumentReaderWriter {
     EditorKit kit = lookup.lookup(EditorKit.class);
 
     return kit;
+  }
+
+  public static void writeOnFile(FileObject fo, String content)
+          throws FileAccessException {
+    // write file
+    try (FileWriter fileWriter = new FileWriter(fo.getPath(), true);
+            BufferedWriter bufferWritter = new BufferedWriter(fileWriter)) {
+      bufferWritter.write(content);
+    } catch (IOException ex) {
+      throw new FileAccessException("Document could not be written: " + ex.getMessage());
+    }
   }
 
   public static void writeWithEditorKit(FileInfo info)
@@ -81,7 +94,7 @@ public class DocumentReaderWriter {
           throws FileAccessException {
     FileLock lock = FileLock.NONE;
     FileObject fo = info.getFileObject();
-    
+
     // write file
     try {
       lock = fo.lock();
