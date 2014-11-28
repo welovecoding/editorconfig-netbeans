@@ -6,6 +6,7 @@ import com.welovecoding.netbeans.plugin.editorconfig.util.FileAccessException;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,6 +28,7 @@ import org.openide.filesystems.FileLock;
 import org.openide.loaders.DataObject;
 import org.openide.util.Lookup;
 import org.openide.filesystems.FileObject;
+import org.openide.util.Utilities;
 
 public class DocumentReaderWriter {
 
@@ -47,8 +49,10 @@ public class DocumentReaderWriter {
 
   public static void writeOnFile(FileObject fo, String content)
           throws FileAccessException {
+    File file = Utilities.toFile(fo.toURI());
+
     // write file
-    try (FileWriter fileWriter = new FileWriter(fo.getPath(), true);
+    try (FileWriter fileWriter = new FileWriter(file, true);
             BufferedWriter bufferWritter = new BufferedWriter(fileWriter)) {
       bufferWritter.write(content);
     } catch (IOException ex) {
