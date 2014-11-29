@@ -31,18 +31,12 @@ public class NetBeansFileUtil {
    * @return
    */
   public static Charset guessCharset(FileObject fo) {
-    Charset charset = StandardCharsets.UTF_8;
+    Charset charset;
     Object fileEncoding = fo.getAttribute(ENCODING_SETTING);
 
     if (fileEncoding == null) {
-      try {
-        charset = CharsetToolkit.guessEncoding(Utilities.toFile(fo.toURI()), 4096);
-        if (charset.name().equals("US-ASCII")) {
-          charset = StandardCharsets.ISO_8859_1;
-        }
-      } catch (IllegalArgumentException | IOException ex) {
-        Exceptions.printStackTrace(ex);
-      }
+      File file = Utilities.toFile(fo.toURI());
+      charset = guessCharset(file);
     } else {
       charset = Charset.forName((String) fileEncoding);
     }
