@@ -60,6 +60,40 @@ public class DocumentReaderWriter {
     }
   }
 
+  public static void writeFile(FileObject fo, Charset charset, String content)
+          throws FileAccessException {
+    File file = Utilities.toFile(fo.toURI());
+
+    try {
+      Files.write(file.toPath(), content.getBytes(charset));
+    } catch (IOException ex) {
+      throw new FileAccessException("Document could not be written: " + ex.getMessage());
+    }
+  }
+
+  public static void writeOnFileWithLines(FileObject fo, Charset charset, List<String> lines)
+          throws FileAccessException {
+    File file = Utilities.toFile(fo.toURI());
+    writeOnFileWithLines(file, charset, lines);
+  }
+
+  /**
+   * Writes a file with a proper (and detectable) character set.
+   *
+   * @param file
+   * @param charset
+   * @param lines
+   * @throws FileAccessException
+   */
+  public static void writeOnFileWithLines(File file, Charset charset, List<String> lines)
+          throws FileAccessException {
+    try {
+      Files.write(file.toPath(), lines, charset);
+    } catch (IOException ex) {
+      throw new FileAccessException("Document could not be written: " + ex.getMessage());
+    }
+  }
+
   public static void writeWithEditorKit(FileInfo info)
           throws FileAccessException {
     EditorCookie cookie = info.getCookie();
@@ -145,7 +179,7 @@ public class DocumentReaderWriter {
     }
   }
 
-  private ArrayList<String> readFileObjectIntoLines(FileObject fo, Charset charset, String lineEnding)
+  public static ArrayList<String> readFileObjectIntoLines(FileObject fo, Charset charset, String lineEnding)
           throws FileAccessException {
     ArrayList<String> lines = new ArrayList<>();
     String line;

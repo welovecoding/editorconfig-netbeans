@@ -15,8 +15,9 @@ public class EditorConfigPropertyMapper {
     String normalizedLineEnding;
 
     if (ecLineEnding == null) {
-      ecLineEnding = "";
+      return System.lineSeparator();
     }
+
     switch (ecLineEnding) {
       case EditorConfigConstant.END_OF_LINE_LF:
         normalizedLineEnding = BaseDocument.LS_LF;
@@ -29,7 +30,6 @@ public class EditorConfigPropertyMapper {
         break;
       default:
         normalizedLineEnding = System.lineSeparator();
-        LOG.log(Level.INFO, "Using default line ending");
         break;
     }
 
@@ -41,7 +41,7 @@ public class EditorConfigPropertyMapper {
     Charset javaCharset;
 
     if (editorConfigCharset == null) {
-      editorConfigCharset = "";
+      return StandardCharsets.UTF_8;
     }
 
     switch (editorConfigCharset) {
@@ -56,7 +56,6 @@ public class EditorConfigPropertyMapper {
         break;
       default:
         javaCharset = StandardCharsets.UTF_8;
-        LOG.log(Level.INFO, "Using default charset");
         break;
     }
 

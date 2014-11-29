@@ -40,7 +40,7 @@ public class FileInfo {
     return getContentAsString().getBytes(charset);
   }
 
-  // <editor-fold defaultstate="collapsed" desc="Generated Getter and Setter...">
+  // <editor-fold defaultstate="collapsed" desc="Getter & Setter">
   public DataObject getDataObject() {
     return dataObject;
   }
