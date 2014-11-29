@@ -20,7 +20,7 @@ public class DocumentReaderWriterTest {
   }
 
   @Test
-  public void benny() throws IOException, FileAccessException {
+  public void testReadAndWrite() throws IOException, FileAccessException {
     // create temp file
     File file = File.createTempFile("utf8-bom-crlf", ".txt");
     String ecCharset = "utf-8-bom";
@@ -42,7 +42,6 @@ public class DocumentReaderWriterTest {
     assertEquals(javaCharset, guessedCharset);
 
     ArrayList<String> lines = DocumentReaderWriter.readFileObjectIntoLines(fo, javaCharset, ecLineEnding);
-    
 
     // delete temp file
     file.delete();

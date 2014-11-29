@@ -1,6 +1,8 @@
 package com.welovecoding.netbeans.plugin.editorconfig.util;
 
 import com.welovecoding.netbeans.plugin.editorconfig.processor.io.FirstLineInfo;
+import com.welovecoding.netbeans.plugin.editorconfig.processor.io.SupportedCharset;
+import com.welovecoding.netbeans.plugin.editorconfig.processor.io.SupportedCharsets;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -22,6 +24,9 @@ import org.openide.filesystems.FileUtil;
 import org.openide.util.Exceptions;
 import org.openide.util.Utilities;
 
+/**
+ * UTF-8 snowman: http://www.fileformat.info/info/unicode/char/2603/index.htm
+ */
 public class NetBeansFileUtilTest {
 
   private static final Logger LOG = Logger.getLogger(NetBeansFileUtilTest.class.getName());
@@ -38,6 +43,51 @@ public class NetBeansFileUtilTest {
 
     try {
       file = File.createTempFile("utf-8-bom-crlf", ".txt");
+      Path path = Paths.get(Utilities.toURI(file));
+      Files.write(path, content.getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE);
+    } catch (IOException ex) {
+      Exceptions.printStackTrace(ex);
+    }
+
+    return file;
+  }
+
+  private File createUTF_8_CR() {
+    File file = null;
+    String content = "Hello\rWorld!\u2603";
+
+    try {
+      file = File.createTempFile("utf-8-cr", ".txt");
+      Path path = Paths.get(Utilities.toURI(file));
+      Files.write(path, content.getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE);
+    } catch (IOException ex) {
+      Exceptions.printStackTrace(ex);
+    }
+
+    return file;
+  }
+
+  private File createUTF_8_LF() {
+    File file = null;
+    String content = "Hello\nWorld!\u2603";
+
+    try {
+      file = File.createTempFile("utf-8-lf", ".txt");
+      Path path = Paths.get(Utilities.toURI(file));
+      Files.write(path, content.getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE);
+    } catch (IOException ex) {
+      Exceptions.printStackTrace(ex);
+    }
+
+    return file;
+  }
+
+  private File createUTF_8_CRLF() {
+    File file = null;
+    String content = "Hello\r\nWorld!\u2603";
+
+    try {
+      file = File.createTempFile("utf-8-crlf", ".txt");
       Path path = Paths.get(Utilities.toURI(file));
       Files.write(path, content.getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE);
     } catch (IOException ex) {
@@ -83,8 +133,44 @@ public class NetBeansFileUtilTest {
     FirstLineInfo info = NetBeansFileUtil.parseFirstLineInfo(file);
     //
     assertEquals("\r\n", info.getLineEnding());
-    assertEquals("UTF-8-BOM", info.getCharset().getName());
+    assertEquals(SupportedCharsets.UTF_8_BOM.getName(), info.getCharset().getName());
     assertEquals(true, info.isMarked());
+    //
+    assertEquals(true, file.delete());
+  }
+
+  @Test
+  public void testUTF8_CR() throws IOException {
+    File file = createUTF_8_CR();
+    FirstLineInfo info = NetBeansFileUtil.parseFirstLineInfo(file);
+    //
+    assertEquals("\r", info.getLineEnding());
+    assertEquals(SupportedCharsets.UTF_8.getName(), info.getCharset().getName());
+    assertEquals(false, info.isMarked());
+    //
+    assertEquals(true, file.delete());
+  }
+
+  @Test
+  public void testUTF8_LF() throws IOException {
+    File file = createUTF_8_LF();
+    FirstLineInfo info = NetBeansFileUtil.parseFirstLineInfo(file);
+    //
+    assertEquals("\n", info.getLineEnding());
+    assertEquals(SupportedCharsets.UTF_8.getName(), info.getCharset().getName());
+    assertEquals(false, info.isMarked());
+    //
+    assertEquals(true, file.delete());
+  }
+
+  @Test
+  public void testUTF8_CRLF() throws IOException {
+    File file = createUTF_8_CRLF();
+    FirstLineInfo info = NetBeansFileUtil.parseFirstLineInfo(file);
+    //
+    assertEquals("\r\n", info.getLineEnding());
+    assertEquals(SupportedCharsets.UTF_8.getName(), info.getCharset().getName());
+    assertEquals(false, info.isMarked());
     //
     assertEquals(true, file.delete());
   }
@@ -95,7 +181,7 @@ public class NetBeansFileUtilTest {
     FirstLineInfo info = NetBeansFileUtil.parseFirstLineInfo(file);
     //
     assertEquals("\r", info.getLineEnding());
-    assertEquals("UTF-8-BOM", info.getCharset().getName());
+    assertEquals(SupportedCharsets.UTF_8_BOM.getName(), info.getCharset().getName());
     assertEquals(true, info.isMarked());
     //
     assertEquals(true, file.delete());
@@ -105,11 +191,9 @@ public class NetBeansFileUtilTest {
   public void testUTF8_BOM_LF() throws IOException {
     File file = createUTF_8_BOM_LF();
     FirstLineInfo info = NetBeansFileUtil.parseFirstLineInfo(file);
-    String lala = NetBeansFileUtil.readFirstLineWithSeparator(file, StandardCharsets.UTF_8);
-    System.out.println("LALA: " + lala);
     //
     assertEquals("\n", info.getLineEnding());
-    assertEquals("UTF-8-BOM", info.getCharset().getName());
+    assertEquals(SupportedCharsets.UTF_8_BOM.getName(), info.getCharset().getName());
     assertEquals(true, info.isMarked());
     //
     assertEquals(true, file.delete());
