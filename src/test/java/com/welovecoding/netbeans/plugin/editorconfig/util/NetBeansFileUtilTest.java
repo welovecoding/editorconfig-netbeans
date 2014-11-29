@@ -221,11 +221,11 @@ public class NetBeansFileUtilTest {
     File file = createLATIN_1_CR();
     FirstLineInfo info = NetBeansFileUtil.parseFirstLineInfo(file);
     //
+    assertEquals(true, file.delete());
+    //
     assertEquals("\r", info.getLineEnding());
     assertEquals(SupportedCharsets.LATIN_1.getName(), info.getCharset().getName());
     assertEquals(false, info.isMarked());
-    //
-    assertEquals(true, file.delete());
   }
 
   @Test
@@ -233,11 +233,11 @@ public class NetBeansFileUtilTest {
     File file = createLATIN_1_LF();
     FirstLineInfo info = NetBeansFileUtil.parseFirstLineInfo(file);
     //
+    assertEquals(true, file.delete());
+    //
     assertEquals("\n", info.getLineEnding());
     assertEquals(SupportedCharsets.LATIN_1.getName(), info.getCharset().getName());
     assertEquals(false, info.isMarked());
-    //
-    assertEquals(true, file.delete());
   }
 
   @Test
@@ -245,11 +245,11 @@ public class NetBeansFileUtilTest {
     File file = createLATIN_1_CRLF();
     FirstLineInfo info = NetBeansFileUtil.parseFirstLineInfo(file);
     //
+    assertEquals(true, file.delete());
+    //
     assertEquals("\r\n", info.getLineEnding());
     assertEquals(SupportedCharsets.LATIN_1.getName(), info.getCharset().getName());
     assertEquals(false, info.isMarked());
-    //
-    assertEquals(true, file.delete());
   }
 
   @Test
@@ -257,11 +257,11 @@ public class NetBeansFileUtilTest {
     File file = createUTF_8_BOM_CR();
     FirstLineInfo info = NetBeansFileUtil.parseFirstLineInfo(file);
     //
+    assertEquals(true, file.delete());
+    //
     assertEquals("\r", info.getLineEnding());
     assertEquals(SupportedCharsets.UTF_8_BOM.getName(), info.getCharset().getName());
     assertEquals(true, info.isMarked());
-    //
-    assertEquals(true, file.delete());
   }
 
   @Test
@@ -269,11 +269,11 @@ public class NetBeansFileUtilTest {
     File file = createUTF_8_BOM_LF();
     FirstLineInfo info = NetBeansFileUtil.parseFirstLineInfo(file);
     //
+    assertEquals(true, file.delete());
+    //
     assertEquals("\n", info.getLineEnding());
     assertEquals(SupportedCharsets.UTF_8_BOM.getName(), info.getCharset().getName());
     assertEquals(true, info.isMarked());
-    //
-    assertEquals(true, file.delete());
   }
 
   @Test
@@ -371,7 +371,7 @@ public class NetBeansFileUtilTest {
     FileObject fo = FileUtil.toFileObject(file);
     Charset charset = NetBeansFileUtil.guessCharset(fo);
 
-//    assertEquals(true, file.delete());
+    assertEquals(true, file.delete());
     assertEquals(StandardCharsets.UTF_8, charset);
   }
 
