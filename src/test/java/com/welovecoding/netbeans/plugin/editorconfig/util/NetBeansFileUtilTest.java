@@ -1,5 +1,6 @@
 package com.welovecoding.netbeans.plugin.editorconfig.util;
 
+import com.welovecoding.netbeans.plugin.editorconfig.processor.io.FirstLineInfo;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -11,16 +12,107 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Stream;
 import static junit.framework.Assert.assertEquals;
 import org.junit.Test;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
+import org.openide.util.Exceptions;
 import org.openide.util.Utilities;
 
 public class NetBeansFileUtilTest {
 
+  private static final Logger LOG = Logger.getLogger(NetBeansFileUtilTest.class.getName());
+
   public NetBeansFileUtilTest() {
+  }
+
+  /**
+   * BOM: "EF BB BF"
+   */
+  private File createUTF_8_BOM_CRLF() {
+    File file = null;
+    String content = "\uFEFFHello\r\nWorld!";
+
+    try {
+      file = File.createTempFile("utf-8-bom-crlf", ".txt");
+      Path path = Paths.get(Utilities.toURI(file));
+      Files.write(path, content.getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE);
+    } catch (IOException ex) {
+      Exceptions.printStackTrace(ex);
+    }
+
+    return file;
+  }
+
+  private File createUTF_8_BOM_CR() {
+    File file = null;
+    String content = "\uFEFFHello\rWorld!";
+
+    try {
+      file = File.createTempFile("utf-8-bom-cr", ".txt");
+      Path path = Paths.get(Utilities.toURI(file));
+      Files.write(path, content.getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE);
+    } catch (IOException ex) {
+      Exceptions.printStackTrace(ex);
+    }
+
+    return file;
+  }
+
+  private File createUTF_8_BOM_LF() {
+    File file = null;
+    String content = "\uFEFFHello\nWorld!";
+
+    try {
+      file = File.createTempFile("utf-8-bom-lf", ".txt");
+      Path path = Paths.get(Utilities.toURI(file));
+      Files.write(path, content.getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE);
+    } catch (IOException ex) {
+      Exceptions.printStackTrace(ex);
+    }
+
+    return file;
+  }
+
+  @Test
+  public void testUTF8_BOM_CRLF() throws IOException {
+    File file = createUTF_8_BOM_CRLF();
+    FirstLineInfo info = NetBeansFileUtil.parseFirstLineInfo(file);
+    //
+    assertEquals("\r\n", info.getLineEnding());
+    assertEquals("UTF-8-BOM", info.getCharset().getName());
+    assertEquals(true, info.isMarked());
+    //
+    assertEquals(true, file.delete());
+  }
+
+  @Test
+  public void testUTF8_BOM_CR() throws IOException {
+    File file = createUTF_8_BOM_CR();
+    FirstLineInfo info = NetBeansFileUtil.parseFirstLineInfo(file);
+    //
+    assertEquals("\r", info.getLineEnding());
+    assertEquals("UTF-8-BOM", info.getCharset().getName());
+    assertEquals(true, info.isMarked());
+    //
+    assertEquals(true, file.delete());
+  }
+
+  @Test
+  public void testUTF8_BOM_LF() throws IOException {
+    File file = createUTF_8_BOM_LF();
+    FirstLineInfo info = NetBeansFileUtil.parseFirstLineInfo(file);
+    String lala = NetBeansFileUtil.readFirstLineWithSeparator(file, StandardCharsets.UTF_8);
+    System.out.println("LALA: " + lala);
+    //
+    assertEquals("\n", info.getLineEnding());
+    assertEquals("UTF-8-BOM", info.getCharset().getName());
+    assertEquals(true, info.isMarked());
+    //
+    assertEquals(true, file.delete());
   }
 
   @Test

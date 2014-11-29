@@ -6,10 +6,14 @@ import com.welovecoding.netbeans.plugin.editorconfig.processor.io.FirstLineInfo;
 import com.welovecoding.netbeans.plugin.editorconfig.processor.io.SupportedCharset;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.openide.filesystems.FileObject;
@@ -65,15 +69,60 @@ public class NetBeansFileUtil {
     }).collect(Collectors.joining(lineEnding));
   }
 
+  @Deprecated
   public static String readFirstLine(File file) {
-    try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+    try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file)))) {
       return br.readLine();
     } catch (IOException ex) {
       return "";
     }
   }
 
-  private static String detectLineEnding(String line) {
+  /**
+   * Reads the first line of a file with it's termination sequence. A
+   * termination sequence can be a line feed ('\n'), a carriage return ('\r'),
+   * or a carriage return followed immediately by a linefeed.
+   *
+   * @param file
+   * @param charset
+   *
+   * @return First line of a file.
+   */
+  public static String readFirstLineWithSeparator(File file, Charset charset) {
+    StringBuilder sb = new StringBuilder();
+    String firstLine;
+    int c;
+
+    try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), charset))) {
+      // Read first line
+      while ((c = br.read()) != -1) {
+        if (c == '\r') {
+          // Mac OS
+          sb.append('\r');
+          // Windows
+          if (br.read() == '\n') {
+            sb.append('\n');
+          }
+          break;
+        } else if (c == '\n') {
+          // Mac OS X
+          sb.append('\n');
+          break;
+        } else {
+          sb.append((char) c);
+        }
+      }
+
+      firstLine = sb.toString();
+
+    } catch (IOException ex) {
+      firstLine = "";
+    }
+
+    return firstLine;
+  }
+
+  protected static String detectLineEnding(String line) {
     String lineEnding = System.lineSeparator();
 
     if (line.endsWith("\r\n")) {
@@ -87,18 +136,25 @@ public class NetBeansFileUtil {
     return lineEnding;
   }
 
+  @Deprecated
   public static String detectLineEnding(File file) {
     String firstLine = readFirstLine(file);
     String lineEnding = NetBeansFileUtil.detectLineEnding(firstLine);
     return lineEnding;
   }
 
-  public static FirstLineInfo detectCharset(File file) {
+  /**
+   * Die Mutter aller Funktionen!
+   *
+   * @param file
+   * @return
+   */
+  public static FirstLineInfo parseFirstLineInfo(File file) {
     Charset charset = NetBeansFileUtil.guessCharset(file);
     SupportedCharset supportedCharset;
     String charsetName = charset.name();
-    String firstLine = readFirstLine(file);
-    String lineEnding = NetBeansFileUtil.detectLineEnding(firstLine);
+    String firstLine = readFirstLineWithSeparator(file, charset);
+    String lineEnding = detectLineEnding(firstLine);
     boolean marked = false;
 
     if (charset.equals(StandardCharsets.UTF_8)
