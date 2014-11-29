@@ -1,7 +1,6 @@
 package com.welovecoding.netbeans.plugin.editorconfig.util;
 
 import com.welovecoding.netbeans.plugin.editorconfig.processor.io.FirstLineInfo;
-import com.welovecoding.netbeans.plugin.editorconfig.processor.io.SupportedCharset;
 import com.welovecoding.netbeans.plugin.editorconfig.processor.io.SupportedCharsets;
 import java.io.File;
 import java.io.IOException;
@@ -14,7 +13,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 import static junit.framework.Assert.assertEquals;
@@ -26,6 +24,7 @@ import org.openide.util.Utilities;
 
 /**
  * UTF-8 snowman: http://www.fileformat.info/info/unicode/char/2603/index.htm
+ * UTF-8 BOM: "EF BB BF"
  */
 public class NetBeansFileUtilTest {
 
@@ -34,9 +33,51 @@ public class NetBeansFileUtilTest {
   public NetBeansFileUtilTest() {
   }
 
-  /**
-   * BOM: "EF BB BF"
-   */
+  private File createLATIN_1_CR() {
+    File file = null;
+    String content = "Hello\rWorld!";
+
+    try {
+      file = File.createTempFile("latin-1-cr", ".txt");
+      Path path = Paths.get(Utilities.toURI(file));
+      Files.write(path, content.getBytes(StandardCharsets.ISO_8859_1), StandardOpenOption.CREATE);
+    } catch (IOException ex) {
+      Exceptions.printStackTrace(ex);
+    }
+
+    return file;
+  }
+
+  private File createLATIN_1_LF() {
+    File file = null;
+    String content = "Hello\nWorld!";
+
+    try {
+      file = File.createTempFile("latin-1-lf", ".txt");
+      Path path = Paths.get(Utilities.toURI(file));
+      Files.write(path, content.getBytes(StandardCharsets.ISO_8859_1), StandardOpenOption.CREATE);
+    } catch (IOException ex) {
+      Exceptions.printStackTrace(ex);
+    }
+
+    return file;
+  }
+
+  private File createLATIN_1_CRLF() {
+    File file = null;
+    String content = "Hello\r\nWorld!";
+
+    try {
+      file = File.createTempFile("latin-1-crlf", ".txt");
+      Path path = Paths.get(Utilities.toURI(file));
+      Files.write(path, content.getBytes(StandardCharsets.ISO_8859_1), StandardOpenOption.CREATE);
+    } catch (IOException ex) {
+      Exceptions.printStackTrace(ex);
+    }
+
+    return file;
+  }
+
   private File createUTF_8_BOM_CRLF() {
     File file = null;
     String content = "\uFEFFHello\r\nWorld!";
@@ -170,6 +211,42 @@ public class NetBeansFileUtilTest {
     //
     assertEquals("\r\n", info.getLineEnding());
     assertEquals(SupportedCharsets.UTF_8.getName(), info.getCharset().getName());
+    assertEquals(false, info.isMarked());
+    //
+    assertEquals(true, file.delete());
+  }
+
+  @Test
+  public void testLATIN_1_CR() throws IOException {
+    File file = createLATIN_1_CR();
+    FirstLineInfo info = NetBeansFileUtil.parseFirstLineInfo(file);
+    //
+    assertEquals("\r", info.getLineEnding());
+    assertEquals(SupportedCharsets.LATIN_1.getName(), info.getCharset().getName());
+    assertEquals(false, info.isMarked());
+    //
+    assertEquals(true, file.delete());
+  }
+
+  @Test
+  public void testLATIN_1_LF() throws IOException {
+    File file = createLATIN_1_LF();
+    FirstLineInfo info = NetBeansFileUtil.parseFirstLineInfo(file);
+    //
+    assertEquals("\n", info.getLineEnding());
+    assertEquals(SupportedCharsets.LATIN_1.getName(), info.getCharset().getName());
+    assertEquals(false, info.isMarked());
+    //
+    assertEquals(true, file.delete());
+  }
+
+  @Test
+  public void testLATIN_1_CRLF() throws IOException {
+    File file = createLATIN_1_CRLF();
+    FirstLineInfo info = NetBeansFileUtil.parseFirstLineInfo(file);
+    //
+    assertEquals("\r\n", info.getLineEnding());
+    assertEquals(SupportedCharsets.LATIN_1.getName(), info.getCharset().getName());
     assertEquals(false, info.isMarked());
     //
     assertEquals(true, file.delete());
