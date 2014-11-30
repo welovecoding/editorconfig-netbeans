@@ -274,8 +274,8 @@ public class FileInfoReaderTest {
   @Test
   public void guessEndcodingUTF_16BE_withFileMark() {
     File file = createUTF_16_BE_CRLF();
-
     FileObject fo = FileUtil.toFileObject(file);
+
     Charset charset = FileInfoReader.guessCharset(fo);
 
     assertEquals(true, file.delete());
@@ -285,8 +285,8 @@ public class FileInfoReaderTest {
   @Test
   public void guessEndcodingUTF_16LE_withFileMark() {
     File file = createUTF_16_LE_CRLF();
-
     FileObject fo = FileUtil.toFileObject(file);
+
     Charset charset = FileInfoReader.guessCharset(fo);
 
     assertEquals(true, file.delete());
@@ -315,8 +315,8 @@ public class FileInfoReaderTest {
   @Test
   public void guessEndcodingUTF_8() throws URISyntaxException {
     File file = createUTF_8_CRLF();
-
     FileObject fo = FileUtil.toFileObject(file);
+
     Charset charset = FileInfoReader.guessCharset(fo);
 
     assertEquals(true, file.delete());
@@ -326,8 +326,8 @@ public class FileInfoReaderTest {
   @Test
   public void guessEndcodingUTF_8_BOM() throws IOException {
     File file = createUTF_8_BOM_CRLF();
-
     FileObject fo = FileUtil.toFileObject(file);
+
     Charset charset = FileInfoReader.guessCharset(fo);
 
     assertEquals(true, file.delete());
@@ -337,7 +337,8 @@ public class FileInfoReaderTest {
   @Test
   public void readInfoLATIN_1_CR() throws IOException {
     File file = createLATIN_1_CR();
-    FirstLineInfo info = FileInfoReader.parseFirstLineInfo(file);
+    FileObject fo = FileUtil.toFileObject(file);
+    FirstLineInfo info = FileInfoReader.parseFirstLineInfo(fo);
     //
     assertEquals(true, file.delete());
     //
@@ -349,7 +350,8 @@ public class FileInfoReaderTest {
   @Test
   public void readInfoLATIN_1_CRLF() throws IOException {
     File file = createLATIN_1_CRLF();
-    FirstLineInfo info = FileInfoReader.parseFirstLineInfo(file);
+    FileObject fo = FileUtil.toFileObject(file);
+    FirstLineInfo info = FileInfoReader.parseFirstLineInfo(fo);
     //
     assertEquals(true, file.delete());
     //
@@ -361,7 +363,8 @@ public class FileInfoReaderTest {
   @Test
   public void readInfoLATIN_1_LF() throws IOException {
     File file = createLATIN_1_LF();
-    FirstLineInfo info = FileInfoReader.parseFirstLineInfo(file);
+    FileObject fo = FileUtil.toFileObject(file);
+    FirstLineInfo info = FileInfoReader.parseFirstLineInfo(fo);
     //
     assertEquals(true, file.delete());
     //
@@ -371,145 +374,14 @@ public class FileInfoReaderTest {
   }
 
   @Test
-  public void trimTrailingLineEndingCR() {
-    Stream<String> stream = Stream.of("Hello\r", "World");
-    String actual = FileInfoReader.trimTrailingWhitespace(stream, "\r");
-
-    assertEquals("Hello\rWorld", actual);
-  }
-
-  @Test
-  public void trimTrailingLineEndingCRLF() {
-    Stream<String> stream = Stream.of("Hello\r\n", "World");
-    String actual = FileInfoReader.trimTrailingWhitespace(stream, "\r\n");
-
-    assertEquals("Hello\r\nWorld", actual);
-  }
-
-  @Test
-  public void trimTrailingLineEndingLF() {
-    Stream<String> stream = Stream.of("Hello\n", "World");
-    String actual = FileInfoReader.trimTrailingWhitespace(stream, "\n");
-
-    assertEquals("Hello\nWorld", actual);
-  }
-
-  @Test
-  public void trimTrailingTab() {
-    Stream<String> stream = Stream.of("Hello\t", "World");
-    String actual = FileInfoReader.trimTrailingWhitespace(stream, System.lineSeparator());
-
-    assertEquals("Hello" + System.lineSeparator() + "World", actual);
-  }
-
-  @Test
-  public void trimTrailingTabs() {
-    Stream<String> stream = Stream.of("Hello\t\t", "World");
-    String actual = FileInfoReader.trimTrailingWhitespace(stream, System.lineSeparator());
-
-    assertEquals("Hello" + System.lineSeparator() + "World", actual);
-  }
-
-  @Test
-  public void trimTrailingWhitespace() {
-    Stream<String> stream = Stream.of("Hello ", "World");
-    String actual = FileInfoReader.trimTrailingWhitespace(stream, System.lineSeparator());
-
-    assertEquals("Hello" + System.lineSeparator() + "World", actual);
-  }
-
-  @Test
-  public void readInfoUTF_8_BOM_CR() throws IOException {
-    File file = createUTF_8_BOM_CR();
-    FirstLineInfo info = FileInfoReader.parseFirstLineInfo(file);
-    //
-    assertEquals(true, file.delete());
-    //
-    assertEquals("\r", info.getLineEnding());
-    assertEquals(SupportedCharsets.UTF_8_BOM.getName(), info.getCharset().getName());
-    assertEquals(true, info.isMarked());
-  }
-
-  @Test
-  public void readInfoUTF_8_BOM_CRLF() throws IOException {
-    File file = createUTF_8_BOM_CRLF();
-    FirstLineInfo info = FileInfoReader.parseFirstLineInfo(file);
-    //
-    assertEquals(true, file.delete());
-    //
-    assertEquals("\r\n", info.getLineEnding());
-    assertEquals(SupportedCharsets.UTF_8_BOM.getName(), info.getCharset().getName());
-    assertEquals(true, info.isMarked());
-  }
-
-  @Test
-  public void readInfoUTF_8_BOM_LF() throws IOException {
-    File file = createUTF_8_BOM_LF();
-    FirstLineInfo info = FileInfoReader.parseFirstLineInfo(file);
-    //
-    assertEquals(true, file.delete());
-    //
-    assertEquals("\n", info.getLineEnding());
-    assertEquals(SupportedCharsets.UTF_8_BOM.getName(), info.getCharset().getName());
-    assertEquals(true, info.isMarked());
-  }
-
-  @Test
-  public void readInfoUTF_8_CR() throws IOException {
-    File file = createUTF_8_CR();
-    FirstLineInfo info = FileInfoReader.parseFirstLineInfo(file);
-    //
-    assertEquals(true, file.delete());
-    //
-    assertEquals("\r", info.getLineEnding());
-    assertEquals(SupportedCharsets.UTF_8.getName(), info.getCharset().getName());
-    assertEquals(false, info.isMarked());
-  }
-
-  @Test
-  public void readInfoUTF_8_CRLF() throws IOException {
-    File file = createUTF_8_CRLF();
-    FirstLineInfo info = FileInfoReader.parseFirstLineInfo(file);
-    //
-    assertEquals(true, file.delete());
-    //
-    assertEquals("\r\n", info.getLineEnding());
-    assertEquals(SupportedCharsets.UTF_8.getName(), info.getCharset().getName());
-    assertEquals(false, info.isMarked());
-  }
-
-  @Test
-  public void readInfoUTF_8_LF() throws IOException {
-    File file = createUTF_8_LF();
-    FirstLineInfo info = FileInfoReader.parseFirstLineInfo(file);
-    //
-    assertEquals(true, file.delete());
-    //
-    assertEquals("\n", info.getLineEnding());
-    assertEquals(SupportedCharsets.UTF_8.getName(), info.getCharset().getName());
-    assertEquals(false, info.isMarked());
-  }
-
-  @Test
   public void readInfoUTF_16_BE_CR() throws IOException {
     File file = createUTF_16_BE_CR();
-    FirstLineInfo info = FileInfoReader.parseFirstLineInfo(file);
+    FileObject fo = FileUtil.toFileObject(file);
+    FirstLineInfo info = FileInfoReader.parseFirstLineInfo(fo);
     //
     assertEquals(true, file.delete());
     //
     assertEquals("\r", info.getLineEnding());
-    assertEquals(SupportedCharsets.UTF_16_BE.getName(), info.getCharset().getName());
-    assertEquals(true, info.isMarked());
-  }
-
-  @Test
-  public void readInfoUTF_16_BE_LF() throws IOException {
-    File file = createUTF_16_BE_LF();
-    FirstLineInfo info = FileInfoReader.parseFirstLineInfo(file);
-    //
-    assertEquals(true, file.delete());
-    //
-    assertEquals("\n", info.getLineEnding());
     assertEquals(SupportedCharsets.UTF_16_BE.getName(), info.getCharset().getName());
     assertEquals(true, info.isMarked());
   }
@@ -517,7 +389,8 @@ public class FileInfoReaderTest {
   @Test
   public void readInfoUTF_16_BE_CRLF() throws IOException {
     File file = createUTF_16_BE_CRLF();
-    FirstLineInfo info = FileInfoReader.parseFirstLineInfo(file);
+    FileObject fo = FileUtil.toFileObject(file);
+    FirstLineInfo info = FileInfoReader.parseFirstLineInfo(fo);
     //
     assertEquals(true, file.delete());
     //
@@ -527,21 +400,23 @@ public class FileInfoReaderTest {
   }
 
   @Test
-  public void readInfoUTF_16_LE_LF() throws IOException {
-    File file = createUTF_16_LE_LF();
-    FirstLineInfo info = FileInfoReader.parseFirstLineInfo(file);
+  public void readInfoUTF_16_BE_LF() throws IOException {
+    File file = createUTF_16_BE_LF();
+    FileObject fo = FileUtil.toFileObject(file);
+    FirstLineInfo info = FileInfoReader.parseFirstLineInfo(fo);
     //
     assertEquals(true, file.delete());
     //
     assertEquals("\n", info.getLineEnding());
-    assertEquals(SupportedCharsets.UTF_16_LE.getName(), info.getCharset().getName());
+    assertEquals(SupportedCharsets.UTF_16_BE.getName(), info.getCharset().getName());
     assertEquals(true, info.isMarked());
   }
 
   @Test
   public void readInfoUTF_16_LE_CR() throws IOException {
     File file = createUTF_16_LE_CR();
-    FirstLineInfo info = FileInfoReader.parseFirstLineInfo(file);
+    FileObject fo = FileUtil.toFileObject(file);
+    FirstLineInfo info = FileInfoReader.parseFirstLineInfo(fo);
     //
     assertEquals(true, file.delete());
     //
@@ -553,13 +428,153 @@ public class FileInfoReaderTest {
   @Test
   public void readInfoUTF_16_LE_CRLF() throws IOException {
     File file = createUTF_16_LE_CRLF();
-    FirstLineInfo info = FileInfoReader.parseFirstLineInfo(file);
+    FileObject fo = FileUtil.toFileObject(file);
+    FirstLineInfo info = FileInfoReader.parseFirstLineInfo(fo);
     //
     assertEquals(true, file.delete());
     //
     assertEquals("\r\n", info.getLineEnding());
     assertEquals(SupportedCharsets.UTF_16_LE.getName(), info.getCharset().getName());
     assertEquals(true, info.isMarked());
+  }
+
+  @Test
+  public void readInfoUTF_16_LE_LF() throws IOException {
+    File file = createUTF_16_LE_LF();
+    FileObject fo = FileUtil.toFileObject(file);
+    FirstLineInfo info = FileInfoReader.parseFirstLineInfo(fo);
+    //
+    assertEquals(true, file.delete());
+    //
+    assertEquals("\n", info.getLineEnding());
+    assertEquals(SupportedCharsets.UTF_16_LE.getName(), info.getCharset().getName());
+    assertEquals(true, info.isMarked());
+  }
+
+  @Test
+  public void readInfoUTF_8_BOM_CR() throws IOException {
+    File file = createUTF_8_BOM_CR();
+    FileObject fo = FileUtil.toFileObject(file);
+    FirstLineInfo info = FileInfoReader.parseFirstLineInfo(fo);
+    //
+    assertEquals(true, file.delete());
+    //
+    assertEquals("\r", info.getLineEnding());
+    assertEquals(SupportedCharsets.UTF_8_BOM.getName(), info.getCharset().getName());
+    assertEquals(true, info.isMarked());
+  }
+
+  @Test
+  public void readInfoUTF_8_BOM_CRLF() throws IOException {
+    File file = createUTF_8_BOM_CRLF();
+    FileObject fo = FileUtil.toFileObject(file);
+    FirstLineInfo info = FileInfoReader.parseFirstLineInfo(fo);
+    //
+    assertEquals(true, file.delete());
+    //
+    assertEquals("\r\n", info.getLineEnding());
+    assertEquals(SupportedCharsets.UTF_8_BOM.getName(), info.getCharset().getName());
+    assertEquals(true, info.isMarked());
+  }
+
+  @Test
+  public void readInfoUTF_8_BOM_LF() throws IOException {
+    File file = createUTF_8_BOM_LF();
+    FileObject fo = FileUtil.toFileObject(file);
+    FirstLineInfo info = FileInfoReader.parseFirstLineInfo(fo);
+    //
+    assertEquals(true, file.delete());
+    //
+    assertEquals("\n", info.getLineEnding());
+    assertEquals(SupportedCharsets.UTF_8_BOM.getName(), info.getCharset().getName());
+    assertEquals(true, info.isMarked());
+  }
+
+  @Test
+  public void readInfoUTF_8_CR() throws IOException {
+    File file = createUTF_8_CR();
+    FileObject fo = FileUtil.toFileObject(file);
+    FirstLineInfo info = FileInfoReader.parseFirstLineInfo(fo);
+    //
+    assertEquals(true, file.delete());
+    //
+    assertEquals("\r", info.getLineEnding());
+    assertEquals(SupportedCharsets.UTF_8.getName(), info.getCharset().getName());
+    assertEquals(false, info.isMarked());
+  }
+
+  @Test
+  public void readInfoUTF_8_CRLF() throws IOException {
+    File file = createUTF_8_CRLF();
+    FileObject fo = FileUtil.toFileObject(file);
+    FirstLineInfo info = FileInfoReader.parseFirstLineInfo(fo);
+    //
+    assertEquals(true, file.delete());
+    //
+    assertEquals("\r\n", info.getLineEnding());
+    assertEquals(SupportedCharsets.UTF_8.getName(), info.getCharset().getName());
+    assertEquals(false, info.isMarked());
+  }
+
+  @Test
+  public void readInfoUTF_8_LF() throws IOException {
+    File file = createUTF_8_LF();
+    FileObject fo = FileUtil.toFileObject(file);
+    FirstLineInfo info = FileInfoReader.parseFirstLineInfo(fo);
+    //
+    assertEquals(true, file.delete());
+    //
+    assertEquals("\n", info.getLineEnding());
+    assertEquals(SupportedCharsets.UTF_8.getName(), info.getCharset().getName());
+    assertEquals(false, info.isMarked());
+  }
+
+  @Test
+  public void trimTrailingLineEndingCR() {
+    Stream<String> stream = Stream.of("Hello\r", "World");
+    String actual = FileInfoReader.trimTrailingWhitespace(stream, "\r");
+    
+    assertEquals("Hello\rWorld", actual);
+  }
+
+  @Test
+  public void trimTrailingLineEndingCRLF() {
+    Stream<String> stream = Stream.of("Hello\r\n", "World");
+    String actual = FileInfoReader.trimTrailingWhitespace(stream, "\r\n");
+    
+    assertEquals("Hello\r\nWorld", actual);
+  }
+
+  @Test
+  public void trimTrailingLineEndingLF() {
+    Stream<String> stream = Stream.of("Hello\n", "World");
+    String actual = FileInfoReader.trimTrailingWhitespace(stream, "\n");
+    
+    assertEquals("Hello\nWorld", actual);
+  }
+
+  @Test
+  public void trimTrailingTab() {
+    Stream<String> stream = Stream.of("Hello\t", "World");
+    String actual = FileInfoReader.trimTrailingWhitespace(stream, System.lineSeparator());
+    
+    assertEquals("Hello" + System.lineSeparator() + "World", actual);
+  }
+
+  @Test
+  public void trimTrailingTabs() {
+    Stream<String> stream = Stream.of("Hello\t\t", "World");
+    String actual = FileInfoReader.trimTrailingWhitespace(stream, System.lineSeparator());
+    
+    assertEquals("Hello" + System.lineSeparator() + "World", actual);
+  }
+
+  @Test
+  public void trimTrailingWhitespace() {
+    Stream<String> stream = Stream.of("Hello ", "World");
+    String actual = FileInfoReader.trimTrailingWhitespace(stream, System.lineSeparator());
+    
+    assertEquals("Hello" + System.lineSeparator() + "World", actual);
   }
 
 }

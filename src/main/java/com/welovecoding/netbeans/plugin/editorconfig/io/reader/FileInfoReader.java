@@ -1,11 +1,8 @@
 package com.welovecoding.netbeans.plugin.editorconfig.io.reader;
 
-import com.glaforge.i18n.io.CharsetToolkit;
 import com.welovecoding.netbeans.plugin.editorconfig.io.model.FirstLineInfo;
 import com.welovecoding.netbeans.plugin.editorconfig.io.model.SupportedCharset;
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -45,22 +42,6 @@ public class FileInfoReader {
     return lineEnding;
   }
 
-  @Deprecated
-  private static Charset guessCharset(File file) {
-    Charset charset = StandardCharsets.UTF_8;
-
-    try {
-      charset = CharsetToolkit.guessEncoding(file, 4096);
-      if (charset.name().equals("US-ASCII")) {
-        charset = StandardCharsets.ISO_8859_1;
-      }
-    } catch (IllegalArgumentException | IOException ex) {
-      Exceptions.printStackTrace(ex);
-    }
-
-    return charset;
-  }
-
   public static Charset guessCharset(FileObject fo) {
     Charset charset = StandardCharsets.UTF_8;
 
@@ -78,38 +59,6 @@ public class FileInfoReader {
     }
 
     return charset;
-  }
-
-  /**
-   * Die Mutter aller Funktionen!
-   *
-   * @param file
-   * @return
-   */
-  @Deprecated
-  public static FirstLineInfo parseFirstLineInfo(File file) {
-    Charset charset = FileInfoReader.guessCharset(file);
-    SupportedCharset supportedCharset;
-    String charsetName = charset.name();
-    String firstLine = readFirstLineWithSeparator(file, charset);
-    String lineEnding = detectLineEnding(firstLine);
-    boolean marked = false;
-
-    if (charset.equals(StandardCharsets.UTF_8)
-            && firstLine.startsWith(SupportedCharset.FILE_MARK)) {
-      charsetName = "UTF-8-BOM";
-      marked = true;
-    } else if (charset.equals(StandardCharsets.UTF_16BE)
-            && firstLine.startsWith(SupportedCharset.FILE_MARK)) {
-      marked = true;
-    } else if (charset.equals(StandardCharsets.UTF_16LE)
-            && firstLine.startsWith(SupportedCharset.FILE_MARK)) {
-      marked = true;
-    }
-
-    supportedCharset = new SupportedCharset(charsetName);
-
-    return new FirstLineInfo(supportedCharset, lineEnding, marked);
   }
 
   public static FirstLineInfo parseFirstLineInfo(FileObject fo) {
@@ -142,46 +91,11 @@ public class FileInfoReader {
    * termination sequence can be a line feed ('\n'), a carriage return ('\r'),
    * or a carriage return followed immediately by a linefeed.
    *
-   * @param file
+   * @param fo
    * @param charset
    *
    * @return First line of a file.
    */
-  @Deprecated
-  private static String readFirstLineWithSeparator(File file, Charset charset) {
-    StringBuilder sb = new StringBuilder();
-    String firstLine;
-    int c;
-
-    try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), charset))) {
-      // Read first line
-      while ((c = br.read()) != -1) {
-        if (c == '\r') {
-          // Mac OS
-          sb.append('\r');
-          // Windows
-          if (br.read() == '\n') {
-            sb.append('\n');
-          }
-          break;
-        } else if (c == '\n') {
-          // Mac OS X
-          sb.append('\n');
-          break;
-        } else {
-          sb.append((char) c);
-        }
-      }
-
-      firstLine = sb.toString();
-
-    } catch (IOException ex) {
-      firstLine = "";
-    }
-
-    return firstLine;
-  }
-
   private static String readFirstLineWithSeparator(FileObject fo, Charset charset) {
     StringBuilder sb = new StringBuilder();
     String firstLine;

@@ -151,13 +151,7 @@
       <artifactId>org-openide-dialogs</artifactId>
       <version>${netbeans.api.version}</version>
     </dependency>
-     <!-- Encoding -->
-    <dependency>
-      <groupId>org.codehaus.guessencoding</groupId>
-      <artifactId>guessencoding</artifactId>
-      <version>1.4</version>
-      <type>jar</type>
-    </dependency>
+    <!-- Encoding Detection -->
     <dependency>
       <groupId>org.apache.any23</groupId>
       <artifactId>apache-any23-encoding</artifactId>
