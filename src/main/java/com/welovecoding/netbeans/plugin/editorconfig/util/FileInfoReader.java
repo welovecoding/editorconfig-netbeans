@@ -115,12 +115,47 @@ public class FileInfoReader {
    *
    * @return First line of a file.
    */
+  @Deprecated
   private static String readFirstLineWithSeparator(File file, Charset charset) {
     StringBuilder sb = new StringBuilder();
     String firstLine;
     int c;
 
     try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), charset))) {
+      // Read first line
+      while ((c = br.read()) != -1) {
+        if (c == '\r') {
+          // Mac OS
+          sb.append('\r');
+          // Windows
+          if (br.read() == '\n') {
+            sb.append('\n');
+          }
+          break;
+        } else if (c == '\n') {
+          // Mac OS X
+          sb.append('\n');
+          break;
+        } else {
+          sb.append((char) c);
+        }
+      }
+
+      firstLine = sb.toString();
+
+    } catch (IOException ex) {
+      firstLine = "";
+    }
+
+    return firstLine;
+  }
+
+  private static String readFirstLineWithSeparator(FileObject fo, Charset charset) {
+    StringBuilder sb = new StringBuilder();
+    String firstLine;
+    int c;
+
+    try (BufferedReader br = new BufferedReader(new InputStreamReader(fo.getInputStream(), charset))) {
       // Read first line
       while ((c = br.read()) != -1) {
         if (c == '\r') {
