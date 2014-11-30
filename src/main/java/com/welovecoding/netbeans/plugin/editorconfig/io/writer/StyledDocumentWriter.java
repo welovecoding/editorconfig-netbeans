@@ -2,7 +2,7 @@ package com.welovecoding.netbeans.plugin.editorconfig.io.writer;
 
 import static com.welovecoding.netbeans.plugin.editorconfig.config.Settings.ENCODING_SETTING;
 import com.welovecoding.netbeans.plugin.editorconfig.processor.FileInfo;
-import com.welovecoding.netbeans.plugin.editorconfig.util.FileAccessException;
+import com.welovecoding.netbeans.plugin.editorconfig.io.exception.FileAccessException;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;

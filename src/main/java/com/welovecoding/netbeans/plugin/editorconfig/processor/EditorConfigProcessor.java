@@ -9,8 +9,8 @@ import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.XFinalN
 import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.XLineEndingOperation;
 import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.XTabWidthOperation;
 import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.XTrimTrailingWhitespacesOperation;
-import com.welovecoding.netbeans.plugin.editorconfig.util.FileAccessException;
-import com.welovecoding.netbeans.plugin.editorconfig.util.NetBeansFileUtil;
+import com.welovecoding.netbeans.plugin.editorconfig.io.exception.FileAccessException;
+import com.welovecoding.netbeans.plugin.editorconfig.util.FileInfoReader;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -193,7 +193,7 @@ public class EditorConfigProcessor {
   private boolean doCharset(FileObject fileObject, String charset) {
     boolean hasToBeChanged = false;
 
-    Charset currentCharset = NetBeansFileUtil.guessCharset(fileObject);
+    Charset currentCharset = FileInfoReader.guessCharset(fileObject);
     Charset requestedCharset = EditorConfigPropertyMapper.mapCharset(charset);
 
     if (!currentCharset.equals(requestedCharset)) {

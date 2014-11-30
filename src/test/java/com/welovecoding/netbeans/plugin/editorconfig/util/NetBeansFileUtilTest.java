@@ -171,7 +171,7 @@ public class NetBeansFileUtilTest {
   @Test
   public void testUTF8_BOM_CRLF() throws IOException {
     File file = createUTF_8_BOM_CRLF();
-    FirstLineInfo info = NetBeansFileUtil.parseFirstLineInfo(file);
+    FirstLineInfo info = FileInfoReader.parseFirstLineInfo(file);
     //
     assertEquals("\r\n", info.getLineEnding());
     assertEquals(SupportedCharsets.UTF_8_BOM.getName(), info.getCharset().getName());
@@ -183,7 +183,7 @@ public class NetBeansFileUtilTest {
   @Test
   public void testUTF8_CR() throws IOException {
     File file = createUTF_8_CR();
-    FirstLineInfo info = NetBeansFileUtil.parseFirstLineInfo(file);
+    FirstLineInfo info = FileInfoReader.parseFirstLineInfo(file);
     //
     assertEquals("\r", info.getLineEnding());
     assertEquals(SupportedCharsets.UTF_8.getName(), info.getCharset().getName());
@@ -195,7 +195,7 @@ public class NetBeansFileUtilTest {
   @Test
   public void testUTF8_LF() throws IOException {
     File file = createUTF_8_LF();
-    FirstLineInfo info = NetBeansFileUtil.parseFirstLineInfo(file);
+    FirstLineInfo info = FileInfoReader.parseFirstLineInfo(file);
     //
     assertEquals("\n", info.getLineEnding());
     assertEquals(SupportedCharsets.UTF_8.getName(), info.getCharset().getName());
@@ -207,7 +207,7 @@ public class NetBeansFileUtilTest {
   @Test
   public void testUTF8_CRLF() throws IOException {
     File file = createUTF_8_CRLF();
-    FirstLineInfo info = NetBeansFileUtil.parseFirstLineInfo(file);
+    FirstLineInfo info = FileInfoReader.parseFirstLineInfo(file);
     //
     assertEquals("\r\n", info.getLineEnding());
     assertEquals(SupportedCharsets.UTF_8.getName(), info.getCharset().getName());
@@ -219,7 +219,7 @@ public class NetBeansFileUtilTest {
   @Test
   public void testLATIN_1_CR() throws IOException {
     File file = createLATIN_1_CR();
-    FirstLineInfo info = NetBeansFileUtil.parseFirstLineInfo(file);
+    FirstLineInfo info = FileInfoReader.parseFirstLineInfo(file);
     //
     assertEquals(true, file.delete());
     //
@@ -231,7 +231,7 @@ public class NetBeansFileUtilTest {
   @Test
   public void testLATIN_1_LF() throws IOException {
     File file = createLATIN_1_LF();
-    FirstLineInfo info = NetBeansFileUtil.parseFirstLineInfo(file);
+    FirstLineInfo info = FileInfoReader.parseFirstLineInfo(file);
     //
     assertEquals(true, file.delete());
     //
@@ -243,7 +243,7 @@ public class NetBeansFileUtilTest {
   @Test
   public void testLATIN_1_CRLF() throws IOException {
     File file = createLATIN_1_CRLF();
-    FirstLineInfo info = NetBeansFileUtil.parseFirstLineInfo(file);
+    FirstLineInfo info = FileInfoReader.parseFirstLineInfo(file);
     //
     assertEquals(true, file.delete());
     //
@@ -255,7 +255,7 @@ public class NetBeansFileUtilTest {
   @Test
   public void testUTF8_BOM_CR() throws IOException {
     File file = createUTF_8_BOM_CR();
-    FirstLineInfo info = NetBeansFileUtil.parseFirstLineInfo(file);
+    FirstLineInfo info = FileInfoReader.parseFirstLineInfo(file);
     //
     assertEquals(true, file.delete());
     //
@@ -267,7 +267,7 @@ public class NetBeansFileUtilTest {
   @Test
   public void testUTF8_BOM_LF() throws IOException {
     File file = createUTF_8_BOM_LF();
-    FirstLineInfo info = NetBeansFileUtil.parseFirstLineInfo(file);
+    FirstLineInfo info = FileInfoReader.parseFirstLineInfo(file);
     //
     assertEquals(true, file.delete());
     //
@@ -283,7 +283,7 @@ public class NetBeansFileUtilTest {
     Path testFilePath = Paths.get(url.toURI());
     FileObject fo = FileUtil.toFileObject(testFilePath.toFile());
 
-    Charset charset = NetBeansFileUtil.guessCharset(fo);
+    Charset charset = FileInfoReader.guessCharset(fo);
 
     assertEquals(StandardCharsets.ISO_8859_1, charset);
   }
@@ -295,7 +295,7 @@ public class NetBeansFileUtilTest {
     Path testFilePath = Paths.get(url.toURI());
     FileObject fo = FileUtil.toFileObject(testFilePath.toFile());
 
-    Charset charset = NetBeansFileUtil.guessCharset(fo);
+    Charset charset = FileInfoReader.guessCharset(fo);
 
     assertEquals(StandardCharsets.UTF_8, charset);
   }
@@ -307,7 +307,7 @@ public class NetBeansFileUtilTest {
     Path testFilePath = Paths.get(url.toURI());
     FileObject fo = FileUtil.toFileObject(testFilePath.toFile());
 
-    Charset charset = NetBeansFileUtil.guessCharset(fo);
+    Charset charset = FileInfoReader.guessCharset(fo);
 
     assertEquals(StandardCharsets.UTF_8, charset);
   }
@@ -319,7 +319,7 @@ public class NetBeansFileUtilTest {
     Path testFilePath = Paths.get(url.toURI());
     FileObject fo = FileUtil.toFileObject(testFilePath.toFile());
 
-    Charset charset = NetBeansFileUtil.guessCharset(fo);
+    Charset charset = FileInfoReader.guessCharset(fo);
 
     assertEquals(StandardCharsets.UTF_16BE, charset);
   }
@@ -331,7 +331,7 @@ public class NetBeansFileUtilTest {
     Path testFilePath = Paths.get(url.toURI());
     FileObject fo = FileUtil.toFileObject(testFilePath.toFile());
 
-    Charset charset = NetBeansFileUtil.guessCharset(fo);
+    Charset charset = FileInfoReader.guessCharset(fo);
 
     assertEquals(StandardCharsets.UTF_16LE, charset);
   }
@@ -349,7 +349,7 @@ public class NetBeansFileUtilTest {
 
     // Inspect file object
     FileObject fo = FileUtil.toFileObject(file);
-    Charset charset = NetBeansFileUtil.guessCharset(fo);
+    Charset charset = FileInfoReader.guessCharset(fo);
 
     assertEquals(true, file.delete());
     assertEquals(StandardCharsets.UTF_16LE, charset);
@@ -369,7 +369,7 @@ public class NetBeansFileUtilTest {
 
     // Inspect file object
     FileObject fo = FileUtil.toFileObject(file);
-    Charset charset = NetBeansFileUtil.guessCharset(fo);
+    Charset charset = FileInfoReader.guessCharset(fo);
 
     assertEquals(true, file.delete());
     assertEquals(StandardCharsets.UTF_8, charset);
@@ -389,7 +389,7 @@ public class NetBeansFileUtilTest {
 
     // Inspect file object
     FileObject fo = FileUtil.toFileObject(file);
-    Charset charset = NetBeansFileUtil.guessCharset(fo);
+    Charset charset = FileInfoReader.guessCharset(fo);
 
     assertEquals(true, file.delete());
     assertEquals(StandardCharsets.UTF_16LE, charset);
@@ -409,7 +409,7 @@ public class NetBeansFileUtilTest {
 
     // Inspect file object
     FileObject fo = FileUtil.toFileObject(file);
-    Charset charset = NetBeansFileUtil.guessCharset(fo);
+    Charset charset = FileInfoReader.guessCharset(fo);
 
     assertEquals(true, file.delete());
     assertEquals(StandardCharsets.UTF_16BE, charset);
@@ -418,7 +418,7 @@ public class NetBeansFileUtilTest {
   @Test
   public void testTrimTrailingWhitespace() {
     Stream<String> stream = Stream.of("Hello ", "World");
-    String actual = NetBeansFileUtil.trimTrailingWhitespace(stream, System.lineSeparator());
+    String actual = FileInfoReader.trimTrailingWhitespace(stream, System.lineSeparator());
 
     assertEquals("Hello" + System.lineSeparator() + "World", actual);
   }
@@ -426,7 +426,7 @@ public class NetBeansFileUtilTest {
   @Test
   public void testTrimTrailingTab() {
     Stream<String> stream = Stream.of("Hello\t", "World");
-    String actual = NetBeansFileUtil.trimTrailingWhitespace(stream, System.lineSeparator());
+    String actual = FileInfoReader.trimTrailingWhitespace(stream, System.lineSeparator());
 
     assertEquals("Hello" + System.lineSeparator() + "World", actual);
   }
@@ -434,7 +434,7 @@ public class NetBeansFileUtilTest {
   @Test
   public void testTrimTrailingTabs() {
     Stream<String> stream = Stream.of("Hello\t\t", "World");
-    String actual = NetBeansFileUtil.trimTrailingWhitespace(stream, System.lineSeparator());
+    String actual = FileInfoReader.trimTrailingWhitespace(stream, System.lineSeparator());
 
     assertEquals("Hello" + System.lineSeparator() + "World", actual);
   }
@@ -442,7 +442,7 @@ public class NetBeansFileUtilTest {
   @Test
   public void testTrimTrailingLineEndingCR() {
     Stream<String> stream = Stream.of("Hello\r", "World");
-    String actual = NetBeansFileUtil.trimTrailingWhitespace(stream, "\r");
+    String actual = FileInfoReader.trimTrailingWhitespace(stream, "\r");
 
     assertEquals("Hello\rWorld", actual);
   }
@@ -450,7 +450,7 @@ public class NetBeansFileUtilTest {
   @Test
   public void testTrimTrailingLineEndingLF() {
     Stream<String> stream = Stream.of("Hello\n", "World");
-    String actual = NetBeansFileUtil.trimTrailingWhitespace(stream, "\n");
+    String actual = FileInfoReader.trimTrailingWhitespace(stream, "\n");
 
     assertEquals("Hello\nWorld", actual);
   }
@@ -458,7 +458,7 @@ public class NetBeansFileUtilTest {
   @Test
   public void testTrimTrailingLineEndingCRLF() {
     Stream<String> stream = Stream.of("Hello\r\n", "World");
-    String actual = NetBeansFileUtil.trimTrailingWhitespace(stream, "\r\n");
+    String actual = FileInfoReader.trimTrailingWhitespace(stream, "\r\n");
 
     assertEquals("Hello\r\nWorld", actual);
   }

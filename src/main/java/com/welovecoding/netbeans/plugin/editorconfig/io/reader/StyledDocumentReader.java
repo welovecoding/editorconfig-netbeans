@@ -1,6 +1,6 @@
 package com.welovecoding.netbeans.plugin.editorconfig.io.reader;
 
-import com.welovecoding.netbeans.plugin.editorconfig.util.FileAccessException;
+import com.welovecoding.netbeans.plugin.editorconfig.io.exception.FileAccessException;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;

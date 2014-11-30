@@ -2,8 +2,8 @@ package com.welovecoding.netbeans.plugin.editorconfig.processor.io;
 
 import com.welovecoding.netbeans.plugin.editorconfig.io.writer.StyledDocumentWriter;
 import com.welovecoding.netbeans.plugin.editorconfig.mapper.EditorConfigPropertyMapper;
-import com.welovecoding.netbeans.plugin.editorconfig.util.FileAccessException;
-import com.welovecoding.netbeans.plugin.editorconfig.util.NetBeansFileUtil;
+import com.welovecoding.netbeans.plugin.editorconfig.io.exception.FileAccessException;
+import com.welovecoding.netbeans.plugin.editorconfig.util.FileInfoReader;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -38,7 +38,7 @@ public class DocumentReaderWriterTest {
 
     // read temp file
     FileObject fo = FileUtil.toFileObject(file);
-    Charset guessedCharset = NetBeansFileUtil.guessCharset(fo);
+    Charset guessedCharset = FileInfoReader.guessCharset(fo);
 
     assertEquals(javaCharset, guessedCharset);
 

@@ -22,7 +22,7 @@ import org.openide.util.Utilities;
  * <a href="http://www.w3.org/TR/REC-xml/#sec-guessing-no-ext-info">Detection
  * Without External Encoding Information</a>
  */
-public class NetBeansFileUtil {
+public class FileInfoReader {
 
   /**
    * @see
@@ -136,7 +136,7 @@ public class NetBeansFileUtil {
   @Deprecated
   public static String detectLineEnding(File file) {
     String firstLine = readFirstLine(file);
-    String lineEnding = NetBeansFileUtil.detectLineEnding(firstLine);
+    String lineEnding = FileInfoReader.detectLineEnding(firstLine);
     return lineEnding;
   }
 
@@ -147,7 +147,7 @@ public class NetBeansFileUtil {
    * @return
    */
   public static FirstLineInfo parseFirstLineInfo(File file) {
-    Charset charset = NetBeansFileUtil.guessCharset(file);
+    Charset charset = FileInfoReader.guessCharset(file);
     SupportedCharset supportedCharset;
     String charsetName = charset.name();
     String firstLine = readFirstLineWithSeparator(file, charset);
