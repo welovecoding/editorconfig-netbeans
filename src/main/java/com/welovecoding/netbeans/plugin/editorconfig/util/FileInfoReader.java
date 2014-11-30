@@ -24,6 +24,20 @@ import org.openide.util.Utilities;
  */
 public class FileInfoReader {
 
+  private static String detectLineEnding(String line) {
+    String lineEnding = System.lineSeparator();
+
+    if (line.endsWith("\r\n")) {
+      lineEnding = "\r\n";
+    } else if (line.endsWith("\n")) {
+      lineEnding = "\n";
+    } else if (line.endsWith("\r")) {
+      lineEnding = "\r";
+    }
+
+    return lineEnding;
+  }
+
   /**
    * @see
    * <a href="https://github.com/4ndrew/monqjfa/blob/master/monq/stuff/EncodingDetector.java">EncodingDetector.java</a>
@@ -45,7 +59,7 @@ public class FileInfoReader {
     return charset;
   }
 
-  public static Charset guessCharset(File file) {
+  private static Charset guessCharset(File file) {
     Charset charset = StandardCharsets.UTF_8;
 
     try {
@@ -60,19 +74,35 @@ public class FileInfoReader {
     return charset;
   }
 
-  public static String trimTrailingWhitespace(Stream<String> lines, String lineEnding) {
-    return lines.map((String content) -> {
-      return content.replaceAll("\\s+$", "");
-    }).collect(Collectors.joining(lineEnding));
-  }
+  /**
+   * Die Mutter aller Funktionen!
+   *
+   * @param file
+   * @return
+   */
+  public static FirstLineInfo parseFirstLineInfo(File file) {
+    Charset charset = FileInfoReader.guessCharset(file);
+    SupportedCharset supportedCharset;
+    String charsetName = charset.name();
+    String firstLine = readFirstLineWithSeparator(file, charset);
+    String lineEnding = detectLineEnding(firstLine);
+    boolean marked = false;
 
-  @Deprecated
-  public static String readFirstLine(File file) {
-    try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file)))) {
-      return br.readLine();
-    } catch (IOException ex) {
-      return "";
+    if (charset.equals(StandardCharsets.UTF_8)
+            && firstLine.startsWith(SupportedCharset.FILE_MARK)) {
+      charsetName = "UTF-8-BOM";
+      marked = true;
+    } else if (charset.equals(StandardCharsets.UTF_16BE)
+            && firstLine.startsWith(SupportedCharset.FILE_MARK)) {
+      marked = true;
+    } else if (charset.equals(StandardCharsets.UTF_16LE)
+            && firstLine.startsWith(SupportedCharset.FILE_MARK)) {
+      marked = true;
     }
+
+    supportedCharset = new SupportedCharset(charsetName);
+
+    return new FirstLineInfo(supportedCharset, lineEnding, marked);
   }
 
   /**
@@ -85,7 +115,7 @@ public class FileInfoReader {
    *
    * @return First line of a file.
    */
-  public static String readFirstLineWithSeparator(File file, Charset charset) {
+  private static String readFirstLineWithSeparator(File file, Charset charset) {
     StringBuilder sb = new StringBuilder();
     String firstLine;
     int c;
@@ -119,55 +149,9 @@ public class FileInfoReader {
     return firstLine;
   }
 
-  protected static String detectLineEnding(String line) {
-    String lineEnding = System.lineSeparator();
-
-    if (line.endsWith("\r\n")) {
-      lineEnding = "\r\n";
-    } else if (line.endsWith("\n")) {
-      lineEnding = "\n";
-    } else if (line.endsWith("\r")) {
-      lineEnding = "\r";
-    }
-
-    return lineEnding;
-  }
-
-  @Deprecated
-  public static String detectLineEnding(File file) {
-    String firstLine = readFirstLine(file);
-    String lineEnding = FileInfoReader.detectLineEnding(firstLine);
-    return lineEnding;
-  }
-
-  /**
-   * Die Mutter aller Funktionen!
-   *
-   * @param file
-   * @return
-   */
-  public static FirstLineInfo parseFirstLineInfo(File file) {
-    Charset charset = FileInfoReader.guessCharset(file);
-    SupportedCharset supportedCharset;
-    String charsetName = charset.name();
-    String firstLine = readFirstLineWithSeparator(file, charset);
-    String lineEnding = detectLineEnding(firstLine);
-    boolean marked = false;
-
-    if (charset.equals(StandardCharsets.UTF_8)
-            && firstLine.startsWith(SupportedCharset.FILE_MARK)) {
-      charsetName = "UTF-8-BOM";
-      marked = true;
-    } else if (charset.equals(StandardCharsets.UTF_16BE)
-            && firstLine.startsWith(SupportedCharset.FILE_MARK)) {
-      marked = true;
-    } else if (charset.equals(StandardCharsets.UTF_16LE)
-            && firstLine.startsWith(SupportedCharset.FILE_MARK)) {
-      marked = true;
-    }
-
-    supportedCharset = new SupportedCharset(charsetName);
-
-    return new FirstLineInfo(supportedCharset, lineEnding, marked);
+  public static String trimTrailingWhitespace(Stream<String> lines, String lineEnding) {
+    return lines.map((String content) -> {
+      return content.replaceAll("\\s+$", "");
+    }).collect(Collectors.joining(lineEnding));
   }
 }
