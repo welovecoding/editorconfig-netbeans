@@ -1,21 +1,21 @@
 package com.welovecoding.netbeans.plugin.editorconfig.util;
 
 import com.glaforge.i18n.io.CharsetToolkit;
-import static com.welovecoding.netbeans.plugin.editorconfig.config.Settings.ENCODING_SETTING;
 import com.welovecoding.netbeans.plugin.editorconfig.io.model.FirstLineInfo;
 import com.welovecoding.netbeans.plugin.editorconfig.io.model.SupportedCharset;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.apache.any23.encoding.TikaEncodingDetector;
 import org.openide.filesystems.FileObject;
 import org.openide.util.Exceptions;
-import org.openide.util.Utilities;
 
 /**
  * @see
@@ -38,27 +38,7 @@ public class FileInfoReader {
     return lineEnding;
   }
 
-  /**
-   * @see
-   * <a href="https://github.com/4ndrew/monqjfa/blob/master/monq/stuff/EncodingDetector.java">EncodingDetector.java</a>
-   *
-   * @param fo
-   * @return
-   */
-  public static Charset guessCharset(FileObject fo) {
-    Charset charset;
-    Object fileEncoding = fo.getAttribute(ENCODING_SETTING);
-
-    if (fileEncoding == null) {
-      File file = Utilities.toFile(fo.toURI());
-      charset = guessCharset(file);
-    } else {
-      charset = Charset.forName((String) fileEncoding);
-    }
-
-    return charset;
-  }
-
+  @Deprecated
   private static Charset guessCharset(File file) {
     Charset charset = StandardCharsets.UTF_8;
 
@@ -74,17 +54,58 @@ public class FileInfoReader {
     return charset;
   }
 
+  public static Charset guessCharset(FileObject fo) {
+    Charset charset = StandardCharsets.UTF_8;
+
+    try (InputStream is = fo.getInputStream()) {
+      charset = Charset.forName(new TikaEncodingDetector().guessEncoding(is));
+      if (charset.name().equals("ISO-8859-2") || charset.name().equals("IBM500")) {
+        charset = StandardCharsets.ISO_8859_1;
+      }
+    } catch (IllegalArgumentException | IOException ex) {
+      Exceptions.printStackTrace(ex);
+    }
+
+    return charset;
+  }
+
   /**
    * Die Mutter aller Funktionen!
    *
    * @param file
    * @return
    */
+  @Deprecated
   public static FirstLineInfo parseFirstLineInfo(File file) {
     Charset charset = FileInfoReader.guessCharset(file);
     SupportedCharset supportedCharset;
     String charsetName = charset.name();
     String firstLine = readFirstLineWithSeparator(file, charset);
+    String lineEnding = detectLineEnding(firstLine);
+    boolean marked = false;
+
+    if (charset.equals(StandardCharsets.UTF_8)
+            && firstLine.startsWith(SupportedCharset.FILE_MARK)) {
+      charsetName = "UTF-8-BOM";
+      marked = true;
+    } else if (charset.equals(StandardCharsets.UTF_16BE)
+            && firstLine.startsWith(SupportedCharset.FILE_MARK)) {
+      marked = true;
+    } else if (charset.equals(StandardCharsets.UTF_16LE)
+            && firstLine.startsWith(SupportedCharset.FILE_MARK)) {
+      marked = true;
+    }
+
+    supportedCharset = new SupportedCharset(charsetName);
+
+    return new FirstLineInfo(supportedCharset, lineEnding, marked);
+  }
+
+  public static FirstLineInfo parseFirstLineInfo(FileObject fo) {
+    Charset charset = FileInfoReader.guessCharset(fo);
+    SupportedCharset supportedCharset;
+    String charsetName = charset.name();
+    String firstLine = readFirstLineWithSeparator(fo, charset);
     String lineEnding = detectLineEnding(firstLine);
     boolean marked = false;
 
@@ -155,7 +176,10 @@ public class FileInfoReader {
     String firstLine;
     int c;
 
-    try (BufferedReader br = new BufferedReader(new InputStreamReader(fo.getInputStream(), charset))) {
+    try (
+            InputStream is = fo.getInputStream();
+            InputStreamReader isr = new InputStreamReader(is, charset);
+            BufferedReader br = new BufferedReader(isr)) {
       // Read first line
       while ((c = br.read()) != -1) {
         if (c == '\r') {

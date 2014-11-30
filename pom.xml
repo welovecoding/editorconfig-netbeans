@@ -130,14 +130,7 @@
       <version>${netbeans.api.version}</version>
       <scope>test</scope>
       <type>jar</type>
-    </dependency>
-    <!-- https://xircles.codehaus.org/p/guessencoding -->
-    <dependency>
-      <groupId>org.codehaus.guessencoding</groupId>
-      <artifactId>guessencoding</artifactId>
-      <version>1.4</version>
-      <type>jar</type>
-    </dependency>
+    </dependency>   
     <dependency>
       <groupId>org.netbeans.api</groupId>
       <artifactId>org-openide-nodes</artifactId>
@@ -157,6 +150,19 @@
       <groupId>org.netbeans.api</groupId>
       <artifactId>org-openide-dialogs</artifactId>
       <version>${netbeans.api.version}</version>
+    </dependency>
+     <!-- Encoding -->
+    <dependency>
+      <groupId>org.codehaus.guessencoding</groupId>
+      <artifactId>guessencoding</artifactId>
+      <version>1.4</version>
+      <type>jar</type>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.any23</groupId>
+      <artifactId>apache-any23-encoding</artifactId>
+      <version>1.1</version>
+      <type>jar</type>
     </dependency>
   </dependencies>
     
