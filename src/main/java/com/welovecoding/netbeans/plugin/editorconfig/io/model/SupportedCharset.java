@@ -1,4 +1,4 @@
-package com.welovecoding.netbeans.plugin.editorconfig.processor.io;
+package com.welovecoding.netbeans.plugin.editorconfig.io.model;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;

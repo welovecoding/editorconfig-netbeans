@@ -1,4 +1,4 @@
-package com.welovecoding.netbeans.plugin.editorconfig.processor.io;
+package com.welovecoding.netbeans.plugin.editorconfig.io.writer;
 
 import static com.welovecoding.netbeans.plugin.editorconfig.config.Settings.ENCODING_SETTING;
 import com.welovecoding.netbeans.plugin.editorconfig.processor.FileInfo;
@@ -30,9 +30,9 @@ import org.openide.util.Lookup;
 import org.openide.filesystems.FileObject;
 import org.openide.util.Utilities;
 
-public class DocumentReaderWriter {
+public class StyledDocumentWriter {
 
-  private static final Logger LOG = Logger.getLogger(DocumentReaderWriter.class.getName());
+  private static final Logger LOG = Logger.getLogger(StyledDocumentWriter.class.getName());
 
   private static EditorCookie getEditorCookie(DataObject dataObject) {
     return dataObject.getLookup().lookup(EditorCookie.class);
@@ -47,17 +47,24 @@ public class DocumentReaderWriter {
     return kit;
   }
 
-  public static void writeOnFile(FileObject fo, String content)
+  public static ArrayList<String> readFileObjectIntoLines(FileObject fo, Charset charset, String lineEnding)
           throws FileAccessException {
-    File file = Utilities.toFile(fo.toURI());
+    ArrayList<String> lines = new ArrayList<>();
+    String line;
 
-    // write file
-    try (FileWriter fileWriter = new FileWriter(file, true);
-            BufferedWriter bufferWritter = new BufferedWriter(fileWriter)) {
-      bufferWritter.write(content);
+    try (BufferedReader reader = new BufferedReader(new InputStreamReader(fo.getInputStream(), charset))) {
+      while ((line = reader.readLine()) != null) {
+        lines.add(line);
+        lines.add(lineEnding);
+      }
+
+      // Remove last line-break
+      lines.remove(lines.size() - 1);
     } catch (IOException ex) {
-      throw new FileAccessException("Document could not be written: " + ex.getMessage());
+      throw new FileAccessException("Document could not be read: " + ex.getMessage());
     }
+
+    return lines;
   }
 
   public static void writeFile(FileObject fo, Charset charset, String content)
@@ -66,6 +73,19 @@ public class DocumentReaderWriter {
 
     try {
       Files.write(file.toPath(), content.getBytes(charset));
+    } catch (IOException ex) {
+      throw new FileAccessException("Document could not be written: " + ex.getMessage());
+    }
+  }
+
+  public static void writeOnFile(FileObject fo, String content)
+          throws FileAccessException {
+    File file = Utilities.toFile(fo.toURI());
+
+    // write file
+    try (FileWriter fileWriter = new FileWriter(file, true);
+            BufferedWriter bufferWritter = new BufferedWriter(fileWriter)) {
+      bufferWritter.write(content);
     } catch (IOException ex) {
       throw new FileAccessException("Document could not be written: " + ex.getMessage());
     }
@@ -99,7 +119,7 @@ public class DocumentReaderWriter {
     EditorCookie cookie = info.getCookie();
     EditorKit kit = getEditorKit(info.getDataObject());
     StyledDocument document = null;
-    int caretPosition = -1;
+    int caretPosition;
 
     try {
       document = cookie.openDocument();
@@ -119,7 +139,7 @@ public class DocumentReaderWriter {
       info.getFileObject().setAttribute(ENCODING_SETTING, info.getCharset().name());
 
       // reset the caret positon
-      if (caretPosition > -1 && caretPosition < document.getLength()) {
+      if (caretPosition < document.getLength()) {
         caret.setDot(caretPosition);
       }
     } catch (BadLocationException | IOException ex) {
@@ -177,26 +197,6 @@ public class DocumentReaderWriter {
     } catch (BadLocationException | IOException ex) {
       throw new FileAccessException("Document could not be written: " + ex.getMessage());
     }
-  }
-
-  public static ArrayList<String> readFileObjectIntoLines(FileObject fo, Charset charset, String lineEnding)
-          throws FileAccessException {
-    ArrayList<String> lines = new ArrayList<>();
-    String line;
-
-    try (BufferedReader reader = new BufferedReader(new InputStreamReader(fo.getInputStream(), charset))) {
-      while ((line = reader.readLine()) != null) {
-        lines.add(line);
-        lines.add(lineEnding);
-      }
-
-      // Remove last line-break
-      lines.remove(lines.size() - 1);
-    } catch (IOException ex) {
-      throw new FileAccessException("Document could not be read: " + ex.getMessage());
-    }
-
-    return lines;
   }
 
 }

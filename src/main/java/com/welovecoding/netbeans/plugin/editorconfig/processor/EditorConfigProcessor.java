@@ -2,7 +2,7 @@ package com.welovecoding.netbeans.plugin.editorconfig.processor;
 
 import com.welovecoding.netbeans.plugin.editorconfig.mapper.EditorConfigPropertyMapper;
 import com.welovecoding.netbeans.plugin.editorconfig.model.EditorConfigConstant;
-import com.welovecoding.netbeans.plugin.editorconfig.processor.io.DocumentReaderWriter;
+import com.welovecoding.netbeans.plugin.editorconfig.io.writer.StyledDocumentWriter;
 import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.IndentSizeOperation;
 import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.IndentStyleOperation;
 import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.XFinalNewLineOperation;
@@ -183,7 +183,7 @@ public class EditorConfigProcessor {
     EditorCookie cookie = info.getCookie();
     NbDocument.runAtomic(cookie.getDocument(), () -> {
       try {
-        DocumentReaderWriter.writeWithEditorKit(info);
+        StyledDocumentWriter.writeWithEditorKit(info);
       } catch (FileAccessException ex) {
         LOG.log(Level.SEVERE, ex.getMessage());
       }

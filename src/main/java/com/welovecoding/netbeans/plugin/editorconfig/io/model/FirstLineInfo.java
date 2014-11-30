@@ -1,4 +1,4 @@
-package com.welovecoding.netbeans.plugin.editorconfig.processor.io;
+package com.welovecoding.netbeans.plugin.editorconfig.io.model;
 
 /**
  * File information which can be parsed from the first line of a file.

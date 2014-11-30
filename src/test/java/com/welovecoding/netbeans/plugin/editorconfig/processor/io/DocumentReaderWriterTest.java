@@ -1,5 +1,6 @@
 package com.welovecoding.netbeans.plugin.editorconfig.processor.io;
 
+import com.welovecoding.netbeans.plugin.editorconfig.io.writer.StyledDocumentWriter;
 import com.welovecoding.netbeans.plugin.editorconfig.mapper.EditorConfigPropertyMapper;
 import com.welovecoding.netbeans.plugin.editorconfig.util.FileAccessException;
 import com.welovecoding.netbeans.plugin.editorconfig.util.NetBeansFileUtil;
@@ -41,7 +42,7 @@ public class DocumentReaderWriterTest {
 
     assertEquals(javaCharset, guessedCharset);
 
-    ArrayList<String> lines = DocumentReaderWriter.readFileObjectIntoLines(fo, javaCharset, ecLineEnding);
+    ArrayList<String> lines = StyledDocumentWriter.readFileObjectIntoLines(fo, javaCharset, ecLineEnding);
 
     // delete temp file
     file.delete();

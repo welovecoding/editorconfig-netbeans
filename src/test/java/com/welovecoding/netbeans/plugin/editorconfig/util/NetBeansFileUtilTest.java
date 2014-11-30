@@ -1,7 +1,7 @@
 package com.welovecoding.netbeans.plugin.editorconfig.util;
 
-import com.welovecoding.netbeans.plugin.editorconfig.processor.io.FirstLineInfo;
-import com.welovecoding.netbeans.plugin.editorconfig.processor.io.SupportedCharsets;
+import com.welovecoding.netbeans.plugin.editorconfig.io.model.FirstLineInfo;
+import com.welovecoding.netbeans.plugin.editorconfig.io.model.SupportedCharsets;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;

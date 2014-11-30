@@ -2,8 +2,8 @@ package com.welovecoding.netbeans.plugin.editorconfig.util;
 
 import com.glaforge.i18n.io.CharsetToolkit;
 import static com.welovecoding.netbeans.plugin.editorconfig.config.Settings.ENCODING_SETTING;
-import com.welovecoding.netbeans.plugin.editorconfig.processor.io.FirstLineInfo;
-import com.welovecoding.netbeans.plugin.editorconfig.processor.io.SupportedCharset;
+import com.welovecoding.netbeans.plugin.editorconfig.io.model.FirstLineInfo;
+import com.welovecoding.netbeans.plugin.editorconfig.io.model.SupportedCharset;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
