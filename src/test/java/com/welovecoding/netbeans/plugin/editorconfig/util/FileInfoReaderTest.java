@@ -5,7 +5,6 @@ import com.welovecoding.netbeans.plugin.editorconfig.io.model.SupportedCharsets;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -436,11 +435,11 @@ public class FileInfoReaderTest {
     File file = createUTF_8_BOM_CRLF();
     FirstLineInfo info = FileInfoReader.parseFirstLineInfo(file);
     //
+    assertEquals(true, file.delete());
+    //
     assertEquals("\r\n", info.getLineEnding());
     assertEquals(SupportedCharsets.UTF_8_BOM.getName(), info.getCharset().getName());
     assertEquals(true, info.isMarked());
-    //
-    assertEquals(true, file.delete());
   }
 
   @Test
@@ -460,11 +459,11 @@ public class FileInfoReaderTest {
     File file = createUTF_8_CR();
     FirstLineInfo info = FileInfoReader.parseFirstLineInfo(file);
     //
+    assertEquals(true, file.delete());
+    //
     assertEquals("\r", info.getLineEnding());
     assertEquals(SupportedCharsets.UTF_8.getName(), info.getCharset().getName());
     assertEquals(false, info.isMarked());
-    //
-    assertEquals(true, file.delete());
   }
 
   @Test
@@ -472,11 +471,11 @@ public class FileInfoReaderTest {
     File file = createUTF_8_CRLF();
     FirstLineInfo info = FileInfoReader.parseFirstLineInfo(file);
     //
+    assertEquals(true, file.delete());
+    //
     assertEquals("\r\n", info.getLineEnding());
     assertEquals(SupportedCharsets.UTF_8.getName(), info.getCharset().getName());
     assertEquals(false, info.isMarked());
-    //
-    assertEquals(true, file.delete());
   }
 
   @Test
@@ -484,11 +483,83 @@ public class FileInfoReaderTest {
     File file = createUTF_8_LF();
     FirstLineInfo info = FileInfoReader.parseFirstLineInfo(file);
     //
+    assertEquals(true, file.delete());
+    //
     assertEquals("\n", info.getLineEnding());
     assertEquals(SupportedCharsets.UTF_8.getName(), info.getCharset().getName());
     assertEquals(false, info.isMarked());
+  }
+
+  @Test
+  public void readInfoUTF_16_BE_CR() throws IOException {
+    File file = createUTF_16_BE_CR();
+    FirstLineInfo info = FileInfoReader.parseFirstLineInfo(file);
     //
     assertEquals(true, file.delete());
+    //
+    assertEquals("\r", info.getLineEnding());
+    assertEquals(SupportedCharsets.UTF_16_BE.getName(), info.getCharset().getName());
+    assertEquals(true, info.isMarked());
+  }
+
+  @Test
+  public void readInfoUTF_16_BE_LF() throws IOException {
+    File file = createUTF_16_BE_LF();
+    FirstLineInfo info = FileInfoReader.parseFirstLineInfo(file);
+    //
+    assertEquals(true, file.delete());
+    //
+    assertEquals("\n", info.getLineEnding());
+    assertEquals(SupportedCharsets.UTF_16_BE.getName(), info.getCharset().getName());
+    assertEquals(true, info.isMarked());
+  }
+
+  @Test
+  public void readInfoUTF_16_BE_CRLF() throws IOException {
+    File file = createUTF_16_BE_CRLF();
+    FirstLineInfo info = FileInfoReader.parseFirstLineInfo(file);
+    //
+    assertEquals(true, file.delete());
+    //
+    assertEquals("\r\n", info.getLineEnding());
+    assertEquals(SupportedCharsets.UTF_16_BE.getName(), info.getCharset().getName());
+    assertEquals(true, info.isMarked());
+  }
+
+  @Test
+  public void readInfoUTF_16_LE_LF() throws IOException {
+    File file = createUTF_16_LE_LF();
+    FirstLineInfo info = FileInfoReader.parseFirstLineInfo(file);
+    //
+    assertEquals(true, file.delete());
+    //
+    assertEquals("\n", info.getLineEnding());
+    assertEquals(SupportedCharsets.UTF_16_LE.getName(), info.getCharset().getName());
+    assertEquals(true, info.isMarked());
+  }
+
+  @Test
+  public void readInfoUTF_16_LE_CR() throws IOException {
+    File file = createUTF_16_LE_CR();
+    FirstLineInfo info = FileInfoReader.parseFirstLineInfo(file);
+    //
+    assertEquals(true, file.delete());
+    //
+    assertEquals("\r", info.getLineEnding());
+    assertEquals(SupportedCharsets.UTF_16_LE.getName(), info.getCharset().getName());
+    assertEquals(true, info.isMarked());
+  }
+
+  @Test
+  public void readInfoUTF_16_LE_CRLF() throws IOException {
+    File file = createUTF_16_LE_CRLF();
+    FirstLineInfo info = FileInfoReader.parseFirstLineInfo(file);
+    //
+    assertEquals(true, file.delete());
+    //
+    assertEquals("\r\n", info.getLineEnding());
+    assertEquals(SupportedCharsets.UTF_16_LE.getName(), info.getCharset().getName());
+    assertEquals(true, info.isMarked());
   }
 
 }
