@@ -1,7 +1,7 @@
 package com.welovecoding.netbeans.plugin.editorconfig.processor;
 
 import static com.welovecoding.netbeans.plugin.editorconfig.config.Settings.ENCODING_SETTING;
-import com.welovecoding.netbeans.plugin.editorconfig.util.FileInfoReader;
+import com.welovecoding.netbeans.plugin.editorconfig.io.reader.FileInfoReader;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;

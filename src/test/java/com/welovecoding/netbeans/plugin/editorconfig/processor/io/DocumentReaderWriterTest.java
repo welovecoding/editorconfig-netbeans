@@ -3,7 +3,7 @@ package com.welovecoding.netbeans.plugin.editorconfig.processor.io;
 import com.welovecoding.netbeans.plugin.editorconfig.io.writer.StyledDocumentWriter;
 import com.welovecoding.netbeans.plugin.editorconfig.mapper.EditorConfigPropertyMapper;
 import com.welovecoding.netbeans.plugin.editorconfig.io.exception.FileAccessException;
-import com.welovecoding.netbeans.plugin.editorconfig.util.FileInfoReader;
+import com.welovecoding.netbeans.plugin.editorconfig.io.reader.FileInfoReader;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;

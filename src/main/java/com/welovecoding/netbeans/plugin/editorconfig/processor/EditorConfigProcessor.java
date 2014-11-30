@@ -10,7 +10,7 @@ import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.XLineEn
 import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.XTabWidthOperation;
 import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.XTrimTrailingWhitespacesOperation;
 import com.welovecoding.netbeans.plugin.editorconfig.io.exception.FileAccessException;
-import com.welovecoding.netbeans.plugin.editorconfig.util.FileInfoReader;
+import com.welovecoding.netbeans.plugin.editorconfig.io.reader.FileInfoReader;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package com.welovecoding.netbeans.plugin.editorconfig.util;
+package com.welovecoding.netbeans.plugin.editorconfig.io.reader;
 
 import com.welovecoding.netbeans.plugin.editorconfig.io.model.FirstLineInfo;
 import com.welovecoding.netbeans.plugin.editorconfig.io.model.SupportedCharsets;
