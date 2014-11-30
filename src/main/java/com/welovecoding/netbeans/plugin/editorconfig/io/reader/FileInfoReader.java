@@ -11,6 +11,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.any23.encoding.TikaEncodingDetector;
@@ -23,6 +24,12 @@ import org.openide.util.Exceptions;
  * Without External Encoding Information</a>
  */
 public class FileInfoReader {
+
+  private static final String[] UNICODE_CHARSETS = new String[]{
+    "UTF-16BE",
+    "UTF-16LE",
+    "UTF-8"
+  };
 
   private static String detectLineEnding(String line) {
     String lineEnding = System.lineSeparator();
@@ -58,10 +65,14 @@ public class FileInfoReader {
     Charset charset = StandardCharsets.UTF_8;
 
     try (InputStream is = fo.getInputStream()) {
-      charset = Charset.forName(new TikaEncodingDetector().guessEncoding(is));
-      if (charset.name().equals("ISO-8859-2") || charset.name().equals("IBM500")) {
-        charset = StandardCharsets.ISO_8859_1;
+      String charsetName = new TikaEncodingDetector().guessEncoding(is);
+      boolean isUnicode = Arrays.asList(UNICODE_CHARSETS).contains(charsetName);
+
+      if (!isUnicode) {
+        charsetName = "ISO-8859-1";
       }
+
+      charset = Charset.forName(charsetName);
     } catch (IllegalArgumentException | IOException ex) {
       Exceptions.printStackTrace(ex);
     }
