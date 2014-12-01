@@ -8,7 +8,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
-import org.editorconfig.core.EditorConfig;
 import org.netbeans.modules.editor.indent.spi.CodeStylePreferences;
 import org.openide.cookies.EditorCookie;
 import org.openide.filesystems.FileObject;
@@ -19,19 +18,17 @@ public class EditorConfigProcessor {
 
   private static final Logger LOG = Logger.getLogger(EditorConfigProcessor.class.getSimpleName());
   public static final Level OPERATION_LOG_LEVEL = Level.WARNING;
-  private final EditorConfig ec;
+  private MappedEditorConfig config;
 
   public EditorConfigProcessor() {
-    ec = new EditorConfig(".editorconfig", EditorConfig.VERSION);
   }
 
   public void applyRulesToFile(DataObject dataObject) throws Exception {
     String filePath = dataObject.getPrimaryFile().getPath();
-    MappedEditorConfig mappedConfig = EditorConfigPropertyMapper.createEditorConfig(filePath);
+    config = EditorConfigPropertyMapper.createEditorConfig(filePath);
 
     LOG.log(Level.INFO, "Mapped rules for: {0}", filePath);
-    LOG.log(Level.INFO, mappedConfig.toString());
-//    MappedEditorConfig editorConfig = parseRulesForFile(dataObject);
+    LOG.log(Level.INFO, config.toString());
   }
 
   private void flushFile(FileInfo info) {
@@ -42,11 +39,53 @@ public class EditorConfigProcessor {
     }
   }
 
-  private void updateChangesInFile(FileInfo info) {
-    LOG.log(Level.INFO, "Write content (with all rules applied) to file: {0}", info.getFileObject().getPath());
+  /*
+   private boolean doCharset(FileObject fileObject, String charset) {
+   boolean hasToBeChanged = false;
+   Charset currentCharset = FileInfoReader.guessCharset(fileObject);
+   Charset requestedCharset = EditorConfigPropertyMapper.mapCharset(charset);
+   if (!currentCharset.equals(requestedCharset)) {
+   LOG.log(Level.INFO, "Charset change needed from {0} to {1}",
+   new Object[]{currentCharset.name(), requestedCharset.name()});
+   hasToBeChanged = true;
+   }
+   return hasToBeChanged;
+   }
+   */
+  /*
+   private boolean doEndOfLine(DataObject dataObject, String ecLineEnding) {
+   FileObject fileObject = dataObject.getPrimaryFile();
+   String javaLineEnding = EditorConfigPropertyMapper.mapLineEnding(ecLineEnding);
+   boolean wasChanged = false;
+   try {
+   StringBuilder content = new StringBuilder(fileObject.asText());
+   wasChanged = XLineEndingOperation.doLineEndings(content, javaLineEnding);
+   } catch (IOException ex) {
+   Exceptions.printStackTrace(ex);
+   }
+   StyledDocument document = NbDocument.getDocument(dataObject);
+   if (document != null && wasChanged) {
+   if (!document.getProperty(BaseDocument.READ_LINE_SEPARATOR_PROP).equals(javaLineEnding)) {
+   document.putProperty(BaseDocument.READ_LINE_SEPARATOR_PROP, javaLineEnding);
+   LOG.log(Level.INFO, "Action: Changed line endings in Document.");
+   } else {
+   LOG.log(Level.INFO, "Action not needed: Line endings are already set to: {0}", ecLineEnding);
+   }
+   }
+   return wasChanged;
+   }
+   */
+  private void flushStyles(FileObject fileObject) {
+    try {
+      Preferences codeStyle = CodeStylePreferences.get(fileObject, fileObject.getMIMEType()).getPreferences();
+      codeStyle.flush();
+    } catch (BackingStoreException ex) {
+      LOG.log(Level.SEVERE, "Error applying code style: {0}", ex.getMessage());
+    }
+  }
 
-    WriteStringToFileTask task = new WriteStringToFileTask(info);
-    task.run();
+  private EditorCookie getEditorCookie(DataObject dataObject) {
+    return dataObject.getLookup().lookup(EditorCookie.class);
   }
 
   private void updateChangesInEditorWindow(FileInfo info) {
@@ -62,60 +101,10 @@ public class EditorConfigProcessor {
     });
   }
 
-  /*
-   private boolean doCharset(FileObject fileObject, String charset) {
-   boolean hasToBeChanged = false;
+  private void updateChangesInFile(FileInfo info) {
+    LOG.log(Level.INFO, "Write content (with all rules applied) to file: {0}", info.getFileObject().getPath());
 
-   Charset currentCharset = FileInfoReader.guessCharset(fileObject);
-   Charset requestedCharset = EditorConfigPropertyMapper.mapCharset(charset);
-
-   if (!currentCharset.equals(requestedCharset)) {
-   LOG.log(Level.INFO, "Charset change needed from {0} to {1}",
-   new Object[]{currentCharset.name(), requestedCharset.name()});
-   hasToBeChanged = true;
-   }
-
-   return hasToBeChanged;
-   }
-   */
-
-  /*
-   private boolean doEndOfLine(DataObject dataObject, String ecLineEnding) {
-   FileObject fileObject = dataObject.getPrimaryFile();
-   String javaLineEnding = EditorConfigPropertyMapper.mapLineEnding(ecLineEnding);
-   boolean wasChanged = false;
-
-   try {
-   StringBuilder content = new StringBuilder(fileObject.asText());
-   wasChanged = XLineEndingOperation.doLineEndings(content, javaLineEnding);
-   } catch (IOException ex) {
-   Exceptions.printStackTrace(ex);
-   }
-
-   StyledDocument document = NbDocument.getDocument(dataObject);
-   if (document != null && wasChanged) {
-   if (!document.getProperty(BaseDocument.READ_LINE_SEPARATOR_PROP).equals(javaLineEnding)) {
-   document.putProperty(BaseDocument.READ_LINE_SEPARATOR_PROP, javaLineEnding);
-   LOG.log(Level.INFO, "Action: Changed line endings in Document.");
-
-   } else {
-   LOG.log(Level.INFO, "Action not needed: Line endings are already set to: {0}", ecLineEnding);
-   }
-   }
-
-   return wasChanged;
-   }
-   */
-  private void flushStyles(FileObject fileObject) {
-    try {
-      Preferences codeStyle = CodeStylePreferences.get(fileObject, fileObject.getMIMEType()).getPreferences();
-      codeStyle.flush();
-    } catch (BackingStoreException ex) {
-      LOG.log(Level.SEVERE, "Error applying code style: {0}", ex.getMessage());
-    }
-  }
-
-  private EditorCookie getEditorCookie(DataObject dataObject) {
-    return dataObject.getLookup().lookup(EditorCookie.class);
+    WriteStringToFileTask task = new WriteStringToFileTask(info);
+    task.run();
   }
 }
