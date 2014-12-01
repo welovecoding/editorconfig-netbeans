@@ -5,6 +5,8 @@ public class EditorConfigConstant {
   /**
    * Set to latin1, utf-8, utf-8-bom, utf-16be or utf-16le to control the
    * character set. Use of utf-8-bom is discouraged.
+   * 
+   * TODO: Check if these values are still used.
    */
   public static final String CHARSET = "charset";
   public static final String CHARSET_LATIN_1 = "latin1";        // ISO-LATIN-1

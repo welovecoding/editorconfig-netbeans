@@ -1,9 +1,9 @@
 package com.welovecoding.netbeans.plugin.editorconfig.mapper;
 
+import com.welovecoding.netbeans.plugin.editorconfig.io.model.MappedCharset;
+import com.welovecoding.netbeans.plugin.editorconfig.io.model.SupportedCharsets;
 import com.welovecoding.netbeans.plugin.editorconfig.model.MappedEditorConfig;
 import com.welovecoding.netbeans.plugin.editorconfig.model.EditorConfigConstant;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -49,8 +49,8 @@ public class EditorConfigPropertyMapper {
 
       switch (key) {
         case "charset":
-          Charset charset = mapCharset(value);
-          mappedConfig.setCharset(charset);
+          MappedCharset charset = mapCharset(value);
+          mappedConfig.setSupportedCharset(charset);
           break;
         case "end_of_line":
           String lineEnding = mapLineEnding(value);
@@ -104,30 +104,42 @@ public class EditorConfigPropertyMapper {
     return fileMark;
   }
 
-  protected static synchronized Charset mapCharset(String editorConfigCharset) {
-    Charset javaCharset;
+  /**
+   *
+   * @param ecCharset latin1, utf-8, utf-8-bom, utf-16be or utf-16le
+   * @return
+   */
+  protected static synchronized MappedCharset mapCharset(String ecCharset) {
+    MappedCharset charset;
 
-    if (editorConfigCharset == null) {
-      return StandardCharsets.UTF_8;
+    if (ecCharset == null) {
+      return SupportedCharsets.UTF_8;
     }
 
-    switch (editorConfigCharset) {
-      case EditorConfigConstant.CHARSET_LATIN_1:
-        javaCharset = StandardCharsets.ISO_8859_1;
+    switch (ecCharset) {
+      case "latin1":
+        charset = SupportedCharsets.LATIN_1;
         break;
-      case EditorConfigConstant.CHARSET_UTF_16_BE:
-        javaCharset = StandardCharsets.UTF_16BE;
+      case "utf-8":
+        charset = SupportedCharsets.UTF_8;
         break;
-      case EditorConfigConstant.CHARSET_UTF_16_LE:
-        javaCharset = StandardCharsets.UTF_16LE;
+      case "utf-8-bom":
+        charset = SupportedCharsets.UTF_8_BOM;
+        break;
+      case "utf-16be":
+        charset = SupportedCharsets.UTF_16_BE;
+        break;
+      case "utf-16le":
+        charset = SupportedCharsets.UTF_16_LE;
         break;
       default:
-        javaCharset = StandardCharsets.UTF_8;
+        charset = SupportedCharsets.UTF_8;
+        LOG.log(Level.INFO, "Unsported charset: {0}. Using: {1}.",
+                new Object[]{ecCharset, charset.getName()});
         break;
     }
 
-    LOG.log(Level.INFO, "Using charset: \"{0}\"", javaCharset);
-    return javaCharset;
+    return charset;
   }
 
   protected static synchronized String mapLineEnding(String ecLineEnding) {

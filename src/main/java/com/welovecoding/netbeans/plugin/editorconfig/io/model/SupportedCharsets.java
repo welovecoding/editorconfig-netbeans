@@ -2,10 +2,10 @@ package com.welovecoding.netbeans.plugin.editorconfig.io.model;
 
 public class SupportedCharsets {
 
-  public static final SupportedCharset LATIN_1 = new SupportedCharset("ISO-8859-1");
-  public static final SupportedCharset UTF_8 = new SupportedCharset("UTF-8");
-  public static final SupportedCharset UTF_8_BOM = new SupportedCharset("UTF-8-BOM");
-  public static final SupportedCharset UTF_16_BE = new SupportedCharset("UTF-16BE");
-  public static final SupportedCharset UTF_16_LE = new SupportedCharset("UTF-16LE");
+  public static final MappedCharset LATIN_1 = new MappedCharset("ISO-8859-1");
+  public static final MappedCharset UTF_8 = new MappedCharset("UTF-8");
+  public static final MappedCharset UTF_8_BOM = new MappedCharset("UTF-8-BOM");
+  public static final MappedCharset UTF_16_BE = new MappedCharset("UTF-16BE");
+  public static final MappedCharset UTF_16_LE = new MappedCharset("UTF-16LE");
 
 }

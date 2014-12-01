@@ -1,12 +1,12 @@
 package com.welovecoding.netbeans.plugin.editorconfig.model;
 
-import java.nio.charset.Charset;
+import com.welovecoding.netbeans.plugin.editorconfig.io.model.MappedCharset;
 import java.text.MessageFormat;
 
 public class MappedEditorConfig {
 
   // charset
-  private Charset charset;
+  private MappedCharset charset;
   // end_of_line
   private String endOfLine;
   // indent_size
@@ -66,11 +66,11 @@ public class MappedEditorConfig {
     return MessageFormat.format(template, values);
   }
 
-  public Charset getCharset() {
+  public MappedCharset getSupportedCharset() {
     return charset;
   }
 
-  public void setCharset(Charset charset) {
+  public void setSupportedCharset(MappedCharset charset) {
     this.charset = charset;
   }
 

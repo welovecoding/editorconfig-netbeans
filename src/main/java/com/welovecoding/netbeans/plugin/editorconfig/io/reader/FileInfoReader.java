@@ -1,7 +1,7 @@
 package com.welovecoding.netbeans.plugin.editorconfig.io.reader;
 
 import com.welovecoding.netbeans.plugin.editorconfig.io.model.FirstLineInfo;
-import com.welovecoding.netbeans.plugin.editorconfig.io.model.SupportedCharset;
+import com.welovecoding.netbeans.plugin.editorconfig.io.model.MappedCharset;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -63,25 +63,25 @@ public class FileInfoReader {
 
   public static FirstLineInfo parseFirstLineInfo(FileObject fo) {
     Charset charset = FileInfoReader.guessCharset(fo);
-    SupportedCharset supportedCharset;
+    MappedCharset supportedCharset;
     String charsetName = charset.name();
     String firstLine = readFirstLineWithSeparator(fo, charset);
     String lineEnding = detectLineEnding(firstLine);
     boolean marked = false;
 
     if (charset.equals(StandardCharsets.UTF_8)
-            && firstLine.startsWith(SupportedCharset.FILE_MARK)) {
+            && firstLine.startsWith(MappedCharset.FILE_MARK)) {
       charsetName = "UTF-8-BOM";
       marked = true;
     } else if (charset.equals(StandardCharsets.UTF_16BE)
-            && firstLine.startsWith(SupportedCharset.FILE_MARK)) {
+            && firstLine.startsWith(MappedCharset.FILE_MARK)) {
       marked = true;
     } else if (charset.equals(StandardCharsets.UTF_16LE)
-            && firstLine.startsWith(SupportedCharset.FILE_MARK)) {
+            && firstLine.startsWith(MappedCharset.FILE_MARK)) {
       marked = true;
     }
 
-    supportedCharset = new SupportedCharset(charsetName);
+    supportedCharset = new MappedCharset(charsetName);
 
     return new FirstLineInfo(supportedCharset, lineEnding, marked);
   }

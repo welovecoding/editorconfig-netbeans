@@ -3,7 +3,7 @@ package com.welovecoding.netbeans.plugin.editorconfig.io.model;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
-public class SupportedCharset {
+public class MappedCharset {
 
   public static final String FILE_MARK = "\uFEFF";
 
@@ -11,7 +11,7 @@ public class SupportedCharset {
   private String mark = null;
   private String name = null;
 
-  public SupportedCharset(String name) {
+  public MappedCharset(String name) {
     this.charset = null;
     this.mark = null;
     this.name = name;
