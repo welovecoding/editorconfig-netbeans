@@ -24,8 +24,7 @@ public class MappedEditorConfig {
 
   }
 
-  @Override
-  public String toString() {
+  public String readableString() {
     String lineEnding = "CRLF";
 
     switch (endOfLine) {
@@ -37,6 +36,11 @@ public class MappedEditorConfig {
         break;
     }
 
+    return lineEnding;
+  }
+
+  @Override
+  public String toString() {
     String template
             = "1. charset: {0}"
             + System.lineSeparator()
@@ -54,8 +58,8 @@ public class MappedEditorConfig {
             + System.lineSeparator();
 
     Object[] values = new Object[]{
-      charset,
-      lineEnding,
+      charset.getName(),
+      readableString(),
       indentSize,
       indentStyle,
       insertFinalNewLine,

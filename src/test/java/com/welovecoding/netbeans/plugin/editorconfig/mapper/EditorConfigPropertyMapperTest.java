@@ -1,6 +1,6 @@
 package com.welovecoding.netbeans.plugin.editorconfig.mapper;
 
-import java.nio.charset.Charset;
+import com.welovecoding.netbeans.plugin.editorconfig.io.model.MappedCharset;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
@@ -12,93 +12,91 @@ public class EditorConfigPropertyMapperTest {
   @Test
   public void itConvertsLineFeed() throws EditorConfigPropertyMappingException {
     String ecProperty = "lf";
-    String javaProperty = "\n";
-    String mappedProperty = EditorConfigPropertyMapper.mapLineEnding(ecProperty);
+    String expected = "\n";
 
-    assertEquals(mappedProperty, javaProperty);
+    String mappedProperty = EditorConfigPropertyMapper.mapLineEnding(ecProperty);
+    assertEquals(expected, mappedProperty);
   }
 
   @Test
   public void itConvertsCarriageReturn() throws EditorConfigPropertyMappingException {
     String ecProperty = "cr";
-    String javaProperty = "\r";
-    String mappedProperty = EditorConfigPropertyMapper.mapLineEnding(ecProperty);
+    String expected = "\r";
 
-    assertEquals(mappedProperty, javaProperty);
+    String mappedProperty = EditorConfigPropertyMapper.mapLineEnding(ecProperty);
+    assertEquals(expected, mappedProperty);
   }
 
   @Test
   public void itConvertsCRLF() throws EditorConfigPropertyMappingException {
     String ecProperty = "crlf";
-    String javaProperty = "\r\n";
-    String mappedProperty = EditorConfigPropertyMapper.mapLineEnding(ecProperty);
+    String expected = "\r\n";
 
-    assertEquals(mappedProperty, javaProperty);
+    String mappedProperty = EditorConfigPropertyMapper.mapLineEnding(ecProperty);
+    assertEquals(expected, mappedProperty);
   }
 
   @Test
   public void itConvertsUnknownValues() throws EditorConfigPropertyMappingException {
     String ecProperty = "something";
-    String javaProperty = System.lineSeparator();
+    String expected = System.lineSeparator();
 
     String mappedProperty = EditorConfigPropertyMapper.mapLineEnding(ecProperty);
-
-    assertEquals(mappedProperty, javaProperty);
+    assertEquals(expected, mappedProperty);
   }
 
   @Test
   public void itWorksWithNullValues() throws EditorConfigPropertyMappingException {
     String ecProperty = null;
-    String javaProperty = System.lineSeparator();
+    String expected = System.lineSeparator();
 
     String mappedProperty = EditorConfigPropertyMapper.mapLineEnding(ecProperty);
-
-    assertEquals(mappedProperty, javaProperty);
+    assertEquals(expected, mappedProperty);
   }
 
   @Test
   public void itConvertsLatin1() {
     String ecProperty = "latin1";
-    String javaProperty = "ISO-8859-1";
+    String expected = "ISO-8859-1";
 
-    Charset charset = EditorConfigPropertyMapper.mapCharset(ecProperty);
-    assertEquals(charset.name(), javaProperty);
+    MappedCharset charset = EditorConfigPropertyMapper.mapCharset(ecProperty);
+    assertEquals(expected, charset.getName());
   }
 
   @Test
   public void itConvertsUTF8() {
     String ecProperty = "utf-8";
-    String javaProperty = "UTF-8";
+    String expected = "UTF-8";
 
-    Charset charset = EditorConfigPropertyMapper.mapCharset(ecProperty);
-    assertEquals(charset.name(), javaProperty);
+    MappedCharset charset = EditorConfigPropertyMapper.mapCharset(ecProperty);
+    assertEquals(expected, charset.getName());
   }
 
   @Test
   public void itConvertsUTF8BOM() {
     String ecProperty = "utf-8-bom";
-    String javaProperty = "UTF-8";
+    String expected = "UTF-8-BOM";
 
-    Charset charset = EditorConfigPropertyMapper.mapCharset(ecProperty);
-    assertEquals(charset.name(), javaProperty);
+    MappedCharset charset = EditorConfigPropertyMapper.mapCharset(ecProperty);
+    assertEquals(expected, charset.getName());
   }
 
   @Test
   public void itConvertsUTF16BE() {
     String ecProperty = "utf-16be";
-    String javaProperty = "UTF-16BE";
+    String expected = "UTF-16BE";
 
-    Charset charset = EditorConfigPropertyMapper.mapCharset(ecProperty);
-    assertEquals(charset.name(), javaProperty);
+    MappedCharset charset = EditorConfigPropertyMapper.mapCharset(ecProperty);
+    assertEquals(expected, charset.getName());
   }
 
   @Test
   public void itConvertsUTF16LE() {
     String ecProperty = "utf-16le";
-    String javaProperty = "UTF-16LE";
+    String expected = "UTF-16LE";
 
-    Charset charset = EditorConfigPropertyMapper.mapCharset(ecProperty);
-    assertEquals(charset.name(), javaProperty);
+    MappedCharset charset = EditorConfigPropertyMapper.mapCharset(ecProperty);
+    assertEquals(expected, charset.getName());
   }
 
 }
