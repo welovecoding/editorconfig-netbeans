@@ -50,13 +50,13 @@ indent_size = 2
 
 ## Supported properties
 
-- :white_check_mark: charset
-- :white_check_mark: end_of_line
-- :white_check_mark: indent_size
-- :white_check_mark: indent_style
-- :white_check_mark: insert_final_newline
-- :white_check_mark: tab_width
-- :white_check_mark: trim_trailing_whitespace
+1. :white_check_mark: charset
+1. :white_check_mark: end_of_line
+1. :white_check_mark: indent_size
+1. :white_check_mark: indent_style
+1. :white_check_mark: insert_final_newline
+1. :white_check_mark: tab_width
+1. :white_check_mark: trim_trailing_whitespace
 
 [EditorConfig]: http://editorconfig.org
 
