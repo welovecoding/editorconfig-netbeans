@@ -2,6 +2,7 @@ package com.welovecoding.netbeans.plugin.editorconfig.io.model;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 public class MappedCharset {
 
@@ -42,6 +43,25 @@ public class MappedCharset {
         charset = StandardCharsets.UTF_8;
         break;
     }
+  }
+
+  @Override
+  public int hashCode() {
+    int hash = 7;
+    hash = 79 * hash + Objects.hashCode(this.name);
+    return hash;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    final MappedCharset other = (MappedCharset) obj;
+    return Objects.equals(this.name, other.name);
   }
 
   public Charset getCharset() {

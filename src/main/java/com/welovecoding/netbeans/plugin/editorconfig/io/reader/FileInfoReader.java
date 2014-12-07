@@ -1,5 +1,6 @@
 package com.welovecoding.netbeans.plugin.editorconfig.io.reader;
 
+import static com.welovecoding.netbeans.plugin.editorconfig.config.Settings.ENCODING_SETTING;
 import com.welovecoding.netbeans.plugin.editorconfig.io.model.FirstLineInfo;
 import com.welovecoding.netbeans.plugin.editorconfig.io.model.MappedCharset;
 import java.io.BufferedReader;
@@ -28,7 +29,7 @@ public class FileInfoReader {
     "UTF-8"
   };
 
-  private static String detectLineEnding(String line) {
+  private static synchronized String detectLineEnding(String line) {
     String lineEnding = System.lineSeparator();
 
     if (line.endsWith("\r\n")) {
@@ -42,7 +43,22 @@ public class FileInfoReader {
     return lineEnding;
   }
 
-  public static Charset guessCharset(FileObject fo) {
+  public static MappedCharset readCharset(FileObject fo) {
+    MappedCharset mappedCharset;
+
+    Object charsetName = fo.getAttribute(ENCODING_SETTING);
+
+    if (charsetName != null) {
+      mappedCharset = new MappedCharset(charsetName.toString());
+    } else {
+      Charset charset = guessCharset(fo);
+      mappedCharset = new MappedCharset(charset.name());
+    }
+
+    return mappedCharset;
+  }
+
+  protected static Charset guessCharset(FileObject fo) {
     Charset charset = StandardCharsets.UTF_8;
 
     try (InputStream is = fo.getInputStream()) {

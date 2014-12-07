@@ -1,6 +1,7 @@
 package com.welovecoding.netbeans.plugin.editorconfig.processor;
 
 import static com.welovecoding.netbeans.plugin.editorconfig.config.Settings.ENCODING_SETTING;
+import com.welovecoding.netbeans.plugin.editorconfig.io.model.MappedCharset;
 import com.welovecoding.netbeans.plugin.editorconfig.io.reader.FileInfoReader;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -30,7 +31,8 @@ public abstract class WriteFileTask implements Runnable {
 
   public WriteFileTask(FileObject fileObject) {
     this.fileObject = fileObject;
-    this.charset = FileInfoReader.guessCharset(fileObject);
+    MappedCharset mappedCharset = FileInfoReader.readCharset(fileObject);
+    this.charset = mappedCharset.getCharset();
   }
 
   @Override

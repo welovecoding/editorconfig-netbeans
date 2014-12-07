@@ -3,6 +3,8 @@ package com.welovecoding.netbeans.plugin.editorconfig.processor;
 import com.welovecoding.netbeans.plugin.editorconfig.mapper.EditorConfigPropertyMapper;
 import com.welovecoding.netbeans.plugin.editorconfig.io.writer.StyledDocumentWriter;
 import com.welovecoding.netbeans.plugin.editorconfig.io.exception.FileAccessException;
+import com.welovecoding.netbeans.plugin.editorconfig.io.model.MappedCharset;
+import com.welovecoding.netbeans.plugin.editorconfig.io.reader.FileInfoReader;
 import com.welovecoding.netbeans.plugin.editorconfig.model.MappedEditorConfig;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -29,6 +31,25 @@ public class EditorConfigProcessor {
 
     LOG.log(Level.INFO, "Mapped rules for: {0}", filePath);
     LOG.log(Level.INFO, config.toString());
+
+    MappedCharset charset = config.getCharset();
+
+    if (charset != null) {
+      doCharset(dataObject.getPrimaryFile(), charset);
+    }
+  }
+
+  private void doCharset(FileObject fo, MappedCharset requestedCharset) {
+    MappedCharset currentCharset = FileInfoReader.readCharset(fo);
+
+    LOG.log(Level.INFO, "Config wants charset {0} for file {1}.",
+            new Object[]{requestedCharset.getName(), fo.getPath()});
+
+    LOG.log(Level.INFO, "\u00ac Current charset: ", currentCharset.getName());
+
+    if (currentCharset != requestedCharset) {
+      LOG.log(Level.INFO, "\u00ac Charsets are not equal.");
+    }
   }
 
   private void flushFile(FileInfo info) {

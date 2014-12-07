@@ -70,11 +70,12 @@ public class MappedEditorConfig {
     return MessageFormat.format(template, values);
   }
 
-  public MappedCharset getSupportedCharset() {
+  // <editor-fold defaultstate="collapsed" desc="Getter & Setter">
+  public MappedCharset getCharset() {
     return charset;
   }
 
-  public void setSupportedCharset(MappedCharset charset) {
+  public void setCharset(MappedCharset charset) {
     this.charset = charset;
   }
 
@@ -125,5 +126,5 @@ public class MappedEditorConfig {
   public void setTrimTrailingWhiteSpace(boolean trimTrailingWhiteSpace) {
     this.trimTrailingWhiteSpace = trimTrailingWhiteSpace;
   }
-
+// </editor-fold>
 }
