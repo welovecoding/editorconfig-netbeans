@@ -64,6 +64,11 @@ public class MappedCharset {
     return Objects.equals(this.name, other.name);
   }
 
+  @Override
+  public String toString() {
+    return "MappedCharset{" + "charset=" + charset + ", mark=" + mark + ", name=" + name + '}';
+  }
+  
   public Charset getCharset() {
     return charset;
   }

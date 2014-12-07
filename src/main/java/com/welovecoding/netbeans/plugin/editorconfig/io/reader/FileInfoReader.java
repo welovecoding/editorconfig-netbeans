@@ -9,7 +9,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.mozilla.universalchardet.UniversalDetector;
@@ -23,13 +24,15 @@ import org.openide.util.Exceptions;
  */
 public class FileInfoReader {
 
+  private static final Logger LOG = Logger.getLogger(FileInfoReader.class.getName());
+
   private static final String[] UNICODE_CHARSETS = new String[]{
     "UTF-16BE",
     "UTF-16LE",
     "UTF-8"
   };
 
-  private static synchronized String detectLineEnding(String line) {
+  private static String detectLineEnding(String line) {
     String lineEnding = System.lineSeparator();
 
     if (line.endsWith("\r\n")) {

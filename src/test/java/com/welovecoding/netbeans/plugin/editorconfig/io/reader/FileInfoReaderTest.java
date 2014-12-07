@@ -1,6 +1,7 @@
 package com.welovecoding.netbeans.plugin.editorconfig.io.reader;
 
 import com.welovecoding.netbeans.plugin.editorconfig.io.model.FirstLineInfo;
+import com.welovecoding.netbeans.plugin.editorconfig.io.model.MappedCharset;
 import com.welovecoding.netbeans.plugin.editorconfig.io.model.SupportedCharsets;
 import java.io.File;
 import java.io.IOException;
@@ -258,6 +259,17 @@ public class FileInfoReaderTest {
     }
 
     return file;
+  }
+
+  @Test
+  public void readCharsetInfoLATIN_1() {
+    File file = createLATIN_1_CRLF();
+
+    FileObject fo = FileUtil.toFileObject(file);
+    MappedCharset charset = FileInfoReader.readCharset(fo);
+
+    assertEquals(true, file.delete());
+    assertEquals(SupportedCharsets.LATIN_1.getName(), charset.getName());
   }
 
   @Test
@@ -533,7 +545,7 @@ public class FileInfoReaderTest {
   public void trimTrailingLineEndingCR() {
     Stream<String> stream = Stream.of("Hello\r", "World");
     String actual = FileInfoReader.trimTrailingWhitespace(stream, "\r");
-    
+
     assertEquals("Hello\rWorld", actual);
   }
 
@@ -541,7 +553,7 @@ public class FileInfoReaderTest {
   public void trimTrailingLineEndingCRLF() {
     Stream<String> stream = Stream.of("Hello\r\n", "World");
     String actual = FileInfoReader.trimTrailingWhitespace(stream, "\r\n");
-    
+
     assertEquals("Hello\r\nWorld", actual);
   }
 
@@ -549,7 +561,7 @@ public class FileInfoReaderTest {
   public void trimTrailingLineEndingLF() {
     Stream<String> stream = Stream.of("Hello\n", "World");
     String actual = FileInfoReader.trimTrailingWhitespace(stream, "\n");
-    
+
     assertEquals("Hello\nWorld", actual);
   }
 
@@ -557,7 +569,7 @@ public class FileInfoReaderTest {
   public void trimTrailingTab() {
     Stream<String> stream = Stream.of("Hello\t", "World");
     String actual = FileInfoReader.trimTrailingWhitespace(stream, System.lineSeparator());
-    
+
     assertEquals("Hello" + System.lineSeparator() + "World", actual);
   }
 
@@ -565,7 +577,7 @@ public class FileInfoReaderTest {
   public void trimTrailingTabs() {
     Stream<String> stream = Stream.of("Hello\t\t", "World");
     String actual = FileInfoReader.trimTrailingWhitespace(stream, System.lineSeparator());
-    
+
     assertEquals("Hello" + System.lineSeparator() + "World", actual);
   }
 
@@ -573,7 +585,7 @@ public class FileInfoReaderTest {
   public void trimTrailingWhitespace() {
     Stream<String> stream = Stream.of("Hello ", "World");
     String actual = FileInfoReader.trimTrailingWhitespace(stream, System.lineSeparator());
-    
+
     assertEquals("Hello" + System.lineSeparator() + "World", actual);
   }
 
