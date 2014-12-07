@@ -12,7 +12,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.apache.any23.encoding.TikaEncodingDetector;
+import org.mozilla.universalchardet.UniversalDetector;
 import org.openide.filesystems.FileObject;
 import org.openide.util.Exceptions;
 
@@ -60,16 +60,27 @@ public class FileInfoReader {
 
   protected static Charset guessCharset(FileObject fo) {
     Charset charset = StandardCharsets.UTF_8;
+    byte[] buf = new byte[4096];
 
     try (InputStream is = fo.getInputStream()) {
-      String charsetName = new TikaEncodingDetector().guessEncoding(is);
-      boolean isUnicode = Arrays.asList(UNICODE_CHARSETS).contains(charsetName);
+      UniversalDetector detector = new UniversalDetector(null);
 
-      if (!isUnicode) {
-        charsetName = "ISO-8859-1";
+      int nread;
+      while ((nread = is.read(buf)) > 0 && !detector.isDone()) {
+        detector.handleData(buf, 0, nread);
       }
 
-      charset = Charset.forName(charsetName);
+      detector.dataEnd();
+
+      String encoding = detector.getDetectedCharset();
+
+      if (encoding == null) {
+        encoding = "ISO-8859-1";
+      }
+
+      detector.reset();
+
+      charset = Charset.forName(encoding);
     } catch (IllegalArgumentException | IOException ex) {
       Exceptions.printStackTrace(ex);
     }

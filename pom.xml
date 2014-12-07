@@ -152,10 +152,11 @@
       <version>${netbeans.api.version}</version>
     </dependency>
     <!-- Encoding Detection -->
+    <!-- https://code.google.com/p/juniversalchardet/ -->
     <dependency>
-      <groupId>org.apache.any23</groupId>
-      <artifactId>apache-any23-encoding</artifactId>
-      <version>1.1</version>
+      <groupId>com.googlecode.juniversalchardet</groupId>
+      <artifactId>juniversalchardet</artifactId>
+      <version>1.0.3</version>
       <type>jar</type>
     </dependency>
   </dependencies>
