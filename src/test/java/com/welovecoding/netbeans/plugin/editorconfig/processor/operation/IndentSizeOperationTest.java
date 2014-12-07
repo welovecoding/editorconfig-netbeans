@@ -9,7 +9,9 @@ import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.StyledDocument;
-import org.netbeans.junit.NbTestCase;
+import static junit.framework.Assert.assertEquals;
+import org.junit.Before;
+import org.junit.Test;
 import org.netbeans.modules.editor.indent.spi.CodeStylePreferences;
 import org.openide.cookies.EditorCookie;
 import org.openide.filesystems.FileObject;
@@ -19,30 +21,23 @@ import org.openide.loaders.DataObjectNotFoundException;
 import org.openide.text.NbDocument;
 import org.openide.util.Exceptions;
 
-/**
- *
- * @author Michael Koppen
- */
-public class IndentSizeOperationTest extends NbTestCase {
+public class IndentSizeOperationTest {
 
-  private final DataObject testDataObject;
+  private DataObject testDataObject = null;
 
-  public IndentSizeOperationTest(String testName) throws URISyntaxException, DataObjectNotFoundException {
-    super(testName);
+  @Before
+  public void setUp() throws URISyntaxException, DataObjectNotFoundException {
     String path = "files/IndentSize.html";
     URL url = Thread.currentThread().getContextClassLoader().getResource(path);
     Path testFilePath = Paths.get(url.toURI());
     testDataObject = DataObject.find(FileUtil.toFileObject(testFilePath.toFile()));
   }
 
-  /**
-   * Test of apply method, of class IndentSizeOperation.
-   *
-   * @throws java.lang.Exception
-   */
-  public void testApply() throws Exception {
-    System.out.println("########  " + getName() + "  #######");
+  public IndentSizeOperationTest() {
+  }
 
+  @Test
+  public void testApply() throws Exception {
     String expected = "<html>" + System.lineSeparator()
             + "  <body>" + System.lineSeparator()
             + "  </body>" + System.lineSeparator()
