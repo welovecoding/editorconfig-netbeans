@@ -3,7 +3,6 @@ package com.welovecoding.netbeans.plugin.editorconfig.processor;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.openide.filesystems.FileObject;
 import org.openide.util.Exceptions;

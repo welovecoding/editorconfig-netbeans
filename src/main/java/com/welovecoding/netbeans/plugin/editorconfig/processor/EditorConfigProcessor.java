@@ -5,16 +5,21 @@ import com.welovecoding.netbeans.plugin.editorconfig.io.writer.StyledDocumentWri
 import com.welovecoding.netbeans.plugin.editorconfig.io.exception.FileAccessException;
 import com.welovecoding.netbeans.plugin.editorconfig.io.model.MappedCharset;
 import com.welovecoding.netbeans.plugin.editorconfig.io.reader.FileInfoReader;
+import com.welovecoding.netbeans.plugin.editorconfig.io.writer.ConfigWriter;
 import com.welovecoding.netbeans.plugin.editorconfig.model.MappedEditorConfig;
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import org.netbeans.modules.editor.indent.spi.CodeStylePreferences;
 import org.openide.cookies.EditorCookie;
+import org.openide.filesystems.FileAlreadyLockedException;
+import org.openide.filesystems.FileLock;
 import org.openide.filesystems.FileObject;
 import org.openide.loaders.DataObject;
 import org.openide.text.NbDocument;
+import org.openide.util.Exceptions;
 
 public class EditorConfigProcessor {
 
@@ -35,11 +40,12 @@ public class EditorConfigProcessor {
     MappedCharset charset = config.getCharset();
 
     if (charset != null) {
-      doCharset(dataObject.getPrimaryFile(), charset);
+      doCharset(dataObject, charset);
     }
   }
 
-  private void doCharset(FileObject fo, MappedCharset requestedCharset) {
+  private void doCharset(DataObject dataObject, MappedCharset requestedCharset) {
+    FileObject fo = dataObject.getPrimaryFile();
     MappedCharset currentCharset = FileInfoReader.readCharset(fo);
 
     LOG.log(Level.INFO, "Config wants charset \"{0}\" for file \"{1}\".",
@@ -48,7 +54,13 @@ public class EditorConfigProcessor {
     LOG.log(Level.INFO, "\u00ac Current charset: {0}", currentCharset.getName());
 
     if (currentCharset != requestedCharset) {
-      LOG.log(Level.INFO, "\u00ac Charsets are not equal.");
+      LOG.log(Level.INFO, "\u00ac Changing charset...");
+
+      try {
+        ConfigWriter.rewrite(dataObject, currentCharset, requestedCharset);
+      } catch (IOException ex) {
+        Exceptions.printStackTrace(ex);
+      }
     }
   }
 
