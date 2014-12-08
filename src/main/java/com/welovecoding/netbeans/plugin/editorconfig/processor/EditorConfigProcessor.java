@@ -56,11 +56,14 @@ public class EditorConfigProcessor {
     if (currentCharset != requestedCharset) {
       LOG.log(Level.INFO, "\u00ac Changing charset...");
 
+      /*
       try {
-        ConfigWriter.rewrite(dataObject, currentCharset, requestedCharset);
+        // TODO: A bit dangerous atm!
+        // ConfigWriter.rewrite(dataObject, currentCharset, requestedCharset);
       } catch (IOException ex) {
         Exceptions.printStackTrace(ex);
       }
+      */
     }
   }
 

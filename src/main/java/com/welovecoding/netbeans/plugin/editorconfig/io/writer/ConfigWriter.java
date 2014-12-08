@@ -6,15 +6,18 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.openide.cookies.EditorCookie;
 import org.openide.cookies.OpenCookie;
 import org.openide.filesystems.FileAlreadyLockedException;
 import org.openide.filesystems.FileLock;
 import org.openide.filesystems.FileObject;
 import org.openide.loaders.DataObject;
-import org.openide.util.Exceptions;
 
 public class ConfigWriter {
+
+  private static final Logger LOG = Logger.getLogger(ConfigWriter.class.getName());
 
   public static void rewrite(DataObject dataObject, MappedCharset currentCharset, MappedCharset requestedCharset) throws IOException {
     FileObject fo = dataObject.getPrimaryFile();
@@ -29,7 +32,7 @@ public class ConfigWriter {
         sb.append(buffer, 0, len);
       }
     } catch (IOException ex) {
-      Exceptions.printStackTrace(ex);
+      LOG.log(Level.WARNING, "Cannot write file: {0}", ex.getMessage());
     }
 
     // Write file
@@ -37,11 +40,11 @@ public class ConfigWriter {
 
     try {
       lock = fo.lock();
-    } catch (FileAlreadyLockedException e) {
+    } catch (FileAlreadyLockedException ex) {
       // Try again later; perhaps display a warning dialog.
-      return;
+      LOG.log(Level.WARNING, "File is alreay locked: {0}", ex.getMessage());
     } catch (IOException ex) {
-      Exceptions.printStackTrace(ex);
+      LOG.log(Level.WARNING, "Cannot lock file: {0}", ex.getMessage());
     }
 
     try (Writer out = new OutputStreamWriter(fo.getOutputStream(lock), requestedCharset.getCharset())) {
@@ -54,6 +57,7 @@ public class ConfigWriter {
 
     final DataObject newDobj = DataObject.find(fo);
     final OpenCookie oc = newDobj.getLookup().lookup(OpenCookie.class);
+
     if (oc != null) {
       EditorCookie ec = dataObject.getLookup().lookup(EditorCookie.class);
       if (ec != null) {
