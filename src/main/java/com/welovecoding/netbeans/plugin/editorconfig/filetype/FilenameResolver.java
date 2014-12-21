@@ -5,10 +5,6 @@ import org.openide.filesystems.FileObject;
 import org.openide.filesystems.MIMEResolver;
 import org.openide.util.lookup.ServiceProvider;
 
-/**
- *
- * @author Michael Koppen
- */
 @ServiceProvider(service = MIMEResolver.class, position = 3214328)
 public class FilenameResolver extends MIMEResolver {
 

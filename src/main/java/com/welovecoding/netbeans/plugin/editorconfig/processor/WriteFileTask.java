@@ -13,10 +13,6 @@ import org.openide.filesystems.FileLock;
 import org.openide.filesystems.FileObject;
 import org.openide.util.Exceptions;
 
-/**
- *
- * @author Michael Koppen
- */
 public abstract class WriteFileTask implements Runnable {
 
   private static final Logger LOG = Logger.getLogger(WriteFileTask.class.getSimpleName());

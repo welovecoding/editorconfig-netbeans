@@ -4,10 +4,6 @@ import static com.welovecoding.netbeans.plugin.editorconfig.processor.EditorConf
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- *
- * @author Michael Koppen
- */
 public class XFinalNewLineOperation {
 
   private static final Logger LOG = Logger.getLogger(XFinalNewLineOperation.class.getSimpleName());

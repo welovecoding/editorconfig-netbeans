@@ -11,10 +11,6 @@ import org.netbeans.modules.editor.indent.spi.CodeStylePreferences;
 import org.openide.filesystems.FileObject;
 import org.openide.loaders.DataObject;
 
-/**
- *
- * @author Michael Koppen
- */
 public class IndentStyleOperation {
 
   private static final Logger LOG = Logger.getLogger(IndentStyleOperation.class.getSimpleName());

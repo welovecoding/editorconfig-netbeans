@@ -7,10 +7,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-/**
- *
- * @author Michael Koppen
- */
 public class XTrimTrailingWhitespacesOperation {
 
   private static final Logger LOG = Logger.getLogger(XTrimTrailingWhitespacesOperation.class.getSimpleName());

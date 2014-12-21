@@ -7,7 +7,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
-import javax.swing.text.BadLocationException;
 import javax.swing.text.StyledDocument;
 import static junit.framework.Assert.assertEquals;
 import org.junit.Before;
