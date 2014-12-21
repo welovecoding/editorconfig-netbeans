@@ -43,13 +43,13 @@ public class EditorConfigProcessor {
     FileObject fo = dataObject.getPrimaryFile();
     MappedCharset currentCharset = FileInfoReader.readCharset(fo);
 
-    LOG.log(Level.INFO, "Config wants charset \"{0}\" for file \"{1}\".",
+    LOG.log(Level.INFO, "\"charset\": \"{0}\" (File: \"{1}\")",
             new Object[]{requestedCharset.getName(), fo.getPath()});
 
     LOG.log(Level.INFO, "\u00ac Current charset: {0}", currentCharset.getName());
 
     if (currentCharset != requestedCharset) {
-      LOG.log(Level.INFO, "\u00ac Changing charset from '{0}' to '{1}'.",
+      LOG.log(Level.INFO, "\u00ac Changing charset from \"{0}\" to \"{1}\".",
               new Object[]{currentCharset.getName(), requestedCharset.getName()});
 
       /*

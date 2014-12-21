@@ -14,7 +14,7 @@ import org.editorconfig.core.EditorConfigException;
 import org.netbeans.editor.BaseDocument;
 
 public class EditorConfigPropertyMapper {
-  
+
   private static final Logger LOG = Logger.getLogger(EditorConfigPropertyMapper.class.getSimpleName());
 
   /**
@@ -30,23 +30,23 @@ public class EditorConfigPropertyMapper {
   public static synchronized MappedEditorConfig createEditorConfig(String filePath) {
     EditorConfig ec = new EditorConfig(".editorconfig", EditorConfig.VERSION);
     MappedEditorConfig mappedConfig = new MappedEditorConfig();
-    
+
     List<EditorConfig.OutPair> rules = new ArrayList<>();
     HashMap<String, String> keyedRules = new HashMap<>();
-    
+
     try {
       rules = ec.getProperties(filePath);
     } catch (EditorConfigException ex) {
       LOG.log(Level.SEVERE, ex.getMessage());
     }
-    
+
     for (EditorConfig.OutPair rule : rules) {
       keyedRules.put(rule.getKey().toLowerCase(), rule.getVal().toLowerCase());
     }
-    
+
     for (String key : keyedRules.keySet()) {
       String value = keyedRules.get(key);
-      
+
       switch (key) {
         case "charset":
           MappedCharset charset = mapCharset(value);
@@ -54,6 +54,7 @@ public class EditorConfigPropertyMapper {
           break;
         case "end_of_line":
           String lineEnding = mapLineEnding(value);
+
           mappedConfig.setEndOfLine(lineEnding);
           break;
         case "indent_size":
@@ -80,13 +81,13 @@ public class EditorConfigPropertyMapper {
                   new Object[]{key, value});
       }
     }
-    
+
     return mappedConfig;
   }
-  
+
   protected static synchronized String getFileMark(String editorConfigCharset) {
     String fileMark = null;
-    
+
     if (editorConfigCharset != null) {
       switch (editorConfigCharset) {
         case EditorConfigConstant.CHARSET_UTF_8_BOM:
@@ -100,7 +101,7 @@ public class EditorConfigPropertyMapper {
           break;
       }
     }
-    
+
     return fileMark;
   }
 
@@ -111,11 +112,11 @@ public class EditorConfigPropertyMapper {
    */
   protected static synchronized MappedCharset mapCharset(String ecCharset) {
     MappedCharset charset;
-    
+
     if (ecCharset == null) {
       return SupportedCharsets.UTF_8;
     }
-    
+
     switch (ecCharset) {
       case "latin1":
         charset = SupportedCharsets.LATIN_1;
@@ -138,33 +139,37 @@ public class EditorConfigPropertyMapper {
                 new Object[]{ecCharset, charset.getName()});
         break;
     }
-    
+
     return charset;
   }
-  
+
   protected static synchronized String mapLineEnding(String ecLineEnding) {
     String normalizedLineEnding;
-    
+
     if (ecLineEnding == null) {
+      LOG.log(Level.INFO, "Using line ending from System properties.");
       return System.lineSeparator();
     }
-    
+
     switch (ecLineEnding) {
       case EditorConfigConstant.END_OF_LINE_LF:
         normalizedLineEnding = BaseDocument.LS_LF;
+        LOG.log(Level.INFO, "Using line ending: LF");
         break;
       case EditorConfigConstant.END_OF_LINE_CR:
         normalizedLineEnding = BaseDocument.LS_CR;
+        LOG.log(Level.INFO, "Using line ending: CR");
         break;
       case EditorConfigConstant.END_OF_LINE_CRLF:
         normalizedLineEnding = BaseDocument.LS_CRLF;
+        LOG.log(Level.INFO, "Using line ending: CRLF");
         break;
       default:
         normalizedLineEnding = System.lineSeparator();
+        LOG.log(Level.INFO, "Using line ending from System properties.");
         break;
     }
-    
-    LOG.log(Level.INFO, "Using line ending: \"{0}\"", normalizedLineEnding);
+
     return normalizedLineEnding;
   }
 }
