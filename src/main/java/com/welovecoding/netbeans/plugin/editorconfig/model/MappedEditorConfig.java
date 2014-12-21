@@ -27,13 +27,17 @@ public class MappedEditorConfig {
   public String readableString() {
     String lineEnding = "CRLF";
 
-    switch (endOfLine) {
-      case "\r":
-        lineEnding = "CR";
-        break;
-      case "\n":
-        lineEnding = "LF";
-        break;
+    if (endOfLine != null) {
+      switch (endOfLine) {
+        case "\r":
+          lineEnding = "CR";
+          break;
+        case "\n":
+          lineEnding = "LF";
+          break;
+      }
+    } else {
+      lineEnding = null;
     }
 
     return lineEnding;
@@ -57,8 +61,13 @@ public class MappedEditorConfig {
             + "7. trim_trailing_whitespace: {6}"
             + System.lineSeparator();
 
+    String charsetName = null;
+    if (charset != null) {
+      charsetName = charset.getName();
+    }
+
     Object[] values = new Object[]{
-      charset.getName(),
+      charsetName,
       readableString(),
       indentSize,
       indentStyle,
