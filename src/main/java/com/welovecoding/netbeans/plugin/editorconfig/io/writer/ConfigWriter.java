@@ -18,7 +18,7 @@ import org.openide.loaders.DataObject;
 public class ConfigWriter {
 
   private static final Logger LOG = Logger.getLogger(ConfigWriter.class.getName());
-
+  
   public static void rewrite(DataObject dataObject, MappedCharset currentCharset, MappedCharset requestedCharset) throws IOException {
     FileObject fo = dataObject.getPrimaryFile();
 

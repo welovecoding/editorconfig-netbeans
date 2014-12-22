@@ -3,18 +3,29 @@ package com.welovecoding.netbeans.plugin.editorconfig.processor;
 import com.welovecoding.netbeans.plugin.editorconfig.mapper.EditorConfigPropertyMapper;
 import com.welovecoding.netbeans.plugin.editorconfig.io.writer.StyledDocumentWriter;
 import com.welovecoding.netbeans.plugin.editorconfig.io.exception.FileAccessException;
+import com.welovecoding.netbeans.plugin.editorconfig.io.exception.FileObjectLockException;
 import com.welovecoding.netbeans.plugin.editorconfig.io.model.MappedCharset;
 import com.welovecoding.netbeans.plugin.editorconfig.io.reader.FileInfoReader;
+import com.welovecoding.netbeans.plugin.editorconfig.io.reader.FileObjectReader;
+import com.welovecoding.netbeans.plugin.editorconfig.io.writer.FileObjectWriter;
 import com.welovecoding.netbeans.plugin.editorconfig.model.MappedEditorConfig;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
+import org.netbeans.api.queries.FileEncodingQuery;
 import org.netbeans.modules.editor.indent.spi.CodeStylePreferences;
 import org.openide.cookies.EditorCookie;
+import org.openide.cookies.SaveCookie;
+import org.openide.filesystems.FileLock;
 import org.openide.filesystems.FileObject;
 import org.openide.loaders.DataObject;
 import org.openide.text.NbDocument;
+import org.openide.util.Exceptions;
 
 public class EditorConfigProcessor {
 
@@ -52,6 +63,10 @@ public class EditorConfigProcessor {
       LOG.log(Level.INFO, "\u00ac Changing charset from \"{0}\" to \"{1}\".",
               new Object[]{currentCharset.getName(), requestedCharset.getName()});
 
+      String content = FileObjectReader.read(fo, currentCharset.getCharset());
+      // FileObjectWriter.writeWithAtomicAction(dataObject, requestedCharset.getCharset(), content);
+
+    } else {
       /*
        try {
        // TODO: A bit dangerous atm!
@@ -60,7 +75,6 @@ public class EditorConfigProcessor {
        Exceptions.printStackTrace(ex);
        }
        */
-    } else {
       LOG.log(Level.INFO, "No charset change needed.");
     }
   }
