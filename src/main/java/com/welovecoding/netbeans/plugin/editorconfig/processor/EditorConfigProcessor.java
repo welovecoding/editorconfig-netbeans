@@ -25,6 +25,8 @@ public class EditorConfigProcessor {
   private static final Logger LOG = Logger.getLogger(EditorConfigProcessor.class.getSimpleName());
   public static final Level OPERATION_LOG_LEVEL = Level.INFO;
 
+  private String filePath;
+
   public EditorConfigProcessor() {
   }
 
@@ -45,36 +47,29 @@ public class EditorConfigProcessor {
   public void applyRulesToFile(DataObject dataObject) throws Exception {
     FileObject primaryFile = dataObject.getPrimaryFile();
     StringBuilder content = new StringBuilder(primaryFile.asText());
-    String filePath = primaryFile.getPath();
+
+    filePath = primaryFile.getPath();
 
     MappedEditorConfig config = EditorConfigPropertyMapper.createEditorConfig(filePath);
 
     LOG.log(Level.INFO, "Mapped rules for: {0}", filePath);
     LOG.log(Level.INFO, config.toString());
 
-    MappedCharset mappedCharset = config.getCharset();
     boolean fileChangeNeeded = false;
 
-    // Perform EditorConfig operations
-    if (mappedCharset != null) {
-      logOperation(new Object[]{
-        EditorConfigConstant.CHARSET,
-        mappedCharset.getName(),
-        filePath
-      });
+    // 1. "charset"
+    MappedCharset mappedCharset = config.getCharset();
 
+    if (mappedCharset != null) {
+      logOperation(EditorConfigConstant.CHARSET, mappedCharset.getName());
       doCharset(dataObject, mappedCharset);
     }
 
+    // 5. "insert_final_newline"
     boolean insertFinalNewLine = config.isInsertFinalNewLine();
 
     if (insertFinalNewLine) {
-      logOperation(new Object[]{
-        EditorConfigConstant.INSERT_FINAL_NEWLINE,
-        insertFinalNewLine,
-        filePath
-      });
-
+      logOperation(EditorConfigConstant.INSERT_FINAL_NEWLINE, insertFinalNewLine);
       boolean changedLineEndings = XFinalNewLineOperation.doFinalNewLine(content, insertFinalNewLine, config.getEndOfLine());
       fileChangeNeeded = fileChangeNeeded || changedLineEndings;
     }
@@ -103,8 +98,12 @@ public class EditorConfigProcessor {
 
   }
 
-  private void logOperation(Object[] values) {
-    LOG.log(Level.INFO, "\"{0}\": {1} ({2})", values);
+  private void logOperation(String key, Object value) {
+    LOG.log(Level.INFO, "\"{0}\": {1} ({2})", new Object[]{
+      key,
+      value,
+      filePath
+    });
   }
 
   private void doCharset(DataObject dataObject, MappedCharset requestedCharset) {
