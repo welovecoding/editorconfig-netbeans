@@ -50,13 +50,13 @@ indent_size = 2
 
 ## Supported properties
 
-1. :white_check_mark: charset
-1. :white_check_mark: end_of_line
-1. :white_check_mark: indent_size
-1. :white_check_mark: indent_style
+1. :construction: charset
+1. :construction: end_of_line
+1. :construction: indent_size
+1. :construction: indent_style
 1. :white_check_mark: insert_final_newline
-1. :white_check_mark: tab_width
-1. :white_check_mark: trim_trailing_whitespace
+1. :construction: tab_width
+1. :construction: trim_trailing_whitespace
 
 [EditorConfig]: http://editorconfig.org
 
@@ -81,7 +81,7 @@ OR OTHER DEALINGS IN THE SOFTWARE.
 
 [![Michael Koppen on Stack Exchange][stack_exchange_flair_yser]][stack_exchange_link_yser]
 
-## Special Thanks
+## Credits
 
 - [Geertjan Wielenga](https://blogs.oracle.com/geertjan) for his sample project and article on [EditorConfig and NetBeans IDE](https://blogs.oracle.com/geertjan/entry/editorconfig_and_netbeans_ide)
 

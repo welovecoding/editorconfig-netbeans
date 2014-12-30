@@ -28,9 +28,23 @@ public class EditorConfigProcessor {
   public EditorConfigProcessor() {
   }
 
+  /**
+   * Applies properties defined in an ".editorconfig" file to a DataObject.
+   *
+   * If a supported property is found, then changes are made to a StringBuilder
+   * instance.
+   *
+   * The StringBuilder instance is passed as a reference to operations that can
+   * then perform their actions on this instance.
+   *
+   * After all operations were performed, the changes will be flushed.
+   *
+   * @param dataObject
+   * @throws Exception
+   */
   public void applyRulesToFile(DataObject dataObject) throws Exception {
     FileObject primaryFile = dataObject.getPrimaryFile();
-    String content = primaryFile.asText();
+    StringBuilder content = new StringBuilder(primaryFile.asText());
     String filePath = primaryFile.getPath();
 
     MappedEditorConfig config = EditorConfigPropertyMapper.createEditorConfig(filePath);
@@ -68,7 +82,7 @@ public class EditorConfigProcessor {
     // Construct FileInfo object
     // TODO: FileInfo duplicates values from MappedEditorConfig
     FileInfo info = new FileInfo(dataObject);
-    info.setContent(new StringBuilder(content));
+    info.setContent(content);
 
     if (mappedCharset != null) {
       info.setCharset(mappedCharset.getCharset());
@@ -83,7 +97,8 @@ public class EditorConfigProcessor {
 
     // Apply EditorConfig operations
     if (fileChangeNeeded) {
-      // flushFile(info);
+      LOG.log(Level.INFO, "Flush file changes for: {0}", filePath);
+      flushFile(info);
     }
 
   }
@@ -126,42 +141,6 @@ public class EditorConfigProcessor {
     }
   }
 
-  /*
-   private boolean doCharset(FileObject fileObject, String charset) {
-   boolean hasToBeChanged = false;
-   Charset currentCharset = FileInfoReader.guessCharset(fileObject);
-   Charset requestedCharset = EditorConfigPropertyMapper.mapCharset(charset);
-   if (!currentCharset.equals(requestedCharset)) {
-   LOG.log(Level.INFO, "Charset change needed from {0} to {1}",
-   new Object[]{currentCharset.name(), requestedCharset.name()});
-   hasToBeChanged = true;
-   }
-   return hasToBeChanged;
-   }
-   */
-  /*
-   private boolean doEndOfLine(DataObject dataObject, String ecLineEnding) {
-   FileObject fileObject = dataObject.getPrimaryFile();
-   String javaLineEnding = EditorConfigPropertyMapper.mapLineEnding(ecLineEnding);
-   boolean wasChanged = false;
-   try {
-   StringBuilder content = new StringBuilder(fileObject.asText());
-   wasChanged = XLineEndingOperation.doLineEndings(content, javaLineEnding);
-   } catch (IOException ex) {
-   Exceptions.printStackTrace(ex);
-   }
-   StyledDocument document = NbDocument.getDocument(dataObject);
-   if (document != null && wasChanged) {
-   if (!document.getProperty(BaseDocument.READ_LINE_SEPARATOR_PROP).equals(javaLineEnding)) {
-   document.putProperty(BaseDocument.READ_LINE_SEPARATOR_PROP, javaLineEnding);
-   LOG.log(Level.INFO, "Action: Changed line endings in Document.");
-   } else {
-   LOG.log(Level.INFO, "Action not needed: Line endings are already set to: {0}", ecLineEnding);
-   }
-   }
-   return wasChanged;
-   }
-   */
   private void flushStyles(FileObject fileObject) {
     try {
       Preferences codeStyle = CodeStylePreferences.get(fileObject, fileObject.getMIMEType()).getPreferences();
@@ -189,7 +168,8 @@ public class EditorConfigProcessor {
   }
 
   private void updateChangesInFile(FileInfo info) {
-    LOG.log(Level.INFO, "Write content (with all rules applied) to file: {0}", info.getFileObject().getPath());
+    LOG.log(Level.INFO, "Write content (with all rules applied) to file: {0}",
+            info.getFileObject().getPath());
 
     WriteStringToFileTask task = new WriteStringToFileTask(info);
     task.run();
