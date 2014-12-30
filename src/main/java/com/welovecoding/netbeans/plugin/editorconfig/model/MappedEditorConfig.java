@@ -21,7 +21,6 @@ public class MappedEditorConfig {
   private boolean trimTrailingWhiteSpace;
 
   public MappedEditorConfig() {
-
   }
 
   public String readableString() {

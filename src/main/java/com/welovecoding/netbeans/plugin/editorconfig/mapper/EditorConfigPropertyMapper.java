@@ -54,7 +54,6 @@ public class EditorConfigPropertyMapper {
           break;
         case "end_of_line":
           String lineEnding = mapLineEnding(value);
-
           mappedConfig.setEndOfLine(lineEnding);
           break;
         case "indent_size":
