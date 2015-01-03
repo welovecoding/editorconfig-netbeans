@@ -28,7 +28,7 @@ public class EditorConfigPropertyMapper {
    * "trim_trailing_whitespace": "true"<br/>
    */
   public static synchronized MappedEditorConfig createEditorConfig(String filePath) {
-    EditorConfig ec = new EditorConfig(".editorconfig", EditorConfig.VERSION);
+    EditorConfig ec = new EditorConfig();
     MappedEditorConfig mappedConfig = new MappedEditorConfig();
 
     List<EditorConfig.OutPair> rules = new ArrayList<>();

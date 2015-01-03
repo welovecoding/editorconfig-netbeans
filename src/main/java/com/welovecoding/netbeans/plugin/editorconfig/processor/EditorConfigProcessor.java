@@ -9,6 +9,7 @@ import com.welovecoding.netbeans.plugin.editorconfig.io.reader.FileObjectReader;
 import com.welovecoding.netbeans.plugin.editorconfig.model.EditorConfigConstant;
 import com.welovecoding.netbeans.plugin.editorconfig.model.MappedEditorConfig;
 import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.XFinalNewLineOperation;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -46,16 +47,46 @@ public class EditorConfigProcessor {
    */
   public void applyRulesToFile(DataObject dataObject) throws Exception {
     FileObject primaryFile = dataObject.getPrimaryFile();
-    StringBuilder content = new StringBuilder(primaryFile.asText());
-
     filePath = primaryFile.getPath();
 
-    MappedEditorConfig config = EditorConfigPropertyMapper.createEditorConfig(filePath);
+    MappedEditorConfig config = readRulesForFile(filePath);
+    excuteOperations(dataObject, config);
+  }
+
+  private void doCharset(DataObject dataObject, MappedCharset requestedCharset) {
+    FileObject fo = dataObject.getPrimaryFile();
+    MappedCharset currentCharset = FileInfoReader.readCharset(fo);
+
+    LOG.log(Level.INFO, "\u00ac Current charset: {0}", currentCharset.getName());
+
+    if (currentCharset != requestedCharset) {
+      LOG.log(Level.INFO, "\u00ac Changing charset from \"{0}\" to \"{1}\"",
+              new Object[]{currentCharset.getName(), requestedCharset.getName()});
+
+      String content = FileObjectReader.read(fo, currentCharset.getCharset());
+      // FileObjectWriter.writeWithAtomicAction(dataObject, requestedCharset.getCharset(), content);
+
+    } else {
+      /*
+       try {
+       // TODO: A bit dangerous atm!
+       // ConfigWriter.rewrite(dataObject, currentCharset, requestedCharset);
+       } catch (IOException ex) {
+       Exceptions.printStackTrace(ex);
+       }
+       */
+      LOG.log(Level.INFO, "No charset change needed.");
+    }
+  }
+
+  protected void excuteOperations(DataObject dataObject, MappedEditorConfig config) throws IOException, Exception {
+
+    FileObject primaryFile = dataObject.getPrimaryFile();
+    StringBuilder content = new StringBuilder(primaryFile.asText());
+    boolean fileChangeNeeded = false;
 
     LOG.log(Level.INFO, "Mapped rules for: {0}", filePath);
     LOG.log(Level.INFO, config.toString());
-
-    boolean fileChangeNeeded = false;
 
     // 1. "charset"
     MappedCharset mappedCharset = config.getCharset();
@@ -95,41 +126,6 @@ public class EditorConfigProcessor {
       LOG.log(Level.INFO, "Flush file changes for: {0}", filePath);
       flushFile(info);
     }
-
-  }
-
-  private void logOperation(String key, Object value) {
-    LOG.log(Level.INFO, "\"{0}\": {1} ({2})", new Object[]{
-      key,
-      value,
-      filePath
-    });
-  }
-
-  private void doCharset(DataObject dataObject, MappedCharset requestedCharset) {
-    FileObject fo = dataObject.getPrimaryFile();
-    MappedCharset currentCharset = FileInfoReader.readCharset(fo);
-
-    LOG.log(Level.INFO, "\u00ac Current charset: {0}", currentCharset.getName());
-
-    if (currentCharset != requestedCharset) {
-      LOG.log(Level.INFO, "\u00ac Changing charset from \"{0}\" to \"{1}\"",
-              new Object[]{currentCharset.getName(), requestedCharset.getName()});
-
-      String content = FileObjectReader.read(fo, currentCharset.getCharset());
-      // FileObjectWriter.writeWithAtomicAction(dataObject, requestedCharset.getCharset(), content);
-
-    } else {
-      /*
-       try {
-       // TODO: A bit dangerous atm!
-       // ConfigWriter.rewrite(dataObject, currentCharset, requestedCharset);
-       } catch (IOException ex) {
-       Exceptions.printStackTrace(ex);
-       }
-       */
-      LOG.log(Level.INFO, "No charset change needed.");
-    }
   }
 
   private void flushFile(FileInfo info) {
@@ -151,6 +147,18 @@ public class EditorConfigProcessor {
 
   private EditorCookie getEditorCookie(DataObject dataObject) {
     return dataObject.getLookup().lookup(EditorCookie.class);
+  }
+
+  private void logOperation(String key, Object value) {
+    LOG.log(Level.INFO, "\"{0}\": {1} ({2})", new Object[]{
+      key,
+      value,
+      filePath
+    });
+  }
+
+  private MappedEditorConfig readRulesForFile(String filePath) {
+    return EditorConfigPropertyMapper.createEditorConfig(filePath);
   }
 
   private void updateChangesInEditorWindow(FileInfo info) {
