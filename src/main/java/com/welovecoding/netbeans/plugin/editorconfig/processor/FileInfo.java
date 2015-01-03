@@ -13,6 +13,7 @@ public class FileInfo {
   private String fileMark;
   private StringBuilder sb;
   private boolean openedInEditor;
+  private boolean fileChangeNeeded = false;
 
   public FileInfo(DataObject dataObject) {
     this.dataObject = dataObject;
@@ -41,6 +42,14 @@ public class FileInfo {
   }
 
   // <editor-fold defaultstate="collapsed" desc="Getter & Setter">
+  public boolean isFileChangeNeeded() {
+    return fileChangeNeeded;
+  }
+
+  public void setFileChangeNeeded(boolean fileChangeNeeded) {
+    this.fileChangeNeeded = fileChangeNeeded;
+  }
+
   public DataObject getDataObject() {
     return dataObject;
   }

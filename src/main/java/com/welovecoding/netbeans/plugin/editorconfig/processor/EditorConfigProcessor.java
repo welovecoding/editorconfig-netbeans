@@ -50,7 +50,13 @@ public class EditorConfigProcessor {
     filePath = primaryFile.getPath();
 
     MappedEditorConfig config = readRulesForFile(filePath);
-    excuteOperations(dataObject, config);
+    FileInfo info = excuteOperations(dataObject, config);
+
+    // Apply EditorConfig operations
+    if (info.isFileChangeNeeded()) {
+      LOG.log(Level.INFO, "Flush file changes for: {0}", filePath);
+      flushFile(info);
+    }
   }
 
   private void doCharset(DataObject dataObject, MappedCharset requestedCharset) {
@@ -79,7 +85,7 @@ public class EditorConfigProcessor {
     }
   }
 
-  protected void excuteOperations(DataObject dataObject, MappedEditorConfig config) throws IOException, Exception {
+  protected FileInfo excuteOperations(DataObject dataObject, MappedEditorConfig config) throws IOException, Exception {
 
     FileObject primaryFile = dataObject.getPrimaryFile();
     StringBuilder content = new StringBuilder(primaryFile.asText());
@@ -120,12 +126,9 @@ public class EditorConfigProcessor {
     boolean isOpenedInEditor = (cookie != null) && (cookie.getDocument() != null);
     info.setOpenedInEditor(isOpenedInEditor);
     info.setCookie(cookie);
+    info.setFileChangeNeeded(fileChangeNeeded);
 
-    // Apply EditorConfig operations
-    if (fileChangeNeeded) {
-      LOG.log(Level.INFO, "Flush file changes for: {0}", filePath);
-      flushFile(info);
-    }
+    return info;
   }
 
   private void flushFile(FileInfo info) {
