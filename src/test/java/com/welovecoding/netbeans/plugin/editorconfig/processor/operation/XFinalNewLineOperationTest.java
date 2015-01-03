@@ -46,7 +46,7 @@ public class XFinalNewLineOperationTest {
   }
 
   @Test
-  public void itAddsAFinalNewLine() throws Exception {
+  public void itAddsAFinalNewLine() throws IOException {
     StringBuilder content = new StringBuilder(dataObject.getPrimaryFile().asText());
 
     String expectedContent = content.toString();

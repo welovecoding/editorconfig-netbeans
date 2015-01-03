@@ -44,9 +44,8 @@ public class EditorConfigProcessor {
    * After all operations were performed, the changes will be flushed.
    *
    * @param dataObject
-   * @throws Exception
    */
-  public void applyRulesToFile(DataObject dataObject) throws Exception {
+  public void applyRulesToFile(DataObject dataObject) {
     FileObject primaryFile = dataObject.getPrimaryFile();
     filePath = primaryFile.getPath();
 
@@ -86,14 +85,20 @@ public class EditorConfigProcessor {
     }
   }
 
-  protected FileInfo excuteOperations(DataObject dataObject, MappedEditorConfig config) throws IOException, Exception {
+  protected FileInfo excuteOperations(DataObject dataObject, MappedEditorConfig config) {
 
-    FileObject primaryFile = dataObject.getPrimaryFile();
-    StringBuilder content = new StringBuilder(primaryFile.asText());
     boolean fileChangeNeeded = false;
+    FileObject primaryFile = dataObject.getPrimaryFile();
+    StringBuilder content;
 
     LOG.log(Level.INFO, "Mapped rules for: {0}", filePath);
     LOG.log(Level.INFO, config.toString());
+
+    try {
+      content = new StringBuilder(primaryFile.asText());
+    } catch (IOException ex) {
+      content = new StringBuilder();
+    }
 
     // 1. "charset"
     MappedCharset mappedCharset = config.getCharset();
@@ -104,17 +109,15 @@ public class EditorConfigProcessor {
     }
 
     // 5. "insert_final_newline"
-    boolean insertFinalNewLine = config.isInsertFinalNewLine();
-
-    if (insertFinalNewLine) {
-      logOperation(EditorConfigConstant.INSERT_FINAL_NEWLINE, insertFinalNewLine);
+    if (config.isInsertFinalNewLine()) {
+      logOperation(EditorConfigConstant.INSERT_FINAL_NEWLINE, config.isInsertFinalNewLine());
       boolean changedLineEndings = new XFinalNewLineOperation().run(content, config.getEndOfLine());
       fileChangeNeeded = fileChangeNeeded || changedLineEndings;
     }
 
     // 7. "trim_trailing_whitespace"
     if (config.isTrimTrailingWhiteSpace()) {
-      logOperation(EditorConfigConstant.TRIM_TRAILING_WHITESPACE, true);
+      logOperation(EditorConfigConstant.TRIM_TRAILING_WHITESPACE, config.isTrimTrailingWhiteSpace());
       boolean removedWhiteSpaces = new XTrimTrailingWhiteSpaceOperation().run(content, config.getEndOfLine());
       fileChangeNeeded = fileChangeNeeded || removedWhiteSpaces;
     }

@@ -21,7 +21,7 @@ public class XFinalNewLineOperation {
    * "\r\n")
    * @return whether the operation could be performed
    */
-  public boolean run(StringBuilder content, final String lineEnding) throws Exception {
+  public boolean run(StringBuilder content, final String lineEnding) {
     return run(content, true, lineEnding);
   }
 
