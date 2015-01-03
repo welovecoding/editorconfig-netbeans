@@ -5,20 +5,20 @@ import java.text.MessageFormat;
 
 public class MappedEditorConfig {
 
-  // charset
+  // 1. charset
   private MappedCharset charset;
-  // end_of_line
+  // 2. end_of_line
   private String endOfLine;
-  // indent_size
-  private int indentSize;
-  // indent_style
+  // 3. indent_size
+  private int indentSize = -1;
+  // 4. indent_style
   private String indentStyle;
-  // insert_final_newline
-  private boolean insertFinalNewLine;
-  // tab_width
-  private int tabWidth;
-  // trim_trailing_whitespace
-  private boolean trimTrailingWhiteSpace;
+  // 5. insert_final_newline
+  private boolean insertFinalNewLine = false;
+  // 6. tab_width
+  private int tabWidth = -1;
+  // 7. trim_trailing_whitespace
+  private boolean trimTrailingWhiteSpace = false;
 
   public MappedEditorConfig() {
   }

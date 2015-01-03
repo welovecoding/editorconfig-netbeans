@@ -1,12 +1,25 @@
 package com.welovecoding.netbeans.plugin.editorconfig.mapper;
 
 import com.welovecoding.netbeans.plugin.editorconfig.io.model.MappedCharset;
+import com.welovecoding.netbeans.plugin.editorconfig.model.MappedEditorConfig;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 public class EditorConfigPropertyMapperTest {
 
   public EditorConfigPropertyMapperTest() {
+  }
+
+  @Test
+  public void itReliesOnNullValues() {
+    MappedEditorConfig config = new MappedEditorConfig();
+    assertEquals(null, config.getCharset());
+    assertEquals(null, config.getEndOfLine());
+    assertEquals(-1, config.getIndentSize());
+    assertEquals(null, config.getIndentStyle());
+    assertEquals(-1, config.getTabWidth());
+    assertEquals(false, config.isInsertFinalNewLine());
+    assertEquals(false, config.isTrimTrailingWhiteSpace());
   }
 
   @Test
