@@ -17,17 +17,25 @@ public class XFinalNewLineOperation {
    * StringBuilder to work with a reference of the content.
    *
    * @param content Content of a file
-   * @param insertFinalNewLine whether to insert a new line at the end of the
-   * content
    * @param lineEnding the string representation of a new line ("\r", "\n" or
    * "\r\n")
    * @return whether the operation could be performed
    */
-  public static boolean doFinalNewLine(StringBuilder content, final boolean insertFinalNewLine, final String lineEnding) throws Exception {
-    return new XFinalNewLineOperation().apply(content, insertFinalNewLine, lineEnding);
+  public boolean run(StringBuilder content, final String lineEnding) throws Exception {
+    return run(content, true, lineEnding);
   }
 
-  public boolean apply(StringBuilder content, final boolean insertFinalNewLine, final String lineEnding) {
+  private StringBuilder addFinalNewLine(StringBuilder content, String lineEnding) {
+    if (!content.toString().endsWith("\n") && !content.toString().endsWith("\r")) {
+      LOG.log(Level.INFO, "\u00ac Final new line will be added");
+      return content.append(lineEnding);
+    } else {
+      LOG.log(Level.INFO, "\u00ac There is already a final new line. No change needed");
+      return content;
+    }
+  }
+
+  private boolean run(StringBuilder content, final boolean insertFinalNewLine, final String lineEnding) {
     boolean changed = false;
 
     LOG.log(Level.INFO, "\u00ac Executing final new line operation");
@@ -35,7 +43,7 @@ public class XFinalNewLineOperation {
     if (insertFinalNewLine) {
       String contentBeforeChange = content.toString();
 
-      content = finalNewline(content, lineEnding);
+      content = addFinalNewLine(content, lineEnding);
 
       if (contentBeforeChange.equals(content.toString())) {
         LOG.log(Level.INFO, "\u00ac No final new line added to StringBuilder");
@@ -47,15 +55,5 @@ public class XFinalNewLineOperation {
     }
 
     return changed;
-  }
-
-  private StringBuilder finalNewline(StringBuilder content, String lineEnding) {
-    if (!content.toString().endsWith("\n") && !content.toString().endsWith("\r")) {
-      LOG.log(Level.INFO, "\u00ac Final new line will be added");
-      return content.append(lineEnding);
-    } else {
-      LOG.log(Level.INFO, "\u00ac There is already a final new line. No change needed");
-      return content;
-    }
   }
 }

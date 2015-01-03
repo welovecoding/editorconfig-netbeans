@@ -9,6 +9,7 @@ import com.welovecoding.netbeans.plugin.editorconfig.io.reader.FileObjectReader;
 import com.welovecoding.netbeans.plugin.editorconfig.model.EditorConfigConstant;
 import com.welovecoding.netbeans.plugin.editorconfig.model.MappedEditorConfig;
 import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.XFinalNewLineOperation;
+import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.XTrimTrailingWhiteSpaceOperation;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
@@ -107,8 +108,15 @@ public class EditorConfigProcessor {
 
     if (insertFinalNewLine) {
       logOperation(EditorConfigConstant.INSERT_FINAL_NEWLINE, insertFinalNewLine);
-      boolean changedLineEndings = XFinalNewLineOperation.doFinalNewLine(content, insertFinalNewLine, config.getEndOfLine());
+      boolean changedLineEndings = new XFinalNewLineOperation().run(content, config.getEndOfLine());
       fileChangeNeeded = fileChangeNeeded || changedLineEndings;
+    }
+
+    // 7. "trim_trailing_whitespace"
+    if (config.isTrimTrailingWhiteSpace()) {
+      logOperation(EditorConfigConstant.TRIM_TRAILING_WHITESPACE, true);
+      boolean removedWhiteSpaces = new XTrimTrailingWhiteSpaceOperation().run(content, config.getEndOfLine());
+      fileChangeNeeded = fileChangeNeeded || removedWhiteSpaces;
     }
 
     // Construct FileInfo object

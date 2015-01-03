@@ -7,25 +7,31 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-public class XTrimTrailingWhitespacesOperation {
+public class XTrimTrailingWhiteSpaceOperation {
 
-  private static final Logger LOG = Logger.getLogger(XTrimTrailingWhitespacesOperation.class.getSimpleName());
+  private static final Logger LOG = Logger.getLogger(XTrimTrailingWhiteSpaceOperation.class.getSimpleName());
 
   static {
     LOG.setLevel(OPERATION_LOG_LEVEL);
   }
 
-  public static boolean doTrimTrailingWhitespaces(StringBuilder content, final String trimwhitespaces, final String lineEnding) throws Exception {
+  public boolean run(StringBuilder content, final String lineEnding) {
+    boolean wasExecuted = false;
 
-    return new XTrimTrailingWhitespacesOperation().apply(content, trimwhitespaces, lineEnding);
+    try {
+      wasExecuted = apply(content, true, lineEnding);
+    } catch (Exception ex) {
+      LOG.log(Level.SEVERE, ex.getMessage());
+    }
+
+    return wasExecuted;
   }
 
-  public boolean apply(StringBuilder content, final String trimwhitespaces, final String lineEnding) {
-    boolean bTrimwhitespaces = Boolean.valueOf(trimwhitespaces);
+  private boolean apply(StringBuilder content, final boolean trimWhiteSpace, final String lineEnding) {
     boolean changed = false;
     LOG.log(Level.INFO, "Executing ApplyTestTask");
 
-    if (bTrimwhitespaces) {
+    if (trimWhiteSpace) {
       LOG.log(Level.INFO, "TRIM_TRAILING_WHITESPACE = true");
       String tempContent = content.toString();
       LOG.log(Level.FINEST, "OLDCONTENT: {0}.", tempContent);

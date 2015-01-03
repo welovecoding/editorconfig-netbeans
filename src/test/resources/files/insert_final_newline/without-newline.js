@@ -1,1 +1,0 @@
-alert("insert_final_newline test");
