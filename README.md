@@ -56,7 +56,7 @@ indent_size = 2
 1. :construction: indent_style
 1. :white_check_mark: insert_final_newline
 1. :construction: tab_width
-1. :construction: trim_trailing_whitespace
+1. :white_check_mark: trim_trailing_whitespace
 
 [EditorConfig]: http://editorconfig.org
 

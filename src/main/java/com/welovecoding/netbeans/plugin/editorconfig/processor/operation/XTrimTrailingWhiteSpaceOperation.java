@@ -16,62 +16,52 @@ public class XTrimTrailingWhiteSpaceOperation {
   }
 
   public boolean run(StringBuilder content, final String lineEnding) {
-    boolean wasExecuted = false;
-
-    try {
-      wasExecuted = apply(content, true, lineEnding);
-    } catch (Exception ex) {
-      LOG.log(Level.SEVERE, ex.getMessage());
-    }
-
-    return wasExecuted;
+    return run(content, true, lineEnding);
   }
 
-  private boolean apply(StringBuilder content, final boolean trimWhiteSpace, final String lineEnding) {
-    boolean changed = false;
-    LOG.log(Level.INFO, "Executing ApplyTestTask");
+  private boolean run(StringBuilder content, final boolean trimWhiteSpace, final String lineEnding) {
+    LOG.log(Level.INFO, "\u00ac Executing trim whitespaces operation");
+
+    boolean trimmedWhiteSpaces = false;
 
     if (trimWhiteSpace) {
-      LOG.log(Level.INFO, "TRIM_TRAILING_WHITESPACE = true");
-      String tempContent = content.toString();
-      LOG.log(Level.FINEST, "OLDCONTENT: {0}.", tempContent);
-      content = trimWhitespaces(content, lineEnding);
+      String contentBeforeOperation = content.toString();
 
-      if (tempContent.equals(content.toString())) {
-        LOG.log(Level.INFO, "TRIM_TRAILING_WHITESPACE : No changes");
-        changed = false;
+      content = trim(content, lineEnding);
+
+      if (contentBeforeOperation.equals(content.toString())) {
+        LOG.log(Level.INFO, "\u00ac No whitespace trimmed");
+        trimmedWhiteSpaces = false;
       } else {
-        LOG.log(Level.INFO, "TRIM_TRAILING_WHITESPACE : trimmed trailing whitespaces");
-        changed = true;
+        LOG.log(Level.INFO, "\u00ac Trimmed whitespaces");
+        trimmedWhiteSpaces = true;
       }
-      LOG.log(Level.FINEST, "NEWCONTENT: {0}.", content);
     }
 
-    return changed;
+    return trimmedWhiteSpaces;
   }
 
-  private StringBuilder trimWhitespaces(StringBuilder content, String lineEnding) {
-    BufferedReader reader = new BufferedReader(new StringReader(content.toString()));
+  // TODO: Carret position is not set properly when text is trimmed
+  // If the caret is in a line where we trim text, then we have to move it
+  // minus the amount of characters which have been removed.
+  private StringBuilder trim(StringBuilder content, String lineEnding) {
+    String contentCopy = content.toString();
+    BufferedReader reader = new BufferedReader(new StringReader(contentCopy));
 
-    /**
-     * Note: As a side effect this will strip a final newline!
-     */
-    String tempContent = reader.lines().
-            map((String t) -> {
-              return t.replaceAll("\\s+$", "");
-            }).
-            collect(Collectors.joining(lineEnding));
+    // Note: As a side effect this will strip a final newline!
+    String trimmedContent = reader.lines().map((String line) -> {
+      return line.replaceAll("\\s+$", "");
+    }).collect(Collectors.joining(lineEnding));
 
-    /**
-     * appending lineending only if that was the case in the old content.
-     */
-    if (content.toString().endsWith("\n") || content.toString().endsWith("\r")) {
-      content.delete(0, content.length());
-      content.append(tempContent).append(lineEnding);
-    } else {
-      content.delete(0, content.length());
-      content.append(tempContent);
+    // Exchange original content with trimmed content
+    content.delete(0, content.length());
+    content.append(trimmedContent);
+
+    // Append line ending if old content had a line ending
+    if (contentCopy.endsWith("\n") || contentCopy.endsWith("\r")) {
+      content.append(lineEnding);
     }
+
     return content;
   }
 }

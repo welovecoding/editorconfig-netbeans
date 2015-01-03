@@ -118,8 +118,8 @@ public class EditorConfigProcessor {
     // 7. "trim_trailing_whitespace"
     if (config.isTrimTrailingWhiteSpace()) {
       logOperation(EditorConfigConstant.TRIM_TRAILING_WHITESPACE, config.isTrimTrailingWhiteSpace());
-      boolean removedWhiteSpaces = new XTrimTrailingWhiteSpaceOperation().run(content, config.getEndOfLine());
-      fileChangeNeeded = fileChangeNeeded || removedWhiteSpaces;
+      boolean trimmedWhiteSpaces = new XTrimTrailingWhiteSpaceOperation().run(content, config.getEndOfLine());
+      fileChangeNeeded = fileChangeNeeded || trimmedWhiteSpaces;
     }
 
     // Construct FileInfo object

@@ -36,24 +36,24 @@ public class XFinalNewLineOperation {
   }
 
   private boolean run(StringBuilder content, final boolean insertFinalNewLine, final String lineEnding) {
-    boolean changed = false;
-
     LOG.log(Level.INFO, "\u00ac Executing final new line operation");
 
+    boolean changedLineEndings = false;
+
     if (insertFinalNewLine) {
-      String contentBeforeChange = content.toString();
+      String contentBeforeOperation = content.toString();
 
       content = addFinalNewLine(content, lineEnding);
 
-      if (contentBeforeChange.equals(content.toString())) {
-        LOG.log(Level.INFO, "\u00ac No final new line added to StringBuilder");
-        changed = false;
+      if (contentBeforeOperation.equals(content.toString())) {
+        LOG.log(Level.INFO, "\u00ac No final new line added");
+        changedLineEndings = false;
       } else {
-        LOG.log(Level.INFO, "\u00ac Added final new line to StringBuilder");
-        changed = true;
+        LOG.log(Level.INFO, "\u00ac Added final new line");
+        changedLineEndings = true;
       }
     }
 
-    return changed;
+    return changedLineEndings;
   }
 }
