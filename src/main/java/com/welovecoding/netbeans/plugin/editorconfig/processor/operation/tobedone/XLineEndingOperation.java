@@ -1,4 +1,4 @@
-package com.welovecoding.netbeans.plugin.editorconfig.processor.operation;
+package com.welovecoding.netbeans.plugin.editorconfig.processor.operation.tobedone;
 
 import static com.welovecoding.netbeans.plugin.editorconfig.processor.EditorConfigProcessor.OPERATION_LOG_LEVEL;
 import java.io.BufferedReader;

@@ -52,7 +52,7 @@ public class XFinalNewLineOperationTest {
     String expectedContent = content.toString();
     expectedContent += System.lineSeparator();
 
-    boolean wasPerformed = new XFinalNewLineOperation().run(content, System.lineSeparator());
+    boolean wasPerformed = new FinalNewLineOperation().run(content, System.lineSeparator());
 
     assertEquals(true, wasPerformed);
     assertEquals(expectedContent, content.toString());

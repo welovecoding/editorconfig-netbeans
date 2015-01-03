@@ -1,5 +1,6 @@
 package com.welovecoding.netbeans.plugin.editorconfig.processor.operation;
 
+import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.tobedone.IndentSizeOperation;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;

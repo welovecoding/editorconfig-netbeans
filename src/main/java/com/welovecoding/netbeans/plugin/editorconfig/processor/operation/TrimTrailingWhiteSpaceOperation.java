@@ -7,9 +7,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-public class XTrimTrailingWhiteSpaceOperation {
+public class TrimTrailingWhiteSpaceOperation {
 
-  private static final Logger LOG = Logger.getLogger(XTrimTrailingWhiteSpaceOperation.class.getSimpleName());
+  private static final Logger LOG = Logger.getLogger(TrimTrailingWhiteSpaceOperation.class.getSimpleName());
 
   static {
     LOG.setLevel(OPERATION_LOG_LEVEL);
@@ -41,9 +41,10 @@ public class XTrimTrailingWhiteSpaceOperation {
     return trimmedWhiteSpaces;
   }
 
-  // TODO: Carret position is not set properly when text is trimmed
+  // TODO: Caret position is not set properly when text is trimmed
   // If the caret is in a line where we trim text, then we have to move it
   // minus the amount of characters which have been removed.
+  // We need to find AND save the caret offset.
   private StringBuilder trim(StringBuilder content, String lineEnding) {
     String contentCopy = content.toString();
     BufferedReader reader = new BufferedReader(new StringReader(contentCopy));

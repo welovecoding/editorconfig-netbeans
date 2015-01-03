@@ -20,7 +20,7 @@ public class XTrimTrailingWhiteSpaceOperationTest {
     expectedContent.append("  alert('Hello World!');").append(System.lineSeparator());
     expectedContent.append("})();").append(System.lineSeparator());
 
-    boolean removedWhiteSpaces = new XTrimTrailingWhiteSpaceOperation().run(content, System.lineSeparator());
+    boolean removedWhiteSpaces = new TrimTrailingWhiteSpaceOperation().run(content, System.lineSeparator());
 
     assertEquals(true, removedWhiteSpaces);
     assertEquals(expectedContent.toString(), content.toString());
@@ -38,7 +38,7 @@ public class XTrimTrailingWhiteSpaceOperationTest {
     expectedContent.append("  alert('Hello World!');").append(System.lineSeparator());
     expectedContent.append("})();").append(System.lineSeparator());
 
-    boolean removedWhiteSpaces = new XTrimTrailingWhiteSpaceOperation().run(content, System.lineSeparator());
+    boolean removedWhiteSpaces = new TrimTrailingWhiteSpaceOperation().run(content, System.lineSeparator());
 
     assertEquals(true, removedWhiteSpaces);
     assertEquals(expectedContent.toString(), content.toString());
@@ -56,7 +56,7 @@ public class XTrimTrailingWhiteSpaceOperationTest {
     expectedContent.append("  alert('Hello World!');").append(System.lineSeparator());
     expectedContent.append("})();").append(System.lineSeparator());
 
-    boolean removedWhiteSpaces = new XTrimTrailingWhiteSpaceOperation().run(content, System.lineSeparator());
+    boolean removedWhiteSpaces = new TrimTrailingWhiteSpaceOperation().run(content, System.lineSeparator());
 
     assertEquals(true, removedWhiteSpaces);
     assertEquals(expectedContent.toString(), content.toString());
@@ -74,7 +74,7 @@ public class XTrimTrailingWhiteSpaceOperationTest {
     expectedContent.append("  alert('Hello World!');").append(System.lineSeparator());
     expectedContent.append("})();").append(System.lineSeparator());
 
-    boolean removedWhiteSpaces = new XTrimTrailingWhiteSpaceOperation().run(content, System.lineSeparator());
+    boolean removedWhiteSpaces = new TrimTrailingWhiteSpaceOperation().run(content, System.lineSeparator());
 
     assertEquals(true, removedWhiteSpaces);
     assertEquals(expectedContent.toString(), content.toString());
@@ -92,7 +92,7 @@ public class XTrimTrailingWhiteSpaceOperationTest {
     expectedContent.append("  alert('Hello World!');").append(System.lineSeparator());
     expectedContent.append("})();").append(System.lineSeparator());
 
-    boolean removedWhiteSpaces = new XTrimTrailingWhiteSpaceOperation().run(content, System.lineSeparator());
+    boolean removedWhiteSpaces = new TrimTrailingWhiteSpaceOperation().run(content, System.lineSeparator());
 
     assertEquals(true, removedWhiteSpaces);
     assertEquals(expectedContent.toString(), content.toString());

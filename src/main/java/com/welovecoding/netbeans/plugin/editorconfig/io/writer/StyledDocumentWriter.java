@@ -16,6 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Caret;
@@ -140,6 +141,8 @@ public class StyledDocumentWriter {
 
       // reset the caret positon
       if (caretPosition < document.getLength()) {
+        LOG.log(Level.INFO, "\u00ac Moving caret position to: {0} / {1}",
+                new Object[]{caretPosition, document.getLength()});
         caret.setDot(caretPosition);
       }
     } catch (BadLocationException | IOException ex) {

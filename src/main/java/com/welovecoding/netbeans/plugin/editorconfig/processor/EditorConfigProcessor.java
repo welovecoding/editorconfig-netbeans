@@ -8,8 +8,8 @@ import com.welovecoding.netbeans.plugin.editorconfig.io.reader.FileInfoReader;
 import com.welovecoding.netbeans.plugin.editorconfig.io.reader.FileObjectReader;
 import com.welovecoding.netbeans.plugin.editorconfig.model.EditorConfigConstant;
 import com.welovecoding.netbeans.plugin.editorconfig.model.MappedEditorConfig;
-import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.XFinalNewLineOperation;
-import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.XTrimTrailingWhiteSpaceOperation;
+import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.FinalNewLineOperation;
+import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.TrimTrailingWhiteSpaceOperation;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
@@ -111,14 +111,14 @@ public class EditorConfigProcessor {
     // 5. "insert_final_newline"
     if (config.isInsertFinalNewLine()) {
       logOperation(EditorConfigConstant.INSERT_FINAL_NEWLINE, config.isInsertFinalNewLine());
-      boolean changedLineEndings = new XFinalNewLineOperation().run(content, config.getEndOfLine());
+      boolean changedLineEndings = new FinalNewLineOperation().run(content, config.getEndOfLine());
       fileChangeNeeded = fileChangeNeeded || changedLineEndings;
     }
 
     // 7. "trim_trailing_whitespace"
     if (config.isTrimTrailingWhiteSpace()) {
       logOperation(EditorConfigConstant.TRIM_TRAILING_WHITESPACE, config.isTrimTrailingWhiteSpace());
-      boolean trimmedWhiteSpaces = new XTrimTrailingWhiteSpaceOperation().run(content, config.getEndOfLine());
+      boolean trimmedWhiteSpaces = new TrimTrailingWhiteSpaceOperation().run(content, config.getEndOfLine());
       fileChangeNeeded = fileChangeNeeded || trimmedWhiteSpaces;
     }
 

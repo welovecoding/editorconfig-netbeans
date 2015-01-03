@@ -1,4 +1,4 @@
-package com.welovecoding.netbeans.plugin.editorconfig.processor.operation;
+package com.welovecoding.netbeans.plugin.editorconfig.processor.operation.tobedone;
 
 import com.welovecoding.netbeans.plugin.editorconfig.model.EditorConfigConstant;
 import static com.welovecoding.netbeans.plugin.editorconfig.processor.EditorConfigProcessor.OPERATION_LOG_LEVEL;

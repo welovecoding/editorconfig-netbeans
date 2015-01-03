@@ -4,9 +4,9 @@ import static com.welovecoding.netbeans.plugin.editorconfig.processor.EditorConf
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class XFinalNewLineOperation {
+public class FinalNewLineOperation {
 
-  private static final Logger LOG = Logger.getLogger(XFinalNewLineOperation.class.getSimpleName());
+  private static final Logger LOG = Logger.getLogger(FinalNewLineOperation.class.getSimpleName());
 
   static {
     LOG.setLevel(OPERATION_LOG_LEVEL);
