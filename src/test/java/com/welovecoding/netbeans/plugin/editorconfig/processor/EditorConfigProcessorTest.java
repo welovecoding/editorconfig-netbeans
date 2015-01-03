@@ -58,8 +58,8 @@ public class EditorConfigProcessorTest {
     assertEquals(true, info.isFileChangeNeeded());
 
     /* 
-     Execute the operation a second time and test that file change is NOT 
-     needed (because it has been already performed).
+     Run the processor a second time and test that a file change is NOT 
+     needed (because it has been already performed during the first run).
      */
     proc.flushFile(info);
     info = proc.excuteOperations(dataObject, config);
