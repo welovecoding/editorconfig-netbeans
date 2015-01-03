@@ -131,7 +131,7 @@ public class EditorConfigProcessor {
     return info;
   }
 
-  private void flushFile(FileInfo info) {
+  protected void flushFile(FileInfo info) {
     if (info.isOpenedInEditor()) {
       updateChangesInEditorWindow(info);
     } else {

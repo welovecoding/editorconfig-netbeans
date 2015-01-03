@@ -218,6 +218,7 @@ public class FileInfoReaderTest {
 
   private File createUTF_8_CR() {
     File file = null;
+    // UTF-8 without BOM can be recognized by special chars like "\u2603"
     String content = "Hello\rWorld!\u2603";
 
     try {
