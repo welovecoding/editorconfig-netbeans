@@ -1,3 +1,6 @@
+# http://docs.travis-ci.com/user/workers/container-based-infrastructure/
+sudo: false
+
 # http://docs.travis-ci.com/user/languages/java/
 language: java
 
