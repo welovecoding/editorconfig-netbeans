@@ -21,8 +21,6 @@ public class TrimTrailingWhiteSpaceOperation {
   }
 
   private boolean run(FileInfo info, final boolean trimWhiteSpace) {
-    LOG.log(Level.INFO, "\u00ac Executing trim whitespaces operation");
-
     StringBuilder content = info.getContent();
     boolean trimmedWhiteSpaces = false;
 

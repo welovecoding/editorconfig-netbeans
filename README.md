@@ -85,6 +85,12 @@ OR OTHER DEALINGS IN THE SOFTWARE.
 
 - [Geertjan Wielenga](https://blogs.oracle.com/geertjan) for his posts on [EditorConfig and NetBeans IDE](https://blogs.oracle.com/geertjan/entry/editorconfig_and_netbeans_ide) [(Part 2)](https://blogs.oracle.com/geertjan/entry/editorconfig_and_netbeans_ide_part) [(Part 3)](https://blogs.oracle.com/geertjan/entry/editorconfig_and_netbeans_ide_part1)
 
+# Inspiring projects
+
+- [Change line endings Plugin](https://github.com/junichi11/netbeans-change-lf) by @junichi11
+- [Encoding Plugin](https://github.com/junichi11/netbeans-encoding-plugin) by @junichi11
+- [JSBeautify](https://github.com/drewhamlett/netbeans-jsbeautify) by @drewhamlett
+
 
 [stack_exchange_link_bennyn]: http://stackexchange.com/users/203782/benny-neugebauer?tab=accounts
 [stack_exchange_link_yser]: http://stackexchange.com/users/3210455/yser?tab=accounts

@@ -94,18 +94,17 @@ public class EditorConfigProcessor {
   private boolean doIndentSize(FileObject file, int value) {
     boolean changedIndentSize = false;
 
-    Preferences prefs = CodeStylePreferences.get(file, file.getMIMEType()).getPreferences();
-    int currentValue = prefs.getInt(SimpleValueNames.INDENT_SHIFT_WIDTH, -1);
+    Preferences codeStyle = CodeStylePreferences.get(file, file.getMIMEType()).getPreferences();
+    int currentValue = codeStyle.getInt(SimpleValueNames.INDENT_SHIFT_WIDTH, -1);
 
     LOG.log(Level.INFO, "\u00ac Current indent size: {0}", currentValue);
 
     if (currentValue != value) {
       // Changing indent size in the editor view (content is not affected)
-      prefs.putInt(SimpleValueNames.INDENT_SHIFT_WIDTH, value);
+      codeStyle.putInt(SimpleValueNames.INDENT_SHIFT_WIDTH, value);
       changedIndentSize = true;
       LOG.log(Level.INFO, "\u00ac Changing indent size from \"{0}\" to \"{1}\"",
               new Object[]{currentValue, value});
-      // TODO: Do auto format (will justify content)
     } else {
       LOG.log(Level.INFO, "\u00ac No indent size change needed");
     }

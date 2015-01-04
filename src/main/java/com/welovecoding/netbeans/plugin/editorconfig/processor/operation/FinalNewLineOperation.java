@@ -28,7 +28,7 @@ public class FinalNewLineOperation {
 
   private StringBuilder addFinalNewLine(StringBuilder content, String lineEnding) {
     if (!content.toString().endsWith("\n") && !content.toString().endsWith("\r")) {
-      LOG.log(Level.INFO, "\u00ac Final new line will be added");
+      LOG.log(Level.INFO, "\u00ac Added final new line");
       return content.append(lineEnding);
     } else {
       LOG.log(Level.INFO, "\u00ac There is already a final new line. No change needed");
@@ -37,8 +37,6 @@ public class FinalNewLineOperation {
   }
 
   private boolean run(StringBuilder content, final boolean insertFinalNewLine, final String lineEnding) {
-    LOG.log(Level.INFO, "\u00ac Executing final new line operation");
-
     boolean changedLineEndings = false;
 
     if (insertFinalNewLine) {
@@ -46,13 +44,7 @@ public class FinalNewLineOperation {
 
       content = addFinalNewLine(content, lineEnding);
 
-      if (contentBeforeOperation.equals(content.toString())) {
-        LOG.log(Level.INFO, "\u00ac No final new line added");
-        changedLineEndings = false;
-      } else {
-        LOG.log(Level.INFO, "\u00ac Added final new line");
-        changedLineEndings = true;
-      }
+      changedLineEndings = !contentBeforeOperation.equals(content.toString());
     }
 
     return changedLineEndings;

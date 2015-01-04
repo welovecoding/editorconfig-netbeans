@@ -24,11 +24,13 @@ import javax.swing.text.EditorKit;
 import javax.swing.text.StyledDocument;
 import org.netbeans.api.editor.mimelookup.MimeLookup;
 import org.netbeans.api.editor.mimelookup.MimePath;
+import org.netbeans.modules.editor.indent.api.Reformat;
 import org.openide.cookies.EditorCookie;
 import org.openide.filesystems.FileLock;
 import org.openide.loaders.DataObject;
 import org.openide.util.Lookup;
 import org.openide.filesystems.FileObject;
+import org.openide.util.Exceptions;
 import org.openide.util.Utilities;
 
 public class StyledDocumentWriter {
@@ -142,7 +144,7 @@ public class StyledDocumentWriter {
       // reset the caret positon
       caretPosition -= info.getCaretOffset();
       if (caretPosition < document.getLength()) {
-        LOG.log(Level.INFO, "\u00ac Moving caret position to: {0} / {1}",
+        LOG.log(Level.INFO, "Moving caret position to: {0} / {1}",
                 new Object[]{caretPosition, document.getLength()});
         caret.setDot(caretPosition);
       }
@@ -150,6 +152,18 @@ public class StyledDocumentWriter {
       throw new FileAccessException("Document could not be written: " + ex.getMessage());
     }
 
+    // Reformat code (to apply ident size & styles)
+    Reformat reformat = Reformat.get(document);
+    reformat.lock();
+
+    try {
+      reformat.reformat(0, document.getLength());
+      // TODO: Save document after reformat
+    } catch (BadLocationException ex) {
+      LOG.log(Level.SEVERE, "AutoFormat on document not possible: {0}", ex.getMessage());
+    } finally {
+      reformat.unlock();
+    }
   }
 
   public static void writeWithFilesystemAPI(FileInfo info, List<String> lines)
