@@ -129,9 +129,9 @@ public class StyledDocumentWriter {
     }
 
     try (InputStream is = new ByteArrayInputStream(info.getContentAsBytes())) {
-      // save caret position
-      Caret caret = cookie.getOpenedPanes()[0].getCaret();
-      caretPosition = caret.getDot();
+      // backup caret position
+      Caret caret = info.getCaret();
+      caretPosition = info.getCaretPosition();
 
       // write file
       document.remove(0, document.getLength());

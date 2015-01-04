@@ -1,6 +1,7 @@
 package com.welovecoding.netbeans.plugin.editorconfig.processor;
 
 import java.nio.charset.Charset;
+import javax.swing.text.Caret;
 import org.openide.cookies.EditorCookie;
 import org.openide.filesystems.FileObject;
 import org.openide.loaders.DataObject;
@@ -23,9 +24,18 @@ public class FileInfo {
 
   public FileInfo() {
   }
-  
+
   public FileInfo(DataObject dataObject) {
     this.dataObject = dataObject;
+  }
+
+  public Caret getCaret() {
+    return cookie.getOpenedPanes()[0].getCaret();
+  }
+
+  public int getCaretPosition() {
+    Caret caret = cookie.getOpenedPanes()[0].getCaret();
+    return caret.getDot();
   }
 
   public String getPath() {
