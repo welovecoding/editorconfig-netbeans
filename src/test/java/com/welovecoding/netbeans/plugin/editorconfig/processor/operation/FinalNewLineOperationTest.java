@@ -1,5 +1,6 @@
 package com.welovecoding.netbeans.plugin.editorconfig.processor.operation;
 
+import com.welovecoding.netbeans.plugin.editorconfig.processor.FileInfo;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -18,7 +19,7 @@ import org.openide.loaders.DataObjectNotFoundException;
 import org.openide.util.Exceptions;
 import org.openide.util.Utilities;
 
-public class XFinalNewLineOperationTest {
+public class FinalNewLineOperationTest {
 
   private DataObject dataObject = null;
   private File file;
@@ -42,7 +43,7 @@ public class XFinalNewLineOperationTest {
     file.delete();
   }
 
-  public XFinalNewLineOperationTest() {
+  public FinalNewLineOperationTest() {
   }
 
   @Test
@@ -52,7 +53,11 @@ public class XFinalNewLineOperationTest {
     String expectedContent = content.toString();
     expectedContent += System.lineSeparator();
 
-    boolean wasPerformed = new FinalNewLineOperation().run(content, System.lineSeparator());
+    FileInfo info = new FileInfo();
+    info.setContent(content);
+    info.setEndOfLine(System.lineSeparator());
+
+    boolean wasPerformed = new FinalNewLineOperation().run(info);
 
     assertEquals(true, wasPerformed);
     assertEquals(expectedContent, content.toString());

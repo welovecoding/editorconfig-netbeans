@@ -118,7 +118,7 @@ public class EditorConfigProcessor {
     // 5. "insert_final_newline"
     if (config.isInsertFinalNewLine()) {
       logOperation(EditorConfigConstant.INSERT_FINAL_NEWLINE, config.isInsertFinalNewLine());
-      boolean changedLineEndings = new FinalNewLineOperation().run(content, config.getEndOfLine());
+      boolean changedLineEndings = new FinalNewLineOperation().run(info);
       fileChangeNeeded = fileChangeNeeded || changedLineEndings;
     }
 
