@@ -86,19 +86,23 @@ public class EditorConfigProcessor {
   }
 
   protected FileInfo excuteOperations(DataObject dataObject, MappedEditorConfig config) {
-
-    boolean fileChangeNeeded = false;
-    FileObject primaryFile = dataObject.getPrimaryFile();
-    StringBuilder content;
-
     LOG.log(Level.INFO, "Mapped rules for: {0}", filePath);
     LOG.log(Level.INFO, config.toString());
 
+    FileInfo info = new FileInfo(dataObject);
+    boolean fileChangeNeeded = false;
+
+    FileObject primaryFile = dataObject.getPrimaryFile();
+    StringBuilder content;
+
     try {
       content = new StringBuilder(primaryFile.asText());
+      info.setContent(content);
     } catch (IOException ex) {
       content = new StringBuilder();
     }
+
+    info.setEndOfLine(config.getEndOfLine());
 
     // 1. "charset"
     MappedCharset mappedCharset = config.getCharset();
@@ -106,6 +110,9 @@ public class EditorConfigProcessor {
     if (mappedCharset != null) {
       logOperation(EditorConfigConstant.CHARSET, mappedCharset.getName());
       doCharset(dataObject, mappedCharset);
+      info.setCharset(mappedCharset.getCharset());
+    } else {
+      info.setCharset(StandardCharsets.UTF_8);
     }
 
     // 5. "insert_final_newline"
@@ -118,17 +125,11 @@ public class EditorConfigProcessor {
     // 7. "trim_trailing_whitespace"
     if (config.isTrimTrailingWhiteSpace()) {
       logOperation(EditorConfigConstant.TRIM_TRAILING_WHITESPACE, config.isTrimTrailingWhiteSpace());
-      boolean trimmedWhiteSpaces = new TrimTrailingWhiteSpaceOperation().run(content, config.getEndOfLine());
+      boolean trimmedWhiteSpaces = new TrimTrailingWhiteSpaceOperation().run(info);
       fileChangeNeeded = fileChangeNeeded || trimmedWhiteSpaces;
     }
 
-    // Construct FileInfo object
-    // TODO: FileInfo duplicates values from MappedEditorConfig
-    FileInfo info = new FileInfo(dataObject);
-    info.setContent(content);
-
     if (mappedCharset != null) {
-      info.setCharset(mappedCharset.getCharset());
     } else {
       info.setCharset(StandardCharsets.UTF_8);
     }

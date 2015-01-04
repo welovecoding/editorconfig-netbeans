@@ -7,14 +7,23 @@ import org.openide.loaders.DataObject;
 
 public class FileInfo {
 
-  private Charset charset;
-  private EditorCookie cookie;
+  // File references
   private DataObject dataObject;
-  private String fileMark;
-  private StringBuilder sb;
-  private boolean openedInEditor;
-  private boolean fileChangeNeeded = false;
+  private EditorCookie cookie;
+  private StringBuilder content;
 
+  // Configurations
+  private Charset charset;
+  private String endOfLine;
+  private String fileMark;
+
+  // Switches
+  private boolean fileChangeNeeded = false;
+  private boolean openedInEditor = false;
+
+  public FileInfo() {
+  }
+  
   public FileInfo(DataObject dataObject) {
     this.dataObject = dataObject;
   }
@@ -28,13 +37,13 @@ public class FileInfo {
   }
 
   public String getContentAsString() {
-    String content = sb.toString();
+    String contentAsString = content.toString();
 
-    if (fileMark != null && !content.startsWith(fileMark)) {
-      content = fileMark + content;
+    if (fileMark != null && !contentAsString.startsWith(fileMark)) {
+      contentAsString = fileMark + contentAsString;
     }
 
-    return content;
+    return contentAsString;
   }
 
   public byte[] getContentAsBytes() {
@@ -42,6 +51,14 @@ public class FileInfo {
   }
 
   // <editor-fold defaultstate="collapsed" desc="Getter & Setter">
+  public String getEndOfLine() {
+    return endOfLine;
+  }
+
+  public void setEndOfLine(String endOfLine) {
+    this.endOfLine = endOfLine;
+  }
+
   public boolean isFileChangeNeeded() {
     return fileChangeNeeded;
   }
@@ -67,11 +84,11 @@ public class FileInfo {
   }
 
   public StringBuilder getContent() {
-    return sb;
+    return content;
   }
 
   public void setContent(StringBuilder content) {
-    this.sb = content;
+    this.content = content;
   }
 
   public Charset getCharset() {

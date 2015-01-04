@@ -1,6 +1,7 @@
 package com.welovecoding.netbeans.plugin.editorconfig.processor.operation;
 
 import static com.welovecoding.netbeans.plugin.editorconfig.processor.EditorConfigProcessor.OPERATION_LOG_LEVEL;
+import com.welovecoding.netbeans.plugin.editorconfig.processor.FileInfo;
 import java.io.BufferedReader;
 import java.io.StringReader;
 import java.util.logging.Level;
@@ -15,8 +16,8 @@ public class TrimTrailingWhiteSpaceOperation {
     LOG.setLevel(OPERATION_LOG_LEVEL);
   }
 
-  public boolean run(StringBuilder content, final String lineEnding) {
-    return run(content, true, lineEnding);
+  public boolean run(FileInfo info) {
+    return run(info.getContent(), true, info.getEndOfLine());
   }
 
   private boolean run(StringBuilder content, final boolean trimWhiteSpace, final String lineEnding) {
