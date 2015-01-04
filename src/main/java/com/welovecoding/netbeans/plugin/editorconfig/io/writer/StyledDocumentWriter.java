@@ -140,10 +140,11 @@ public class StyledDocumentWriter {
       info.getFileObject().setAttribute(ENCODING_SETTING, info.getCharset().name());
 
       // reset the caret positon
+      caretPosition -= info.getCaretOffset();
       if (caretPosition < document.getLength()) {
         LOG.log(Level.INFO, "\u00ac Moving caret position to: {0} / {1}",
-                new Object[]{caretPosition - info.getCaretOffset(), document.getLength()});
-        caret.setDot(caretPosition - info.getCaretOffset());
+                new Object[]{caretPosition, document.getLength()});
+        caret.setDot(caretPosition);
       }
     } catch (BadLocationException | IOException ex) {
       throw new FileAccessException("Document could not be written: " + ex.getMessage());
