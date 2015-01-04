@@ -22,6 +22,7 @@ public class FileInfo {
   // Switches
   private boolean fileChangeNeeded = false;
   private boolean openedInEditor = false;
+  private boolean styleFlushNeeded = false;
 
   public FileInfo() {
   }
@@ -68,6 +69,15 @@ public class FileInfo {
   }
 
   // <editor-fold defaultstate="collapsed" desc="Getter & Setter">
+
+  public boolean isStyleFlushNeeded() {
+    return styleFlushNeeded;
+  }
+
+  public void setStyleFlushNeeded(boolean styleFlushNeeded) {
+    this.styleFlushNeeded = styleFlushNeeded;
+  }
+  
   public int getCaretOffset() {
     return caretOffset;
   }

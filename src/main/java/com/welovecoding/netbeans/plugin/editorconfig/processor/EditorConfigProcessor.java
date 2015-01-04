@@ -16,6 +16,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
+import org.netbeans.api.editor.settings.SimpleValueNames;
 import org.netbeans.modules.editor.indent.spi.CodeStylePreferences;
 import org.openide.cookies.EditorCookie;
 import org.openide.filesystems.FileObject;
@@ -57,6 +58,11 @@ public class EditorConfigProcessor {
       LOG.log(Level.INFO, "Flush file changes for: {0}", filePath);
       flushFile(info);
     }
+
+    if (info.isStyleFlushNeeded()) {
+      LOG.log(Level.INFO, "Flush style changes for: {0}", filePath);
+      flushStyles(info.getFileObject());
+    }
   }
 
   private void doCharset(DataObject dataObject, MappedCharset requestedCharset) {
@@ -65,7 +71,7 @@ public class EditorConfigProcessor {
 
     LOG.log(Level.INFO, "\u00ac Current charset: {0}", currentCharset.getName());
 
-    if (currentCharset != requestedCharset) {
+    if (!currentCharset.getCharset().name().equals(requestedCharset.getCharset().name())) {
       LOG.log(Level.INFO, "\u00ac Changing charset from \"{0}\" to \"{1}\"",
               new Object[]{currentCharset.getName(), requestedCharset.getName()});
 
@@ -81,8 +87,30 @@ public class EditorConfigProcessor {
        Exceptions.printStackTrace(ex);
        }
        */
-      LOG.log(Level.INFO, "No charset change needed.");
+      LOG.log(Level.INFO, "\u00ac No charset change needed");
     }
+  }
+
+  private boolean doIndentSize(FileObject file, int value) {
+    boolean changedIndentSize = false;
+
+    Preferences prefs = CodeStylePreferences.get(file, file.getMIMEType()).getPreferences();
+    int currentValue = prefs.getInt(SimpleValueNames.INDENT_SHIFT_WIDTH, -1);
+
+    LOG.log(Level.INFO, "\u00ac Current indent size: {0}", currentValue);
+
+    if (currentValue != value) {
+      // Changing indent size in the editor view (content is not affected)
+      prefs.putInt(SimpleValueNames.INDENT_SHIFT_WIDTH, value);
+      changedIndentSize = true;
+      LOG.log(Level.INFO, "\u00ac Changing indent size from \"{0}\" to \"{1}\"",
+              new Object[]{currentValue, value});
+      // TODO: Do auto format (will justify content)
+    } else {
+      LOG.log(Level.INFO, "\u00ac No indent size change needed");
+    }
+
+    return changedIndentSize;
   }
 
   protected FileInfo excuteOperations(DataObject dataObject, MappedEditorConfig config) {
@@ -91,6 +119,7 @@ public class EditorConfigProcessor {
 
     FileInfo info = new FileInfo(dataObject);
     boolean fileChangeNeeded = false;
+    boolean styleFlushNeeded = false;
 
     FileObject primaryFile = dataObject.getPrimaryFile();
     StringBuilder content;
@@ -121,6 +150,13 @@ public class EditorConfigProcessor {
       info.setCharset(StandardCharsets.UTF_8);
     }
 
+    // 3. "indent_size"
+    if (config.getIndentSize() > -1) {
+      logOperation(EditorConfigConstant.INDENT_SIZE, config.getIndentSize());
+      boolean changedIndentSize = doIndentSize(primaryFile, config.getIndentSize());
+      styleFlushNeeded = styleFlushNeeded || changedIndentSize;
+    }
+
     // 5. "insert_final_newline"
     if (config.isInsertFinalNewLine()) {
       logOperation(EditorConfigConstant.INSERT_FINAL_NEWLINE, config.isInsertFinalNewLine());
@@ -141,6 +177,7 @@ public class EditorConfigProcessor {
     }
 
     info.setFileChangeNeeded(fileChangeNeeded);
+    info.setStyleFlushNeeded(styleFlushNeeded);
 
     return info;
   }
@@ -158,7 +195,7 @@ public class EditorConfigProcessor {
       Preferences codeStyle = CodeStylePreferences.get(fileObject, fileObject.getMIMEType()).getPreferences();
       codeStyle.flush();
     } catch (BackingStoreException ex) {
-      LOG.log(Level.SEVERE, "Error applying code style: {0}", ex.getMessage());
+      LOG.log(Level.SEVERE, "Error flushing code styles: {0}", ex.getMessage());
     }
   }
 
