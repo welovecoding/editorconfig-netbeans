@@ -33,7 +33,7 @@ import org.openide.util.Utilities;
 
 public class StyledDocumentWriter {
 
-  private static final Logger LOG = Logger.getLogger(StyledDocumentWriter.class.getName());
+  private static final Logger LOG = Logger.getLogger(StyledDocumentWriter.class.getSimpleName());
 
   private static EditorCookie getEditorCookie(DataObject dataObject) {
     return dataObject.getLookup().lookup(EditorCookie.class);
@@ -131,7 +131,7 @@ public class StyledDocumentWriter {
     try (InputStream is = new ByteArrayInputStream(info.getContentAsBytes())) {
       // backup caret position
       Caret caret = info.getCaret();
-      caretPosition = info.getCaretPosition();
+      caretPosition = info.getCurrentCaretPosition();
 
       // write file
       document.remove(0, document.getLength());
@@ -142,8 +142,8 @@ public class StyledDocumentWriter {
       // reset the caret positon
       if (caretPosition < document.getLength()) {
         LOG.log(Level.INFO, "\u00ac Moving caret position to: {0} / {1}",
-                new Object[]{caretPosition, document.getLength()});
-        caret.setDot(caretPosition);
+                new Object[]{caretPosition - info.getCaretOffset(), document.getLength()});
+        caret.setDot(caretPosition - info.getCaretOffset());
       }
     } catch (BadLocationException | IOException ex) {
       throw new FileAccessException("Document could not be written: " + ex.getMessage());

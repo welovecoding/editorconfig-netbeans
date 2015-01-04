@@ -17,6 +17,7 @@ public class FileInfo {
   private Charset charset;
   private String endOfLine;
   private String fileMark;
+  private int caretOffset;
 
   // Switches
   private boolean fileChangeNeeded = false;
@@ -33,9 +34,15 @@ public class FileInfo {
     return cookie.getOpenedPanes()[0].getCaret();
   }
 
-  public int getCaretPosition() {
-    Caret caret = cookie.getOpenedPanes()[0].getCaret();
-    return caret.getDot();
+  public int getCurrentCaretPosition() {
+    int position = -1;
+
+    if (openedInEditor) {
+      Caret caret = cookie.getOpenedPanes()[0].getCaret();
+      position = caret.getDot();
+    }
+
+    return position;
   }
 
   public String getPath() {
@@ -61,6 +68,14 @@ public class FileInfo {
   }
 
   // <editor-fold defaultstate="collapsed" desc="Getter & Setter">
+  public int getCaretOffset() {
+    return caretOffset;
+  }
+
+  public void setCaretOffset(int caretOffset) {
+    this.caretOffset = caretOffset;
+  }
+
   public String getEndOfLine() {
     return endOfLine;
   }

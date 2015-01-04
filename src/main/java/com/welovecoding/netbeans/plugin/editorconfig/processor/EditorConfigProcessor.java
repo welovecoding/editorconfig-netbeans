@@ -97,12 +97,18 @@ public class EditorConfigProcessor {
 
     try {
       content = new StringBuilder(primaryFile.asText());
-      info.setContent(content);
     } catch (IOException ex) {
       content = new StringBuilder();
     }
 
+    info.setContent(content);
     info.setEndOfLine(config.getEndOfLine());
+
+    EditorCookie cookie = getEditorCookie(dataObject);
+    boolean isOpenedInEditor = (cookie != null) && (cookie.getDocument() != null);
+
+    info.setOpenedInEditor(isOpenedInEditor);
+    info.setCookie(cookie);
 
     // 1. "charset"
     MappedCharset mappedCharset = config.getCharset();
@@ -134,10 +140,6 @@ public class EditorConfigProcessor {
       info.setCharset(StandardCharsets.UTF_8);
     }
 
-    EditorCookie cookie = getEditorCookie(dataObject);
-    boolean isOpenedInEditor = (cookie != null) && (cookie.getDocument() != null);
-    info.setOpenedInEditor(isOpenedInEditor);
-    info.setCookie(cookie);
     info.setFileChangeNeeded(fileChangeNeeded);
 
     return info;

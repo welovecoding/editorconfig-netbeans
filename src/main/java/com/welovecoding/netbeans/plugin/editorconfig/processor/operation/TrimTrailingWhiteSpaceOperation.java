@@ -17,18 +17,20 @@ public class TrimTrailingWhiteSpaceOperation {
   }
 
   public boolean run(FileInfo info) {
-    return run(info.getContent(), true, info.getEndOfLine());
+    return run(info, true);
   }
 
-  private boolean run(StringBuilder content, final boolean trimWhiteSpace, final String lineEnding) {
+  private boolean run(FileInfo info, final boolean trimWhiteSpace) {
     LOG.log(Level.INFO, "\u00ac Executing trim whitespaces operation");
 
+    StringBuilder content = info.getContent();
     boolean trimmedWhiteSpaces = false;
 
     if (trimWhiteSpace) {
       String contentBeforeOperation = content.toString();
 
-      content = trim(content, lineEnding);
+      detectCaretOffset(info);
+      content = trim(info);
 
       if (contentBeforeOperation.equals(content.toString())) {
         LOG.log(Level.INFO, "\u00ac No whitespace trimmed");
@@ -42,12 +44,42 @@ public class TrimTrailingWhiteSpaceOperation {
     return trimmedWhiteSpaces;
   }
 
+  private void detectCaretOffset(FileInfo info) {
+    StringBuilder content = info.getContent();
+    String contentCopy = content.toString();
+
+    // Trim until caret
+    String contentUntilCaret = "";
+    int caretPosition = info.getCurrentCaretPosition();
+    if (caretPosition > 0) {
+      contentUntilCaret = contentCopy.substring(0, caretPosition);
+    }
+
+    BufferedReader reader = new BufferedReader(new StringReader(contentUntilCaret));
+
+    String trimmedContent = reader.lines().map((String line) -> {
+      return line.replaceAll("\\s+$", "");
+    }).collect(Collectors.joining(info.getEndOfLine()));
+
+    // Count the characters which have been trimmed until the caret positon
+    // (this will be our caret offset)
+    int offset = contentUntilCaret.length() - trimmedContent.length();
+    info.setCaretOffset(offset);
+
+    LOG.log(Level.INFO, "\u00ac Content length until caret: {0}", contentUntilCaret.length());
+    LOG.log(Level.INFO, "\u00ac Trimmed content length: {0}", trimmedContent.length());
+    LOG.log(Level.INFO, "\u00ac Caret offset: {0}", offset);
+  }
+
   // TODO: Caret position is not set properly when text is trimmed
   // If the caret is in a line where we trim text, then we have to move it
   // minus the amount of characters which have been removed.
   // We need to find AND save the caret offset.
-  private StringBuilder trim(StringBuilder content, String lineEnding) {
+  private StringBuilder trim(FileInfo info) {
+    StringBuilder content = info.getContent();
+    String lineEnding = info.getEndOfLine();
     String contentCopy = content.toString();
+
     BufferedReader reader = new BufferedReader(new StringReader(contentCopy));
 
     // Note: As a side effect this will strip a final newline!
