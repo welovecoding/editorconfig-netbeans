@@ -149,20 +149,26 @@ public class StyledDocumentWriter {
         caret.setDot(caretPosition);
       }
     } catch (BadLocationException | IOException ex) {
-      throw new FileAccessException("Document could not be written: " + ex.getMessage());
+      throw new FileAccessException("Document could not be saved: " + ex.getMessage());
     }
 
     // Reformat code (to apply ident size & styles)
+    // TODO: Do this only if CodeStylePreferences have been changed
     Reformat reformat = Reformat.get(document);
     reformat.lock();
 
     try {
       reformat.reformat(0, document.getLength());
-      // TODO: Save document after reformat
     } catch (BadLocationException ex) {
       LOG.log(Level.SEVERE, "AutoFormat on document not possible: {0}", ex.getMessage());
     } finally {
       reformat.unlock();
+      // Save document after reformat
+      try {
+        cookie.saveDocument();
+      } catch (IOException ex) {
+        throw new FileAccessException("Document could not be saved: " + ex.getMessage());
+      }
     }
   }
 
