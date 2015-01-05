@@ -5,8 +5,6 @@ import com.welovecoding.netbeans.plugin.editorconfig.mapper.EditorConfigProperty
 import com.welovecoding.netbeans.plugin.editorconfig.io.writer.StyledDocumentWriter;
 import com.welovecoding.netbeans.plugin.editorconfig.io.exception.FileAccessException;
 import com.welovecoding.netbeans.plugin.editorconfig.io.model.MappedCharset;
-import com.welovecoding.netbeans.plugin.editorconfig.io.reader.FileInfoReader;
-import com.welovecoding.netbeans.plugin.editorconfig.io.reader.FileObjectReader;
 import com.welovecoding.netbeans.plugin.editorconfig.model.EditorConfigConstant;
 import com.welovecoding.netbeans.plugin.editorconfig.model.MappedEditorConfig;
 import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.FinalNewLineOperation;
@@ -18,7 +16,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
-import org.netbeans.api.editor.settings.SimpleValueNames;
 import org.netbeans.modules.editor.indent.spi.CodeStylePreferences;
 import org.openide.cookies.EditorCookie;
 import org.openide.filesystems.FileObject;
