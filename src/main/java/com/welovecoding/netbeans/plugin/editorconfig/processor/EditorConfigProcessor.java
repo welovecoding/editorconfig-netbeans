@@ -1,5 +1,6 @@
 package com.welovecoding.netbeans.plugin.editorconfig.processor;
 
+import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.IndentSizeOperation;
 import com.welovecoding.netbeans.plugin.editorconfig.mapper.EditorConfigPropertyMapper;
 import com.welovecoding.netbeans.plugin.editorconfig.io.writer.StyledDocumentWriter;
 import com.welovecoding.netbeans.plugin.editorconfig.io.exception.FileAccessException;
@@ -10,6 +11,7 @@ import com.welovecoding.netbeans.plugin.editorconfig.model.EditorConfigConstant;
 import com.welovecoding.netbeans.plugin.editorconfig.model.MappedEditorConfig;
 import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.FinalNewLineOperation;
 import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.TrimTrailingWhiteSpaceOperation;
+import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.tobedone.CharsetOperation;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
@@ -54,62 +56,15 @@ public class EditorConfigProcessor {
     FileInfo info = excuteOperations(dataObject, config);
 
     // Apply EditorConfig operations
-    if (info.isFileChangeNeeded()) {
-      LOG.log(Level.INFO, "Flush file changes for: {0}", filePath);
-      flushFile(info);
-    }
-
     if (info.isStyleFlushNeeded()) {
       LOG.log(Level.INFO, "Flush style changes for: {0}", filePath);
       flushStyles(info.getFileObject());
     }
-  }
 
-  private void doCharset(DataObject dataObject, MappedCharset requestedCharset) {
-    FileObject fo = dataObject.getPrimaryFile();
-    MappedCharset currentCharset = FileInfoReader.readCharset(fo);
-
-    LOG.log(Level.INFO, "\u00ac Current charset: {0}", currentCharset.getName());
-
-    if (!currentCharset.getCharset().name().equals(requestedCharset.getCharset().name())) {
-      LOG.log(Level.INFO, "\u00ac Changing charset from \"{0}\" to \"{1}\"",
-              new Object[]{currentCharset.getName(), requestedCharset.getName()});
-
-      String content = FileObjectReader.read(fo, currentCharset.getCharset());
-      // FileObjectWriter.writeWithAtomicAction(dataObject, requestedCharset.getCharset(), content);
-
-    } else {
-      /*
-       try {
-       // TODO: A bit dangerous atm!
-       // ConfigWriter.rewrite(dataObject, currentCharset, requestedCharset);
-       } catch (IOException ex) {
-       Exceptions.printStackTrace(ex);
-       }
-       */
-      LOG.log(Level.INFO, "\u00ac No charset change needed");
+    if (info.isFileChangeNeeded()) {
+      LOG.log(Level.INFO, "Flush file changes for: {0}", filePath);
+      flushFile(info);
     }
-  }
-
-  private boolean doIndentSize(FileObject file, int value) {
-    boolean changedIndentSize = false;
-
-    Preferences codeStyle = CodeStylePreferences.get(file, file.getMIMEType()).getPreferences();
-    int currentValue = codeStyle.getInt(SimpleValueNames.INDENT_SHIFT_WIDTH, -1);
-
-    LOG.log(Level.INFO, "\u00ac Current indent size: {0}", currentValue);
-
-    if (currentValue != value) {
-      // Changing indent size in the editor view (content is not affected)
-      codeStyle.putInt(SimpleValueNames.INDENT_SHIFT_WIDTH, value);
-      changedIndentSize = true;
-      LOG.log(Level.INFO, "\u00ac Changing indent size from \"{0}\" to \"{1}\"",
-              new Object[]{currentValue, value});
-    } else {
-      LOG.log(Level.INFO, "\u00ac No indent size change needed");
-    }
-
-    return changedIndentSize;
   }
 
   protected FileInfo excuteOperations(DataObject dataObject, MappedEditorConfig config) {
@@ -143,7 +98,8 @@ public class EditorConfigProcessor {
 
     if (mappedCharset != null) {
       logOperation(EditorConfigConstant.CHARSET, mappedCharset.getName());
-      doCharset(dataObject, mappedCharset);
+      boolean changedCharset = new CharsetOperation().run(dataObject, mappedCharset);
+      fileChangeNeeded = fileChangeNeeded || changedCharset;
       info.setCharset(mappedCharset.getCharset());
     } else {
       info.setCharset(StandardCharsets.UTF_8);
@@ -152,7 +108,7 @@ public class EditorConfigProcessor {
     // 3. "indent_size"
     if (config.getIndentSize() > -1) {
       logOperation(EditorConfigConstant.INDENT_SIZE, config.getIndentSize());
-      boolean changedIndentSize = doIndentSize(primaryFile, config.getIndentSize());
+      boolean changedIndentSize = new IndentSizeOperation().run(primaryFile, config.getIndentSize());
       styleFlushNeeded = styleFlushNeeded || changedIndentSize;
     }
 

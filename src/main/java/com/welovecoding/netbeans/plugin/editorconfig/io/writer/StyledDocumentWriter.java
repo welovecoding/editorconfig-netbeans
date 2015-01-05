@@ -30,7 +30,6 @@ import org.openide.filesystems.FileLock;
 import org.openide.loaders.DataObject;
 import org.openide.util.Lookup;
 import org.openide.filesystems.FileObject;
-import org.openide.util.Exceptions;
 import org.openide.util.Utilities;
 
 public class StyledDocumentWriter {
@@ -131,17 +130,17 @@ public class StyledDocumentWriter {
     }
 
     try (InputStream is = new ByteArrayInputStream(info.getContentAsBytes())) {
-      // backup caret position
+      // Backup caret position
       Caret caret = info.getCaret();
       caretPosition = info.getCurrentCaretPosition();
 
-      // write file
+      // Write file
       document.remove(0, document.getLength());
       kit.read(is, document, document.getLength());
       cookie.saveDocument();
       info.getFileObject().setAttribute(ENCODING_SETTING, info.getCharset().name());
 
-      // reset the caret positon
+      // Reset caret positon
       caretPosition -= info.getCaretOffset();
       if (caretPosition < document.getLength()) {
         LOG.log(Level.INFO, "Moving caret position to: {0} / {1}",

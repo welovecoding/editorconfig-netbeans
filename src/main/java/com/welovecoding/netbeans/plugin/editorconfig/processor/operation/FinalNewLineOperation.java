@@ -20,7 +20,7 @@ public class FinalNewLineOperation {
    * @param content Content of a file
    * @param lineEnding the string representation of a new line ("\r", "\n" or
    * "\r\n")
-   * @return whether the operation could be performed
+   * @return whether the operation has been performed
    */
   public boolean run(FileInfo info) {
     return run(info.getContent(), true, info.getEndOfLine());
@@ -31,7 +31,7 @@ public class FinalNewLineOperation {
       LOG.log(Level.INFO, "\u00ac Added final new line");
       return content.append(lineEnding);
     } else {
-      LOG.log(Level.INFO, "\u00ac There is already a final new line. No change needed");
+      LOG.log(Level.INFO, "\u00ac No change needed");
       return content;
     }
   }
