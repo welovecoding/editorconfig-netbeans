@@ -7,6 +7,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.prefs.BackingStoreException;
+import java.util.prefs.Preferences;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.StyledDocument;
 import org.junit.After;
@@ -15,6 +17,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Ignore;
 import org.netbeans.modules.editor.indent.api.Reformat;
+import org.netbeans.modules.editor.indent.spi.CodeStylePreferences;
 import org.openide.cookies.EditorCookie;
 import org.openide.filesystems.FileUtil;
 import org.openide.loaders.DataObject;
@@ -53,7 +56,8 @@ public class IndentSizeOperationTest {
 
   @Test
   @Ignore
-  public void itDetectsIfChangesAreNeeded() throws IOException, BadLocationException {
+  public void itDetectsIfChangesAreNeeded() throws
+          IOException, BadLocationException, BackingStoreException {
     String with2Spaces = "(function(){" + System.lineSeparator();
     with2Spaces += "  alert('Hello World!');" + System.lineSeparator();
     with2Spaces += "})();";
@@ -61,9 +65,17 @@ public class IndentSizeOperationTest {
     boolean changeNeeded
             = new IndentSizeOperation().run(dataObject.getPrimaryFile(), 2);
 
-    EditorCookie cookie = getEditorCookie(dataObject);
+    Preferences codeStyle = CodeStylePreferences.get(
+            dataObject.getPrimaryFile(),
+            dataObject.getPrimaryFile().getMIMEType()
+    ).getPreferences();
+    codeStyle.flush();
+
+    EditorCookie cookie = dataObject.getLookup().lookup(EditorCookie.class);
     cookie.open();
+
     StyledDocument document = cookie.openDocument();
+
     NbDocument.runAtomicAsUser(document, () -> {
       try {
         // Save test file
@@ -94,10 +106,6 @@ public class IndentSizeOperationTest {
 
     assertEquals(true, changeNeeded);
     assertEquals(with2Spaces, dataObject.getPrimaryFile().asText());
-  }
-
-  private EditorCookie getEditorCookie(DataObject dataObject) {
-    return dataObject.getLookup().lookup(EditorCookie.class);
   }
 
 }
