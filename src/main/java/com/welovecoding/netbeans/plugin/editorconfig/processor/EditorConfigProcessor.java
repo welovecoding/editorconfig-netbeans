@@ -180,6 +180,11 @@ public class EditorConfigProcessor {
     });
   }
 
+  /**
+   * TODO: Make sure that a Reformat is done to write correct indentions.
+   *
+   * @param info
+   */
   private void updateChangesInFile(FileInfo info) {
     LOG.log(Level.INFO, "Write content (with all rules applied) to file: {0}",
             info.getFileObject().getPath());
