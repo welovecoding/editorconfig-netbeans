@@ -59,6 +59,8 @@ public class IndentSizeOperationTest {
   @Test
   public void itDetectsIfChangesAreNeeded() throws
           IOException, BadLocationException, BackingStoreException {
+    int indentWidth = 2;
+
     String codeWith2SpacesIndent = "(function(){" + System.lineSeparator();
     codeWith2SpacesIndent += "  alert('Hello World!');" + System.lineSeparator();
     codeWith2SpacesIndent += "})();";
@@ -73,10 +75,21 @@ public class IndentSizeOperationTest {
     assertEquals(-1, indentSizeBefore);
 
     // Change indent size within an operation
-    boolean changeNeeded = new IndentSizeOperation().run(dataObject.getPrimaryFile(), 2);
+    boolean changeNeeded = new IndentSizeOperation().run(dataObject.getPrimaryFile(), indentWidth);
+    assertEquals(true, changeNeeded);
+
+    // Update code style reference
+    codeStyle = CodeStylePreferences.get(
+            dataObject.getPrimaryFile(),
+            dataObject.getPrimaryFile().getMIMEType()
+    ).getPreferences();
 
     // Save the new style
     codeStyle.flush();
+
+    // Udate reference to changed code style
+    int indentSizeAfter = codeStyle.getInt(SimpleValueNames.INDENT_SHIFT_WIDTH, -1);
+    assertEquals(indentWidth, indentSizeAfter);
 
     // Save indent size
     EditorCookie cookie = dataObject.getLookup().lookup(EditorCookie.class);
@@ -113,18 +126,8 @@ public class IndentSizeOperationTest {
       }
     });
 
-    // Update reference to changed code style
-    codeStyle = CodeStylePreferences.get(
-            dataObject.getPrimaryFile(),
-            dataObject.getPrimaryFile().getMIMEType()
-    ).getPreferences();
-    int indentSizeAfter = codeStyle.getInt(SimpleValueNames.INDENT_SHIFT_WIDTH, -1);
-
-    assertEquals(true, changeNeeded);
-    assertEquals(2, indentSizeAfter);
-
     // TODO: This check fails
-    // assertEquals(codeWith2SpacesIndent, dataObject.getPrimaryFile().asText());
+    assertEquals(codeWith2SpacesIndent, dataObject.getPrimaryFile().asText());
   }
 
 }
