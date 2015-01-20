@@ -87,7 +87,7 @@ public class IndentSizeOperationTest {
     // Save the new style
     codeStyle.flush();
 
-    // Udate reference to changed code style
+    // Check that new style has been applied
     int indentSizeAfter = codeStyle.getInt(SimpleValueNames.INDENT_SHIFT_WIDTH, -1);
     assertEquals(indentWidth, indentSizeAfter);
 
