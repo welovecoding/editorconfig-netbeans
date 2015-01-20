@@ -72,12 +72,9 @@ public class IndentSizeOperationTest {
     int indentSizeBefore = codeStyle.getInt(SimpleValueNames.INDENT_SHIFT_WIDTH, -1);
     assertEquals(-1, indentSizeBefore);
 
-    // Change indent size
-    codeStyle.putInt(SimpleValueNames.INDENT_SHIFT_WIDTH, 2);
-
     // Change indent size within an operation
-    // boolean changeNeeded = new IndentSizeOperation().run(dataObject.getPrimaryFile(), 2);
-    
+    boolean changeNeeded = new IndentSizeOperation().run(dataObject.getPrimaryFile(), 2);
+
     // Save the new style
     codeStyle.flush();
 
@@ -116,11 +113,16 @@ public class IndentSizeOperationTest {
       }
     });
 
+    // Update reference to changed code style
+    codeStyle = CodeStylePreferences.get(
+            dataObject.getPrimaryFile(),
+            dataObject.getPrimaryFile().getMIMEType()
+    ).getPreferences();
     int indentSizeAfter = codeStyle.getInt(SimpleValueNames.INDENT_SHIFT_WIDTH, -1);
 
-    // assertEquals(true, changeNeeded);
+    assertEquals(true, changeNeeded);
     assertEquals(2, indentSizeAfter);
-    
+
     // TODO: This check fails
     // assertEquals(codeWith2SpacesIndent, dataObject.getPrimaryFile().asText());
   }
