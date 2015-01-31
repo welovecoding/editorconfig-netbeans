@@ -105,7 +105,7 @@ public class EditorConfigProcessor {
     // 3. "indent_size"
     if (config.getIndentSize() > -1) {
       logOperation(EditorConfigConstant.INDENT_SIZE, config.getIndentSize());
-      boolean changedIndentSize = new IndentSizeOperation().operate(primaryFile, config.getIndentSize());
+      boolean changedIndentSize = new IndentSizeOperation().changeIndentSize(primaryFile, config.getIndentSize());
       styleFlushNeeded = styleFlushNeeded || changedIndentSize;
     }
 

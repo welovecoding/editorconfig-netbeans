@@ -11,6 +11,7 @@ import org.openide.filesystems.FileObject;
 public class IndentSizeOperation {
 
   private static final Logger LOG = Logger.getLogger(IndentSizeOperation.class.getSimpleName());
+  private FileObject file;
 
   static {
     LOG.setLevel(OPERATION_LOG_LEVEL);
@@ -27,23 +28,30 @@ public class IndentSizeOperation {
    * @param value
    * @return whether the operation has been performed
    */
-  public boolean operate(FileObject file, int value) {
-    boolean changedIndentSize = false;
+  public boolean changeIndentSize(FileObject file, int value) {
+    this.file = file;
+    String simpleValueName = SimpleValueNames.INDENT_SHIFT_WIDTH;
+    return operate(simpleValueName, value);
+  }
+
+  private boolean operate(String simpleValueName, int value) {
+    boolean codeStyleChangeNeeded = false;
 
     Preferences codeStyle = CodeStylePreferences.get(file, file.getMIMEType()).getPreferences();
-    int currentValue = codeStyle.getInt(SimpleValueNames.INDENT_SHIFT_WIDTH, -1);
+    int currentValue = codeStyle.getInt(simpleValueName, -1);
 
-    LOG.log(Level.INFO, "\u00ac Current indent size: {0}", currentValue);
+    LOG.log(Level.INFO, "\u00ac Current value: {0}", currentValue);
+    LOG.log(Level.INFO, "\u00ac New value: {0}", value);
 
     if (currentValue != value) {
-      codeStyle.putInt(SimpleValueNames.INDENT_SHIFT_WIDTH, value);
-      changedIndentSize = true;
-      LOG.log(Level.INFO, "\u00ac Changing indent size from \"{0}\" to \"{1}\"",
+      codeStyle.putInt(simpleValueName, value);
+      codeStyleChangeNeeded = true;
+      LOG.log(Level.INFO, "\u00ac Changing value from \"{0}\" to \"{1}\"",
               new Object[]{currentValue, value});
     } else {
       LOG.log(Level.INFO, "\u00ac No change needed");
     }
 
-    return changedIndentSize;
+    return codeStyleChangeNeeded;
   }
 }
