@@ -22,8 +22,20 @@ public class FinalNewLineOperation {
    * "\r\n")
    * @return whether the operation has been performed
    */
-  public boolean run(FileInfo info) {
-    return run(info.getContent(), true, info.getEndOfLine());
+  public boolean operate(FileInfo info) {
+    return operate(info.getContent(), true, info.getEndOfLine());
+  }
+
+  private boolean operate(StringBuilder content, final boolean insertFinalNewLine, final String lineEnding) {
+    boolean changedLineEndings = false;
+
+    if (insertFinalNewLine) {
+      String contentBeforeOperation = content.toString();
+      content = addFinalNewLine(content, lineEnding);
+      changedLineEndings = !contentBeforeOperation.equals(content.toString());
+    }
+
+    return changedLineEndings;
   }
 
   private StringBuilder addFinalNewLine(StringBuilder content, String lineEnding) {
@@ -34,19 +46,5 @@ public class FinalNewLineOperation {
       LOG.log(Level.INFO, "\u00ac No change needed");
       return content;
     }
-  }
-
-  private boolean run(StringBuilder content, final boolean insertFinalNewLine, final String lineEnding) {
-    boolean changedLineEndings = false;
-
-    if (insertFinalNewLine) {
-      String contentBeforeOperation = content.toString();
-
-      content = addFinalNewLine(content, lineEnding);
-
-      changedLineEndings = !contentBeforeOperation.equals(content.toString());
-    }
-
-    return changedLineEndings;
   }
 }

@@ -16,11 +16,11 @@ public class TrimTrailingWhiteSpaceOperation {
     LOG.setLevel(OPERATION_LOG_LEVEL);
   }
 
-  public boolean run(FileInfo info) {
-    return run(info, true);
+  public boolean operate(FileInfo info) {
+    return operate(info, true);
   }
 
-  private boolean run(FileInfo info, final boolean trimWhiteSpace) {
+  private boolean operate(FileInfo info, final boolean trimWhiteSpace) {
     StringBuilder content = info.getContent();
     boolean trimmedWhiteSpaces = false;
 

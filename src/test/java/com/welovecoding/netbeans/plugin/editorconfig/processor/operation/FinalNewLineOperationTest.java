@@ -57,7 +57,7 @@ public class FinalNewLineOperationTest {
     info.setContent(content);
     info.setEndOfLine(System.lineSeparator());
 
-    boolean wasPerformed = new FinalNewLineOperation().run(info);
+    boolean wasPerformed = new FinalNewLineOperation().operate(info);
 
     assertEquals(true, wasPerformed);
     assertEquals(expectedContent, content.toString());

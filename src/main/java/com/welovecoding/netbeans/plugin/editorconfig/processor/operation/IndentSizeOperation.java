@@ -27,7 +27,7 @@ public class IndentSizeOperation {
    * @param value
    * @return whether the operation has been performed
    */
-  public boolean run(FileObject file, int value) {
+  public boolean operate(FileObject file, int value) {
     boolean changedIndentSize = false;
 
     Preferences codeStyle = CodeStylePreferences.get(file, file.getMIMEType()).getPreferences();

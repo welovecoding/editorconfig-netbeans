@@ -25,7 +25,7 @@ public class TrimTrailingWhiteSpaceOperationTest {
     info.setContent(content);
     info.setEndOfLine(System.lineSeparator());
 
-    boolean removedWhiteSpaces = new TrimTrailingWhiteSpaceOperation().run(info);
+    boolean removedWhiteSpaces = new TrimTrailingWhiteSpaceOperation().operate(info);
 
     assertEquals(true, removedWhiteSpaces);
     assertEquals(expectedContent.toString(), content.toString());
@@ -47,7 +47,7 @@ public class TrimTrailingWhiteSpaceOperationTest {
     info.setContent(content);
     info.setEndOfLine(System.lineSeparator());
 
-    boolean removedWhiteSpaces = new TrimTrailingWhiteSpaceOperation().run(info);
+    boolean removedWhiteSpaces = new TrimTrailingWhiteSpaceOperation().operate(info);
 
     assertEquals(true, removedWhiteSpaces);
     assertEquals(expectedContent.toString(), content.toString());
@@ -69,7 +69,7 @@ public class TrimTrailingWhiteSpaceOperationTest {
     info.setContent(content);
     info.setEndOfLine(System.lineSeparator());
 
-    boolean removedWhiteSpaces = new TrimTrailingWhiteSpaceOperation().run(info);
+    boolean removedWhiteSpaces = new TrimTrailingWhiteSpaceOperation().operate(info);
 
     assertEquals(true, removedWhiteSpaces);
     assertEquals(expectedContent.toString(), content.toString());
@@ -91,7 +91,7 @@ public class TrimTrailingWhiteSpaceOperationTest {
     info.setContent(content);
     info.setEndOfLine(System.lineSeparator());
 
-    boolean removedWhiteSpaces = new TrimTrailingWhiteSpaceOperation().run(info);
+    boolean removedWhiteSpaces = new TrimTrailingWhiteSpaceOperation().operate(info);
 
     assertEquals(true, removedWhiteSpaces);
     assertEquals(expectedContent.toString(), content.toString());
@@ -113,7 +113,7 @@ public class TrimTrailingWhiteSpaceOperationTest {
     info.setContent(content);
     info.setEndOfLine(System.lineSeparator());
 
-    boolean removedWhiteSpaces = new TrimTrailingWhiteSpaceOperation().run(info);
+    boolean removedWhiteSpaces = new TrimTrailingWhiteSpaceOperation().operate(info);
 
     assertEquals(true, removedWhiteSpaces);
     assertEquals(expectedContent.toString(), content.toString());

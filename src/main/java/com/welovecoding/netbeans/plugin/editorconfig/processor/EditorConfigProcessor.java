@@ -105,21 +105,21 @@ public class EditorConfigProcessor {
     // 3. "indent_size"
     if (config.getIndentSize() > -1) {
       logOperation(EditorConfigConstant.INDENT_SIZE, config.getIndentSize());
-      boolean changedIndentSize = new IndentSizeOperation().run(primaryFile, config.getIndentSize());
+      boolean changedIndentSize = new IndentSizeOperation().operate(primaryFile, config.getIndentSize());
       styleFlushNeeded = styleFlushNeeded || changedIndentSize;
     }
 
     // 5. "insert_final_newline"
     if (config.isInsertFinalNewLine()) {
       logOperation(EditorConfigConstant.INSERT_FINAL_NEWLINE, config.isInsertFinalNewLine());
-      boolean changedLineEndings = new FinalNewLineOperation().run(info);
+      boolean changedLineEndings = new FinalNewLineOperation().operate(info);
       fileChangeNeeded = fileChangeNeeded || changedLineEndings;
     }
 
     // 7. "trim_trailing_whitespace"
     if (config.isTrimTrailingWhiteSpace()) {
       logOperation(EditorConfigConstant.TRIM_TRAILING_WHITESPACE, config.isTrimTrailingWhiteSpace());
-      boolean trimmedWhiteSpaces = new TrimTrailingWhiteSpaceOperation().run(info);
+      boolean trimmedWhiteSpaces = new TrimTrailingWhiteSpaceOperation().operate(info);
       fileChangeNeeded = fileChangeNeeded || trimmedWhiteSpaces;
     }
 
