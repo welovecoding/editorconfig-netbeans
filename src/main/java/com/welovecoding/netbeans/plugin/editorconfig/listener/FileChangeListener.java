@@ -73,7 +73,7 @@ public class FileChangeListener extends FileChangeAdapter {
     boolean applyRules = false;
     boolean isntFolder = !file.isFolder();
     boolean isUnexpected = !event.isExpected();
-    boolean isntSkipped = !SmartSkip.skipFile(file);
+    boolean isntSkipped = !SmartSkip.skipDirectory(file);
 
     if (isUnexpected && isntFolder && isntSkipped) {
       applyRules = true;

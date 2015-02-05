@@ -5,14 +5,14 @@ import org.openide.filesystems.FileObject;
 public class SmartSkip {
 
   public static final boolean IS_ON = true;
-  private static final String[] IGNORED_FILES = {
+  static final String[] IGNORED_FILES = {
     "bower_components",
     "nbproject",
     "node_modules"
   };
 
-  public static boolean skipFile(FileObject file) {
-    String fileName = file.getName();
+  public static boolean skipDirectory(FileObject directory) {
+    String fileName = directory.getName();
     boolean skip = false;
 
     for (String pattern : IGNORED_FILES) {
@@ -21,7 +21,7 @@ public class SmartSkip {
       }
     }
 
-    if (file.isFolder() && fileName.startsWith(".")) {
+    if (directory.isFolder() && fileName.startsWith(".")) {
       skip = true;
     }
 

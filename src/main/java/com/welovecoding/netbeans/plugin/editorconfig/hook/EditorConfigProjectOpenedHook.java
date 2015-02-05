@@ -56,8 +56,8 @@ public class EditorConfigProjectOpenedHook extends ProjectOpenedHook {
         attachEditorConfigChangeListener(project, file);
         LOG.log(Level.INFO, "\u00ac Found EditorConfig: {0}", file.getPath());
       } else if (file.isFolder()) {
-        if (SmartSkip.skipFile(file)) {
-          LOG.log(Level.INFO, "\u00ac Skipped file: {0}", file.getPath());
+        if (SmartSkip.skipDirectory(file)) {
+          LOG.log(Level.INFO, "\u00ac Skipped directory: {0}", file.getPath());
         } else {
           attachListeners(file, project);
           LOG.log(Level.INFO, "\u00ac Attached ProjectChangeListener: {0}", file.getPath());

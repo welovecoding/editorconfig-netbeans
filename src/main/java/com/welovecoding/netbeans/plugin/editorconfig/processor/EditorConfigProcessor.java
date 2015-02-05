@@ -16,11 +16,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
+import org.netbeans.api.project.Project;
 import org.netbeans.modules.editor.indent.spi.CodeStylePreferences;
 import org.openide.cookies.EditorCookie;
 import org.openide.filesystems.FileObject;
 import org.openide.loaders.DataObject;
 import org.openide.text.NbDocument;
+import org.openide.util.Lookup;
+import org.openide.util.Utilities;
 
 public class EditorConfigProcessor {
 
@@ -28,8 +31,18 @@ public class EditorConfigProcessor {
   public static final Level OPERATION_LOG_LEVEL = Level.INFO;
 
   private String filePath;
+  private final String projectPath;
 
   public EditorConfigProcessor() {
+    // Project nbProject = OpenProjects.getDefault().getMainProject();
+    Lookup lookup = Utilities.actionsGlobalContext();
+    Project project = lookup.lookup(Project.class);
+    if (project == null) {
+      projectPath = "";
+    } else {
+      FileObject nbProjectDirectory = project.getProjectDirectory();
+      projectPath = nbProjectDirectory.getPath();
+    }
   }
 
   /**
@@ -48,6 +61,16 @@ public class EditorConfigProcessor {
   public void applyRulesToFile(DataObject dataObject) {
     FileObject primaryFile = dataObject.getPrimaryFile();
     filePath = primaryFile.getPath();
+
+    // Check if file is in unallowed path
+    for (String directoryName : SmartSkip.IGNORED_FILES) {
+      // Note: Always use forward slashes here
+      String path = projectPath + "/" + directoryName;
+      if (filePath.startsWith(path)) {
+        LOG.log(Level.INFO, "Skipping file because it is located in an unsupported directory.", path);
+        return;
+      }
+    }
 
     MappedEditorConfig config = readRulesForFile(filePath);
     FileInfo info = excuteOperations(dataObject, config);
