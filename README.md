@@ -50,13 +50,13 @@ indent_size = 2
 
 ## Supported properties
 
-1. :construction: charset
-1. :construction: end_of_line
-1. :construction: indent_size
-1. :construction: indent_style
-1. :white_check_mark: insert_final_newline
-1. :construction: tab_width
-1. :white_check_mark: trim_trailing_whitespace
+1. :construction: **charset** (`latin1`, `utf-8`, `utf-8-bom`, `utf-16be`, `utf-16le`, `utf-8-bom`)
+1. :construction: **end_of_line** (`lf`, `cr`, `crlf`)
+1. :construction: **indent_size** (`[number]`)
+1. :construction: **indent_style** (`space`, `tab`)
+1. :white_check_mark: **insert_final_newline** (`false`, `true`)
+1. :construction: **tab_width** (`[number]`)
+1. :white_check_mark: **trim_trailing_whitespace** (`false`, `true`)
 
 [EditorConfig]: http://editorconfig.org
 
