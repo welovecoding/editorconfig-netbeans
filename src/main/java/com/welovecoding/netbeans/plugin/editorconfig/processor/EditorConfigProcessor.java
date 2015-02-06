@@ -8,6 +8,7 @@ import com.welovecoding.netbeans.plugin.editorconfig.io.model.MappedCharset;
 import com.welovecoding.netbeans.plugin.editorconfig.model.EditorConfigConstant;
 import com.welovecoding.netbeans.plugin.editorconfig.model.MappedEditorConfig;
 import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.FinalNewLineOperation;
+import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.IndentStyleOperation;
 import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.TrimTrailingWhiteSpaceOperation;
 import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.tobedone.CharsetOperation;
 import java.io.IOException;
@@ -126,10 +127,17 @@ public class EditorConfigProcessor {
     }
 
     // 3. "indent_size"
-    if (config.getIndentSize() > -1) {
+    if (config.getIndentSize() > -3) {
       logOperation(EditorConfigConstant.INDENT_SIZE, config.getIndentSize());
       boolean changedIndentSize = new IndentSizeOperation(primaryFile).changeIndentSize(config.getIndentSize());
       styleFlushNeeded = styleFlushNeeded || changedIndentSize;
+    }
+
+    // 4. "indent_style "
+    if (config.getIndentStyle() != null) {
+      logOperation(EditorConfigConstant.INDENT_STYLE, config.getIndentStyle());
+      boolean changedIndentStyle = new IndentStyleOperation(primaryFile).changeIndentStyle(config.getIndentStyle());
+      styleFlushNeeded = styleFlushNeeded || changedIndentStyle;
     }
 
     // 5. "insert_final_newline"

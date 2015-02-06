@@ -27,8 +27,7 @@ public class IndentSizeOperation extends CodeStyleOperation {
     if (value == -2) {
       return operate(SimpleValueNames.EXPAND_TABS, false);
     } else {
-      return operate(SimpleValueNames.EXPAND_TABS, true)
-              && operate(SimpleValueNames.INDENT_SHIFT_WIDTH, value);
+      return operate(SimpleValueNames.INDENT_SHIFT_WIDTH, value);
     }
   }
 

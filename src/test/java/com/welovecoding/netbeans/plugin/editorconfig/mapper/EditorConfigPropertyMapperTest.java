@@ -15,7 +15,6 @@ import org.junit.After;
 import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
-import org.omg.PortableServer.LifespanPolicyValue;
 import org.openide.util.Exceptions;
 import org.openide.util.Utilities;
 
@@ -65,6 +64,7 @@ public class EditorConfigPropertyMapperTest {
     Files.write(path, config.toString().getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE);
 
     MappedEditorConfig mappedConfig = EditorConfigPropertyMapper.createEditorConfig(jsFile, ecFile.getName());
+    LOG.log(Level.INFO, "Config:\r\n{0}", mappedConfig.toString());
 
     assertEquals(true, ecFile.delete());
     assertEquals(StandardCharsets.UTF_8.name(), mappedConfig.getCharset().getName());
@@ -92,7 +92,7 @@ public class EditorConfigPropertyMapperTest {
     Files.write(path, config.toString().getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE);
 
     MappedEditorConfig mappedConfig = EditorConfigPropertyMapper.createEditorConfig(jsFile, ecFile.getName());
-    LOG.log(Level.INFO, mappedConfig.toString());
+    LOG.log(Level.INFO, "Config:\r\n{0}", mappedConfig.toString());
 
     assertEquals(true, ecFile.delete());
     assertEquals(StandardCharsets.UTF_8.name(), mappedConfig.getCharset().getName());
@@ -118,6 +118,7 @@ public class EditorConfigPropertyMapperTest {
     Files.write(path, config.toString().getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE);
 
     MappedEditorConfig mappedConfig = EditorConfigPropertyMapper.createEditorConfig(jsFile, ecFile.getName());
+    LOG.log(Level.INFO, "Config:\r\n{0}", mappedConfig.toString());
 
     assertEquals(true, ecFile.delete());
     assertEquals(null, mappedConfig.getCharset());

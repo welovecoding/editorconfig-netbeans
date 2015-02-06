@@ -21,6 +21,27 @@ public abstract class CodeStyleOperation {
     this.file = file;
   }
 
+  protected boolean operate(String simpleValueName, String value) {
+    boolean codeStyleChangeNeeded = false;
+
+    Preferences codeStyle = CodeStylePreferences.get(file, file.getMIMEType()).getPreferences();
+    String currentValue = codeStyle.get(simpleValueName, "");
+
+    LOG.log(Level.INFO, "\u00ac Current value: {0}", currentValue);
+    LOG.log(Level.INFO, "\u00ac New value: {0}", value);
+
+    if (currentValue.equals(value)) {
+      LOG.log(Level.INFO, "\u00ac No change needed");
+    } else {
+      codeStyle.put(simpleValueName, value);
+      codeStyleChangeNeeded = true;
+      LOG.log(Level.INFO, "\u00ac Changing value from \"{0}\" to \"{1}\"",
+              new Object[]{currentValue, value});
+    }
+
+    return codeStyleChangeNeeded;
+  }
+
   protected boolean operate(String simpleValueName, boolean value) {
     boolean codeStyleChangeNeeded = false;
 
@@ -30,13 +51,13 @@ public abstract class CodeStyleOperation {
     LOG.log(Level.INFO, "\u00ac Current value: {0}", currentValue);
     LOG.log(Level.INFO, "\u00ac New value: {0}", value);
 
-    if (currentValue != value) {
+    if (currentValue == value) {
+      LOG.log(Level.INFO, "\u00ac No change needed");
+    } else {
       codeStyle.putBoolean(simpleValueName, value);
       codeStyleChangeNeeded = true;
       LOG.log(Level.INFO, "\u00ac Changing value from \"{0}\" to \"{1}\"",
               new Object[]{currentValue, value});
-    } else {
-      LOG.log(Level.INFO, "\u00ac No change needed");
     }
 
     return codeStyleChangeNeeded;
@@ -55,13 +76,13 @@ public abstract class CodeStyleOperation {
     LOG.log(Level.INFO, "\u00ac Current value: {0}", currentValue);
     LOG.log(Level.INFO, "\u00ac New value: {0}", value);
 
-    if (currentValue != value) {
+    if (currentValue == value) {
+      LOG.log(Level.INFO, "\u00ac No change needed");
+    } else {
       codeStyle.putInt(simpleValueName, value);
       codeStyleChangeNeeded = true;
       LOG.log(Level.INFO, "\u00ac Changing value from \"{0}\" to \"{1}\"",
               new Object[]{currentValue, value});
-    } else {
-      LOG.log(Level.INFO, "\u00ac No change needed");
     }
 
     return codeStyleChangeNeeded;
