@@ -9,16 +9,17 @@ import com.welovecoding.netbeans.plugin.editorconfig.model.MappedEditorConfig;
 import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.FinalNewLineOperation;
 import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.IndentSizeOperation;
 import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.IndentStyleOperation;
+import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.LineEndingOperation;
 import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.TabWidthOperation;
 import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.TrimTrailingWhiteSpaceOperation;
 import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.tobedone.CharsetOperation;
-import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.LineEndingOperation;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
+import javax.swing.SwingUtilities;
 import org.netbeans.api.project.Project;
 import org.netbeans.modules.editor.indent.spi.CodeStylePreferences;
 import org.openide.cookies.EditorCookie;
@@ -108,7 +109,9 @@ public class EditorConfigProcessor {
     }
 
     info.setContent(content);
-    info.setEndOfLine(config.getEndOfLine());
+    if (config.getEndOfLine() != null) {
+      info.setEndOfLine(config.getEndOfLine());
+    }
 
     EditorCookie cookie = getEditorCookie(dataObject);
     boolean isOpenedInEditor = (cookie != null) && (cookie.getDocument() != null);
@@ -223,17 +226,26 @@ public class EditorConfigProcessor {
     return EditorConfigPropertyMapper.createEditorConfig(filePath);
   }
 
-  private void updateChangesInEditorWindow(FileInfo info) {
+  private void updateChangesInEditorWindow(final FileInfo info) {
     LOG.log(Level.INFO, "Update changes in Editor window for: {0}", info.getPath());
 
-    EditorCookie cookie = info.getCookie();
-    NbDocument.runAtomic(cookie.getDocument(), () -> {
-      try {
-        StyledDocumentWriter.writeWithEditorKit(info);
-      } catch (FileAccessException ex) {
-        LOG.log(Level.SEVERE, ex.getMessage());
+    final EditorCookie cookie = info.getCookie();
+    Runnable runner = new Runnable() {
+      public void run() {
+        NbDocument.runAtomic(cookie.getDocument(), () -> {
+          try {
+            StyledDocumentWriter.writeWithEditorKit(info);
+          } catch (FileAccessException ex) {
+            LOG.log(Level.SEVERE, ex.getMessage());
+          }
+        });
       }
-    });
+    };
+    if (SwingUtilities.isEventDispatchThread()) {
+      runner.run();
+    } else {
+      SwingUtilities.invokeLater(runner);
+    }
   }
 
   /**

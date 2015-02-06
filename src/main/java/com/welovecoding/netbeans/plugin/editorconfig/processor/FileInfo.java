@@ -15,7 +15,7 @@ public class FileInfo {
 
   // Configurations
   private Charset charset;
-  private String endOfLine;
+  private String endOfLine = System.lineSeparator();
   private String fileMark;
   private int caretOffset;
 
@@ -69,7 +69,6 @@ public class FileInfo {
   }
 
   // <editor-fold defaultstate="collapsed" desc="Getter & Setter">
-
   public boolean isStyleFlushNeeded() {
     return styleFlushNeeded;
   }
@@ -77,7 +76,7 @@ public class FileInfo {
   public void setStyleFlushNeeded(boolean styleFlushNeeded) {
     this.styleFlushNeeded = styleFlushNeeded;
   }
-  
+
   public int getCaretOffset() {
     return caretOffset;
   }
