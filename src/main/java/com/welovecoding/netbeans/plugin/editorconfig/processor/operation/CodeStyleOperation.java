@@ -7,16 +7,16 @@ import java.util.prefs.Preferences;
 import org.netbeans.modules.editor.indent.spi.CodeStylePreferences;
 import org.openide.filesystems.FileObject;
 
-public abstract class CodeStyle {
+public abstract class CodeStyleOperation {
 
   private static final Logger LOG = Logger.getLogger(IndentSizeOperation.class.getSimpleName());
   protected FileObject file;
 
-  public CodeStyle() {
+  public CodeStyleOperation() {
     LOG.setLevel(OPERATION_LOG_LEVEL);
   }
 
-  public CodeStyle(FileObject file) {
+  public CodeStyleOperation(FileObject file) {
     super();
     this.file = file;
   }

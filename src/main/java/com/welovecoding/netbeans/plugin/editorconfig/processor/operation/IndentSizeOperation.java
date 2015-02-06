@@ -3,7 +3,7 @@ package com.welovecoding.netbeans.plugin.editorconfig.processor.operation;
 import org.netbeans.api.editor.settings.SimpleValueNames;
 import org.openide.filesystems.FileObject;
 
-public class IndentSizeOperation extends CodeStyle {
+public class IndentSizeOperation extends CodeStyleOperation {
 
   private IndentSizeOperation() {
     super();
