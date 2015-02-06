@@ -61,20 +61,26 @@ indent_size = 2
 Indent_size can be set to `tab` if `indent_size` is unspecified and `indent_style` is set to `tab`.
 When set to `tab`, the value of `tab_width` (if specified) will be used.
 
+Read our notes on [Indentation](https://github.com/welovecoding/editorconfig-netbeans/wiki/Indentation).
+
 ### 4. indent_style :white_check_mark:
 
 *Values:* `space`, `tab`
+
+Read our notes on [Indentation](https://github.com/welovecoding/editorconfig-netbeans/wiki/Indentation).
 
 ### 5. insert_final_newline :white_check_mark:
 
 *Values:* `false`, `true`
 
-### 6. tab_width :construction:
+### 6. tab_width :white_check_mark:
 
 *Values:* `[number]`
 
 *Special case:*
 Defaults to the value of `indent_size` and doesn't usually need to be specified.
+
+Read our notes on [Indentation](https://github.com/welovecoding/editorconfig-netbeans/wiki/Indentation).
 
 ### 7. trim_trailing_whitespace :white_check_mark:
 
