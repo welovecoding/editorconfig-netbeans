@@ -75,7 +75,7 @@ public class IndentSizeOperationTest {
     assertEquals(-1, indentSizeBefore);
 
     // Change indent size within an operation
-    boolean changeNeeded = new IndentSizeOperation().changeIndentSize(dataObject.getPrimaryFile(), indentWidth);
+    boolean changeNeeded = new CodeStyleOperation().changeIndentSize(dataObject.getPrimaryFile(), indentWidth);
     assertEquals(true, changeNeeded);
 
     // Update code style reference

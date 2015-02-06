@@ -8,9 +8,9 @@ import org.netbeans.api.editor.settings.SimpleValueNames;
 import org.netbeans.modules.editor.indent.spi.CodeStylePreferences;
 import org.openide.filesystems.FileObject;
 
-public class IndentSizeOperation {
+public class CodeStyleOperation {
 
-  private static final Logger LOG = Logger.getLogger(IndentSizeOperation.class.getSimpleName());
+  private static final Logger LOG = Logger.getLogger(CodeStyleOperation.class.getSimpleName());
   private FileObject file;
 
   static {

@@ -1,6 +1,6 @@
 package com.welovecoding.netbeans.plugin.editorconfig.processor;
 
-import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.IndentSizeOperation;
+import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.CodeStyleOperation;
 import com.welovecoding.netbeans.plugin.editorconfig.mapper.EditorConfigPropertyMapper;
 import com.welovecoding.netbeans.plugin.editorconfig.io.writer.StyledDocumentWriter;
 import com.welovecoding.netbeans.plugin.editorconfig.io.exception.FileAccessException;
@@ -128,7 +128,7 @@ public class EditorConfigProcessor {
     // 3. "indent_size"
     if (config.getIndentSize() > -1) {
       logOperation(EditorConfigConstant.INDENT_SIZE, config.getIndentSize());
-      boolean changedIndentSize = new IndentSizeOperation().changeIndentSize(primaryFile, config.getIndentSize());
+      boolean changedIndentSize = new CodeStyleOperation().changeIndentSize(primaryFile, config.getIndentSize());
       styleFlushNeeded = styleFlushNeeded || changedIndentSize;
     }
 
@@ -138,7 +138,7 @@ public class EditorConfigProcessor {
       boolean changedLineEndings = new FinalNewLineOperation().operate(info);
       fileChangeNeeded = fileChangeNeeded || changedLineEndings;
     }
-
+    
     // 7. "trim_trailing_whitespace"
     if (config.isTrimTrailingWhiteSpace()) {
       logOperation(EditorConfigConstant.TRIM_TRAILING_WHITESPACE, config.isTrimTrailingWhiteSpace());
