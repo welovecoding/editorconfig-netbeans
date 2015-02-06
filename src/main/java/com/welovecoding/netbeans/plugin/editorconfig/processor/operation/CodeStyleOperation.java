@@ -45,6 +45,10 @@ public abstract class CodeStyleOperation {
   protected boolean operate(String simpleValueName, int value) {
     boolean codeStyleChangeNeeded = false;
 
+    if (value < 0) {
+      return false;
+    }
+
     Preferences codeStyle = CodeStylePreferences.get(file, file.getMIMEType()).getPreferences();
     int currentValue = codeStyle.getInt(simpleValueName, -1);
 

@@ -75,7 +75,13 @@ public class EditorConfigPropertyMapper {
           mappedConfig.setEndOfLine(lineEnding);
           break;
         case "indent_size":
-          Integer indentSize = Integer.valueOf(value);
+          Integer indentSize;
+          try {
+            indentSize = Integer.valueOf(value);
+          } catch (NumberFormatException ex) {
+            // "indent_size" is "tab"
+            indentSize = -2;
+          }
           mappedConfig.setIndentSize(indentSize);
           break;
         case "indent_style":

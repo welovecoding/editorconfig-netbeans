@@ -15,6 +15,7 @@ import org.junit.After;
 import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
+import org.omg.PortableServer.LifespanPolicyValue;
 import org.openide.util.Exceptions;
 import org.openide.util.Utilities;
 
@@ -71,8 +72,61 @@ public class EditorConfigPropertyMapperTest {
     assertEquals(2, mappedConfig.getIndentSize());
     assertEquals(null, mappedConfig.getIndentStyle());
     assertEquals(false, mappedConfig.isInsertFinalNewLine());
-    assertEquals(true, mappedConfig.isTrimTrailingWhiteSpace());
     assertEquals(2, mappedConfig.getTabWidth());
+    assertEquals(true, mappedConfig.isTrimTrailingWhiteSpace());
+  }
+
+  @Test
+  public void itMapsIndentSizeTabToMinusTwo() throws IOException {
+    StringBuilder config = new StringBuilder("root = true");
+    config.append(System.lineSeparator()).append(System.lineSeparator());
+    config.append("[*]").append(System.lineSeparator());
+    config.append("charset = utf-8").append(System.lineSeparator());
+    config.append("end_of_line = lf").append(System.lineSeparator());
+    config.append(System.lineSeparator());
+    config.append("[*.js]").append(System.lineSeparator());
+    config.append("indent_style = tab").append(System.lineSeparator());
+
+    File ecFile = File.createTempFile(this.getClass().getSimpleName(), ".editorconfig");
+    Path path = Paths.get(Utilities.toURI(ecFile));
+    Files.write(path, config.toString().getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE);
+
+    MappedEditorConfig mappedConfig = EditorConfigPropertyMapper.createEditorConfig(jsFile, ecFile.getName());
+    LOG.log(Level.INFO, mappedConfig.toString());
+
+    assertEquals(true, ecFile.delete());
+    assertEquals(StandardCharsets.UTF_8.name(), mappedConfig.getCharset().getName());
+    assertEquals("\n", mappedConfig.getEndOfLine());
+    assertEquals(-2, mappedConfig.getIndentSize());
+    assertEquals("tab", mappedConfig.getIndentStyle());
+    assertEquals(false, mappedConfig.isInsertFinalNewLine());
+    assertEquals(-1, mappedConfig.getTabWidth());
+    assertEquals(false, mappedConfig.isTrimTrailingWhiteSpace());
+  }
+
+  @Test
+  public void itMapsNullIfFileDoesNotMatch() throws IOException {
+    StringBuilder config = new StringBuilder("root = true");
+    config.append(System.lineSeparator()).append(System.lineSeparator());
+    config.append("[*.html]").append(System.lineSeparator());
+    config.append("indent_size = 2").append(System.lineSeparator());
+    config.append("insert_final_newline = false").append(System.lineSeparator());
+    config.append("trim_trailing_whitespace = true").append(System.lineSeparator());
+
+    File ecFile = File.createTempFile(this.getClass().getSimpleName(), ".editorconfig");
+    Path path = Paths.get(Utilities.toURI(ecFile));
+    Files.write(path, config.toString().getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE);
+
+    MappedEditorConfig mappedConfig = EditorConfigPropertyMapper.createEditorConfig(jsFile, ecFile.getName());
+
+    assertEquals(true, ecFile.delete());
+    assertEquals(null, mappedConfig.getCharset());
+    assertEquals(null, mappedConfig.getEndOfLine());
+    assertEquals(-1, mappedConfig.getIndentSize());
+    assertEquals(null, mappedConfig.getIndentStyle());
+    assertEquals(false, mappedConfig.isInsertFinalNewLine());
+    assertEquals(-1, mappedConfig.getTabWidth());
+    assertEquals(false, mappedConfig.isTrimTrailingWhiteSpace());
   }
 
   @Test

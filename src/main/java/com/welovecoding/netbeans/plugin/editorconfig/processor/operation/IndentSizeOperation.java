@@ -24,8 +24,12 @@ public class IndentSizeOperation extends CodeStyleOperation {
    * @return whether the operation has been performed
    */
   public boolean changeIndentSize(int value) {
-    String simpleValueName = SimpleValueNames.INDENT_SHIFT_WIDTH;
-    return operate(simpleValueName, value);
+    if (value == -2) {
+      return operate(SimpleValueNames.EXPAND_TABS, false);
+    } else {
+      return operate(SimpleValueNames.EXPAND_TABS, true)
+              && operate(SimpleValueNames.INDENT_SHIFT_WIDTH, value);
+    }
   }
 
 }
