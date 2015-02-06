@@ -1,42 +1,37 @@
-package com.welovecoding.netbeans.plugin.editorconfig.processor.operation.tobedone;
+package com.welovecoding.netbeans.plugin.editorconfig.processor.operation;
 
 import static com.welovecoding.netbeans.plugin.editorconfig.processor.EditorConfigProcessor.OPERATION_LOG_LEVEL;
+import com.welovecoding.netbeans.plugin.editorconfig.processor.FileInfo;
 import java.io.BufferedReader;
 import java.io.StringReader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-public class XLineEndingOperation {
+public class LineEndingOperation {
 
-  private static final Logger LOG = Logger.getLogger(XLineEndingOperation.class.getSimpleName());
+  private static final Logger LOG = Logger.getLogger(LineEndingOperation.class.getSimpleName());
 
   static {
     LOG.setLevel(OPERATION_LOG_LEVEL);
   }
 
-  public static boolean doLineEndings(StringBuilder content, final String lineEnding) {
-
-    return new XLineEndingOperation().apply(content, lineEnding);
-  }
-
-  public boolean apply(StringBuilder content, final String lineEnding) {
+  public boolean operate(FileInfo info) {
     boolean changed;
-    LOG.log(Level.INFO, "Executing ApplyTestTask");
 
     LOG.log(Level.INFO, "LINE_ENDING = true");
-    String tempContent = content.toString();
+    String tempContent = info.getContentAsString();
     LOG.log(Level.FINEST, "OLDCONTENT: {0}.", tempContent);
-    content = replaceLineEndings(content, lineEnding);
+    StringBuilder newContent = replaceLineEndings(info.getContent(), info.getEndOfLine());
 
-    if (tempContent.equals(content.toString())) {
+    if (tempContent.equals(newContent.toString())) {
       LOG.log(Level.INFO, "LINE_ENDING : No changes");
       changed = false;
     } else {
       LOG.log(Level.INFO, "LINE_ENDING : changed line endings");
       changed = true;
     }
-    LOG.log(Level.FINEST, "NEWCONTENT: {0}.", content);
+    LOG.log(Level.FINEST, "NEWCONTENT: {0}.", newContent);
 
     return changed;
   }

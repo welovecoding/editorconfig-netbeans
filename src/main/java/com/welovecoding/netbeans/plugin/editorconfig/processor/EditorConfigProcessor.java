@@ -1,17 +1,18 @@
 package com.welovecoding.netbeans.plugin.editorconfig.processor;
 
-import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.IndentSizeOperation;
-import com.welovecoding.netbeans.plugin.editorconfig.mapper.EditorConfigPropertyMapper;
-import com.welovecoding.netbeans.plugin.editorconfig.io.writer.StyledDocumentWriter;
 import com.welovecoding.netbeans.plugin.editorconfig.io.exception.FileAccessException;
 import com.welovecoding.netbeans.plugin.editorconfig.io.model.MappedCharset;
+import com.welovecoding.netbeans.plugin.editorconfig.io.writer.StyledDocumentWriter;
+import com.welovecoding.netbeans.plugin.editorconfig.mapper.EditorConfigPropertyMapper;
 import com.welovecoding.netbeans.plugin.editorconfig.model.EditorConfigConstant;
 import com.welovecoding.netbeans.plugin.editorconfig.model.MappedEditorConfig;
 import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.FinalNewLineOperation;
+import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.IndentSizeOperation;
 import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.IndentStyleOperation;
 import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.TabWidthOperation;
 import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.TrimTrailingWhiteSpaceOperation;
 import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.tobedone.CharsetOperation;
+import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.LineEndingOperation;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
@@ -125,6 +126,13 @@ public class EditorConfigProcessor {
       info.setCharset(mappedCharset.getCharset());
     } else {
       info.setCharset(StandardCharsets.UTF_8);
+    }
+
+    // 2. "end_of_line"
+    if (config.getEndOfLine() != null) {
+      logOperation(EditorConfigConstant.END_OF_LINE, config.getEndOfLine());
+      boolean endOfLine = new LineEndingOperation().operate(info);
+      fileChangeNeeded = fileChangeNeeded || endOfLine;
     }
 
     // 3. "indent_size"
