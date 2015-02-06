@@ -9,6 +9,7 @@ import com.welovecoding.netbeans.plugin.editorconfig.model.EditorConfigConstant;
 import com.welovecoding.netbeans.plugin.editorconfig.model.MappedEditorConfig;
 import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.FinalNewLineOperation;
 import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.IndentStyleOperation;
+import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.TabWidthOperation;
 import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.TrimTrailingWhiteSpaceOperation;
 import com.welovecoding.netbeans.plugin.editorconfig.processor.operation.tobedone.CharsetOperation;
 import java.io.IOException;
@@ -145,6 +146,15 @@ public class EditorConfigProcessor {
       logOperation(EditorConfigConstant.INSERT_FINAL_NEWLINE, config.isInsertFinalNewLine());
       boolean changedLineEndings = new FinalNewLineOperation().operate(info);
       fileChangeNeeded = fileChangeNeeded || changedLineEndings;
+    }
+
+    // 6. "tab_width"
+    if ((config.getTabWidth() > -1)
+            && (config.getIndentStyle() != null)
+            && (config.getIndentStyle().equals(EditorConfigConstant.INDENT_STYLE_TAB))) {
+      logOperation(EditorConfigConstant.TAB_WIDTH, config.getIndentStyle());
+      boolean changedTabWidth = new TabWidthOperation(primaryFile).changeTabWidth(config.getTabWidth());
+      fileChangeNeeded = fileChangeNeeded || changedTabWidth;
     }
 
     // 7. "trim_trailing_whitespace"

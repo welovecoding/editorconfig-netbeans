@@ -99,7 +99,7 @@ public class EditorConfigPropertyMapperTest {
     assertEquals(StandardCharsets.UTF_8.name(), mappedConfig.getCharset().getName());
     assertEquals("\n", mappedConfig.getEndOfLine());
     assertEquals(-2, mappedConfig.getIndentSize());
-    assertEquals("tab", mappedConfig.getIndentStyle());
+    assertEquals(EditorConfigConstant.INDENT_STYLE_TAB, mappedConfig.getIndentStyle());
     assertEquals(false, mappedConfig.isInsertFinalNewLine());
     assertEquals(-1, mappedConfig.getTabWidth());
     assertEquals(false, mappedConfig.isTrimTrailingWhiteSpace());
