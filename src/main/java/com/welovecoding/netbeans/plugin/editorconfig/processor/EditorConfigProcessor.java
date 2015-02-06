@@ -186,6 +186,13 @@ public class EditorConfigProcessor {
     });
   }
 
+  /**
+   * Takes the absolute path to a file which should be validated using the
+   * EditorConfig file.
+   *
+   * @param filePath Example: C:\project\awesome\index.html
+   * @return
+   */
   private MappedEditorConfig readRulesForFile(String filePath) {
     return EditorConfigPropertyMapper.createEditorConfig(filePath);
   }

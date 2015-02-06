@@ -4,6 +4,7 @@ import com.welovecoding.netbeans.plugin.editorconfig.io.model.MappedCharset;
 import com.welovecoding.netbeans.plugin.editorconfig.io.model.SupportedCharsets;
 import com.welovecoding.netbeans.plugin.editorconfig.model.MappedEditorConfig;
 import com.welovecoding.netbeans.plugin.editorconfig.model.EditorConfigConstant;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,6 +18,14 @@ public class EditorConfigPropertyMapper {
 
   private static final Logger LOG = Logger.getLogger(EditorConfigPropertyMapper.class.getSimpleName());
 
+  public static synchronized MappedEditorConfig createEditorConfig(String filePath) {
+    return createEditorConfig(filePath, null);
+  }
+
+  public static synchronized MappedEditorConfig createEditorConfig(File file, String configName) {
+    return createEditorConfig(file.getAbsolutePath(), configName);
+  }
+
   /**
    * <b>Keyed Rules</b> <br/>
    * "charset": "utf-8"<br/>
@@ -27,20 +36,29 @@ public class EditorConfigPropertyMapper {
    * "tab_width": "2"<br/>
    * "trim_trailing_whitespace": "true"<br/>
    */
-  public static synchronized MappedEditorConfig createEditorConfig(String filePath) {
-    EditorConfig ec = new EditorConfig();
+  private static synchronized MappedEditorConfig createEditorConfig(String filePath, String configName) {
+    EditorConfig ec;
+
+    if (configName == null) {
+      ec = new EditorConfig();
+    } else {
+      ec = new EditorConfig(configName, EditorConfig.VERSION);
+    }
+
     MappedEditorConfig mappedConfig = new MappedEditorConfig();
 
     List<EditorConfig.OutPair> rules = new ArrayList<>();
     HashMap<String, String> keyedRules = new HashMap<>();
 
     try {
-      rules = ec.getProperties(filePath);
+      // The "EditorConfig.java" method "filenameMatches" needs forward slashes
+      rules = ec.getProperties(filePath.replace("\\", "/"));
     } catch (EditorConfigException ex) {
       LOG.log(Level.SEVERE, ex.getMessage());
     }
 
     for (EditorConfig.OutPair rule : rules) {
+      LOG.log(Level.INFO, rule.getKey().toLowerCase());
       keyedRules.put(rule.getKey().toLowerCase(), rule.getVal().toLowerCase());
     }
 

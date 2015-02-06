@@ -23,7 +23,7 @@ public class MappedEditorConfig {
   public MappedEditorConfig() {
   }
 
-  public String readableString() {
+  private String readableString() {
     String lineEnding = "CRLF";
 
     if (endOfLine != null) {
