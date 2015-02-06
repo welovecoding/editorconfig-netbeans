@@ -1,6 +1,7 @@
 package com.welovecoding.netbeans.plugin.editorconfig.mapper;
 
 import com.welovecoding.netbeans.plugin.editorconfig.io.model.MappedCharset;
+import com.welovecoding.netbeans.plugin.editorconfig.model.EditorConfigConstant;
 import com.welovecoding.netbeans.plugin.editorconfig.model.MappedEditorConfig;
 import java.io.File;
 import java.io.IOException;
@@ -47,7 +48,7 @@ public class EditorConfigPropertyMapperTest {
   }
 
   @Test
-  public void itMapsTabWidthFromIndentSize() throws IOException {
+  public void itCanMatchJavaScriptFiles() throws IOException {
     StringBuilder config = new StringBuilder("root = true");
     config.append(System.lineSeparator()).append(System.lineSeparator());
     config.append("[*]").append(System.lineSeparator());
@@ -64,7 +65,7 @@ public class EditorConfigPropertyMapperTest {
     Files.write(path, config.toString().getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE);
 
     MappedEditorConfig mappedConfig = EditorConfigPropertyMapper.createEditorConfig(jsFile, ecFile.getName());
-    LOG.log(Level.INFO, "Config:\r\n{0}", mappedConfig.toString());
+    // LOG.log(Level.INFO, "Config:\r\n{0}", mappedConfig.toString());
 
     assertEquals(true, ecFile.delete());
     assertEquals(StandardCharsets.UTF_8.name(), mappedConfig.getCharset().getName());
@@ -92,7 +93,7 @@ public class EditorConfigPropertyMapperTest {
     Files.write(path, config.toString().getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE);
 
     MappedEditorConfig mappedConfig = EditorConfigPropertyMapper.createEditorConfig(jsFile, ecFile.getName());
-    LOG.log(Level.INFO, "Config:\r\n{0}", mappedConfig.toString());
+    // LOG.log(Level.INFO, "Config:\r\n{0}", mappedConfig.toString());
 
     assertEquals(true, ecFile.delete());
     assertEquals(StandardCharsets.UTF_8.name(), mappedConfig.getCharset().getName());
@@ -118,7 +119,7 @@ public class EditorConfigPropertyMapperTest {
     Files.write(path, config.toString().getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE);
 
     MappedEditorConfig mappedConfig = EditorConfigPropertyMapper.createEditorConfig(jsFile, ecFile.getName());
-    LOG.log(Level.INFO, "Config:\r\n{0}", mappedConfig.toString());
+    // LOG.log(Level.INFO, "Config:\r\n{0}", mappedConfig.toString());
 
     assertEquals(true, ecFile.delete());
     assertEquals(null, mappedConfig.getCharset());
@@ -128,6 +129,94 @@ public class EditorConfigPropertyMapperTest {
     assertEquals(false, mappedConfig.isInsertFinalNewLine());
     assertEquals(-1, mappedConfig.getTabWidth());
     assertEquals(false, mappedConfig.isTrimTrailingWhiteSpace());
+  }
+
+  @Test
+  public void itMapsTabWidthFromIndentSize() throws IOException {
+    StringBuilder config = new StringBuilder("root = true");
+    config.append(System.lineSeparator()).append(System.lineSeparator());
+    config.append("[*.js]").append(System.lineSeparator());
+    config.append("indent_size = 4").append(System.lineSeparator());
+    config.append("indent_style = space").append(System.lineSeparator());
+
+    File ecFile = File.createTempFile(this.getClass().getSimpleName(), ".editorconfig");
+    Path path = Paths.get(Utilities.toURI(ecFile));
+    Files.write(path, config.toString().getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE);
+
+    MappedEditorConfig mappedConfig = EditorConfigPropertyMapper.createEditorConfig(jsFile, ecFile.getName());
+    // LOG.log(Level.INFO, "Config:\r\n{0}", mappedConfig.toString());
+
+    assertEquals(true, ecFile.delete());
+    assertEquals(EditorConfigConstant.INDENT_STYLE_SPACE, mappedConfig.getIndentStyle());
+    // Note: "tab_width" is "4" because "indent_size" is "4" and "tab_width" is "space"
+    assertEquals(4, mappedConfig.getIndentSize());
+    assertEquals(4, mappedConfig.getTabWidth());
+  }
+
+  @Test
+  public void itMapsIndentSizeFromTabWidth() throws IOException {
+    StringBuilder config = new StringBuilder("root = true");
+    config.append(System.lineSeparator()).append(System.lineSeparator());
+    config.append("[*.js]").append(System.lineSeparator());
+    config.append("indent_style = tab").append(System.lineSeparator());
+    config.append("tab_width = 5").append(System.lineSeparator());
+
+    File ecFile = File.createTempFile(this.getClass().getSimpleName(), ".editorconfig");
+    Path path = Paths.get(Utilities.toURI(ecFile));
+    Files.write(path, config.toString().getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE);
+
+    MappedEditorConfig mappedConfig = EditorConfigPropertyMapper.createEditorConfig(jsFile, ecFile.getName());
+    // LOG.log(Level.INFO, "Config:\r\n{0}", mappedConfig.toString());
+
+    assertEquals(true, ecFile.delete());
+    assertEquals(EditorConfigConstant.INDENT_STYLE_TAB, mappedConfig.getIndentStyle());
+    // Note: "indent_size" is "5" because "indent_style" is "tab" and "tab_width" is "5"
+    assertEquals(5, mappedConfig.getIndentSize());
+    assertEquals(5, mappedConfig.getTabWidth());
+  }
+
+  @Test
+  public void itCannotGuessInfosFromTabWidth() throws IOException {
+    StringBuilder config = new StringBuilder("root = true");
+    config.append(System.lineSeparator()).append(System.lineSeparator());
+    config.append("[*.js]").append(System.lineSeparator());
+    config.append("tab_width = 5").append(System.lineSeparator());
+
+    File ecFile = File.createTempFile(this.getClass().getSimpleName(), ".editorconfig");
+    Path path = Paths.get(Utilities.toURI(ecFile));
+    Files.write(path, config.toString().getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE);
+
+    MappedEditorConfig mappedConfig = EditorConfigPropertyMapper.createEditorConfig(jsFile, ecFile.getName());
+    // LOG.log(Level.INFO, "Config:\r\n{0}", mappedConfig.toString());
+
+    assertEquals(true, ecFile.delete());
+    // Note: "indent_style" is "null"
+    assertEquals(null, mappedConfig.getIndentStyle());
+    // Note: "indent_size" is "-1" and not mapped to "5"
+    assertEquals(-1, mappedConfig.getIndentSize());
+    assertEquals(5, mappedConfig.getTabWidth());
+  }
+  
+  @Test
+  public void itCannotGuessIndentStyleFromIndentSize() throws IOException {
+    StringBuilder config = new StringBuilder("root = true");
+    config.append(System.lineSeparator()).append(System.lineSeparator());
+    config.append("[*.js]").append(System.lineSeparator());
+    config.append("indent_size = 6").append(System.lineSeparator());
+
+    File ecFile = File.createTempFile(this.getClass().getSimpleName(), ".editorconfig");
+    Path path = Paths.get(Utilities.toURI(ecFile));
+    Files.write(path, config.toString().getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE);
+
+    MappedEditorConfig mappedConfig = EditorConfigPropertyMapper.createEditorConfig(jsFile, ecFile.getName());
+    // LOG.log(Level.INFO, "Config:\r\n{0}", mappedConfig.toString());
+
+    assertEquals(true, ecFile.delete());
+    // Note: "indent_style" is "null"
+    assertEquals(null, mappedConfig.getIndentStyle());
+    assertEquals(6, mappedConfig.getIndentSize());
+    // Note: "tab_width" is still mapped from "indent_size"
+    assertEquals(6, mappedConfig.getTabWidth());
   }
 
   @Test
