@@ -12,15 +12,17 @@ import org.openide.util.lookup.Lookups;
  * https://platform.netbeans.org/tutorials/nbm-projectextension.html
  */
 @LookupProvider.Registration(projectType = {
-  //  "org-netbeans-modules-ant-freeform",
-  //  "org-netbeans-modules-j2ee-archiveproject",
-  //  "org-netbeans-modules-j2ee-clientproject",
-  //  "org-netbeans-modules-j2ee-earproject",
-  //  "org-netbeans-modules-j2ee-ejbjarproject",
-  //  "org-netbeans-modules-java-j2seproject",
-  //  "org-netbeans-modules-maven",
+  "org-netbeans-modules-ant-freeform",
+  "org-netbeans-modules-apisupport-project",
+  "org-netbeans-modules-apisupport-project-suite",
+  "org-netbeans-modules-j2ee-archiveproject",
+  "org-netbeans-modules-j2ee-clientproject",
+  "org-netbeans-modules-j2ee-earproject",
+  "org-netbeans-modules-j2ee-ejbjarproject",
+  "org-netbeans-modules-java-j2seproject",
+  "org-netbeans-modules-maven",
   "org-netbeans-modules-web-clientproject", // HTML5 project
-//  "org-netbeans-modules-web-project"
+  "org-netbeans-modules-web-project"
 })
 /**
  * Listener for newly opened Projects.

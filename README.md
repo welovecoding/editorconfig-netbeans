@@ -49,7 +49,7 @@ indent_size = 2
 
 *Values:* `latin1`, `utf-8`, `utf-8-bom`, `utf-16be`, `utf-16le`, `utf-8-bom`
 
-### 2. end_of_line :construction:
+### 2. end_of_line :white_check_mark:
 
 *Values:* `lf`, `cr`, `crlf`
 
