@@ -230,16 +230,14 @@ public class EditorConfigProcessor {
     LOG.log(Level.INFO, "Update changes in Editor window for: {0}", info.getPath());
 
     final EditorCookie cookie = info.getCookie();
-    Runnable runner = new Runnable() {
-      public void run() {
-        NbDocument.runAtomic(cookie.getDocument(), () -> {
-          try {
-            StyledDocumentWriter.writeWithEditorKit(info);
-          } catch (FileAccessException ex) {
-            LOG.log(Level.SEVERE, ex.getMessage());
-          }
-        });
-      }
+    Runnable runner = () -> {
+      NbDocument.runAtomic(cookie.getDocument(), () -> {
+        try {
+          StyledDocumentWriter.writeWithEditorKit(info);
+        } catch (FileAccessException ex) {
+          LOG.log(Level.SEVERE, ex.getMessage());
+        }
+      });
     };
     if (SwingUtilities.isEventDispatchThread()) {
       runner.run();
