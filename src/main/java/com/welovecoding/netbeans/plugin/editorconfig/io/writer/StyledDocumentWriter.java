@@ -136,6 +136,10 @@ public class StyledDocumentWriter {
 
       // Write file
       document.remove(0, document.getLength());
+
+      LOG.log(Level.INFO, "Write to \"is\": {0}", is);
+      LOG.log(Level.INFO, "Write to \"document\": {0}", is);
+
       kit.read(is, document, document.getLength());
       cookie.saveDocument();
       info.getFileObject().setAttribute(ENCODING_SETTING, info.getCharset().name());

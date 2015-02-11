@@ -66,7 +66,17 @@ public class EditorConfigProcessor {
     FileObject primaryFile = dataObject.getPrimaryFile();
     filePath = primaryFile.getPath();
 
-    // Check if file is in unallowed path
+    LOG.log(Level.INFO, "Apply rules to file: {0} (MIME type: {1})",
+            new Object[]{filePath, primaryFile.getMIMEType()});
+
+    // Check if the file's MIME type can be edited
+    // Allowed MIME types are: text/html, text/javascript, text/x-java, text/xml, ...
+    if (!primaryFile.getMIMEType().startsWith("text/")) {
+      LOG.log(Level.INFO, "Skipping file because it has an unsupported MIME type.");
+      return;
+    }
+
+    // Check if file is stored in a critical path
     for (String directoryName : SmartSkip.IGNORED_FILES) {
       // Note: Always use forward slashes here
       String path = projectPath + "/" + directoryName;

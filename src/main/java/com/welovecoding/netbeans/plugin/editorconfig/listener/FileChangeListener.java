@@ -98,7 +98,9 @@ public class FileChangeListener extends FileChangeAdapter {
   @Override
   public void fileDataCreated(FileEvent event) {
     super.fileDataCreated(event);
-    LOG.log(Level.INFO, "fileDataCreated: {0}", event.getFile().getPath());
+    FileObject primaryFile = event.getFile();
+    LOG.log(Level.INFO, "Added new file to project: {0} (MIME type: {1})",
+            new Object[]{primaryFile.getPath(), primaryFile.getMIMEType()});
   }
 
 }
