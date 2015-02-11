@@ -23,7 +23,7 @@ public class MappedEditorConfig {
   public MappedEditorConfig() {
   }
 
-  private String readableString() {
+  public String getReadableEndOfLine() {
     String lineEnding = "CRLF";
 
     if (endOfLine != null) {
@@ -67,7 +67,7 @@ public class MappedEditorConfig {
 
     Object[] values = new Object[]{
       charsetName,
-      readableString(),
+      getReadableEndOfLine(),
       indentSize,
       indentStyle,
       insertFinalNewLine,

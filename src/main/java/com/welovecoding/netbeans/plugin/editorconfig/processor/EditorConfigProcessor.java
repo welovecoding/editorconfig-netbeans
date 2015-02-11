@@ -143,9 +143,9 @@ public class EditorConfigProcessor {
 
     // 2. "end_of_line"
     if (config.getEndOfLine() != null) {
-      logOperation(EditorConfigConstant.END_OF_LINE, config.getEndOfLine());
-      boolean endOfLine = new LineEndingOperation().operate(info);
-      fileChangeNeeded = fileChangeNeeded || endOfLine;
+      logOperation(EditorConfigConstant.END_OF_LINE, config.getReadableEndOfLine());
+      boolean changedLineEndings = new LineEndingOperation().operate(info);
+      fileChangeNeeded = fileChangeNeeded || changedLineEndings;
     }
 
     // 3. "indent_size"
