@@ -92,7 +92,7 @@ public class EditorConfigProcessor {
     // Apply EditorConfig operations
     if (info.isStyleFlushNeeded()) {
       LOG.log(Level.INFO, "Flush style changes for: {0}", filePath);
-      flushStyles(info.getFileObject());
+      flushStyles(info);
     }
 
     if (info.isFileChangeNeeded()) {
@@ -204,10 +204,13 @@ public class EditorConfigProcessor {
     }
   }
 
-  private void flushStyles(FileObject fileObject) {
+  private void flushStyles(FileInfo info) {
     try {
-      Preferences codeStyle = CodeStylePreferences.get(fileObject, fileObject.getMIMEType()).getPreferences();
+      Preferences codeStyle = CodeStylePreferences.get(info.getFileObject(), info.getFileObject().getMIMEType()).getPreferences();
       codeStyle.flush();
+      if (info.isOpenedInEditor()) {
+        updateChangesInEditorWindow(info);
+      }
     } catch (BackingStoreException ex) {
       LOG.log(Level.SEVERE, "Error flushing code styles: {0}", ex.getMessage());
     }
