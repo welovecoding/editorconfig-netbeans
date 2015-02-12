@@ -194,8 +194,8 @@
           <keystore>../certificate/keystore.jks</keystore>
           <keystorealias>yser</keystorealias>
           <keystorepassword>${nbm.signing.keystorepassword}</keystorepassword>
-          <!--          <licenseName>Apache License 2.0</licenseName>
-          <licenseFile>LICENSE.txt</licenseFile>-->
+          <licenseName>BETA DISCLAIMER</licenseName>
+          <licenseFile>LICENSE.txt</licenseFile>
           <publicPackages>
             <publicPackage>com.welovecoding.netbeans.plugin.editorconfig</publicPackage>
           </publicPackages>
