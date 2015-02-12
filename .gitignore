@@ -1,3 +1,5 @@
 /src/main/java/com/welovecoding/test
 /target/
 .DS_Store
+nb-configuration.xml
+release.properties
