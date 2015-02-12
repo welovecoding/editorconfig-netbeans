@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.welovecoding.netbeans.plugin</groupId>
   <artifactId>editorconfig</artifactId>
-  <version>0.0.1</version>
+  <version>0.0.2-SNAPSHOT</version>
   <packaging>nbm</packaging>
   
   <name>welovecoding | EditorConfig Plugin</name>
@@ -32,7 +32,7 @@
     <connection>scm:git:git@github.com:welovecoding/editorconfig-netbeans.git</connection>
     <developerConnection>scm:git:git@github.com:welovecoding/editorconfig-netbeans.git</developerConnection>
     <url>https://github.com/welovecoding/editorconfig-netbeans</url>
-    <tag>editorconfig-0.0.1</tag>
+    <tag>HEAD</tag>
   </scm>
   <issueManagement>
     <system>GitHub Issue Management</system>
