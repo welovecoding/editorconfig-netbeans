@@ -38,6 +38,14 @@
     <system>GitHub Issue Management</system>
     <url>https://github.com/welovecoding/editorconfig-netbeans/issues</url>
   </issueManagement>
+  <distributionManagement>
+    <repository>
+      <id>maven-own-repo</id>
+      <name>Own Repository</name>
+      <layout>default</layout>
+      <url>file://${project.basedir}/maven-repo/</url>
+    </repository>
+  </distributionManagement>
     
   <dependencies>
     <dependency>
