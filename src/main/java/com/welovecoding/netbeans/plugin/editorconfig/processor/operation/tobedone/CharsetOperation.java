@@ -18,19 +18,19 @@ public class CharsetOperation {
   }
 
   /**
-   * TODO:<br/>
-   * 1. Check charset attribute<br/>
+   * TODO:<br>
+   * 1. Check charset attribute<br>
    * 2. If no attribute exists, then take the default encoding from project
-   * settings<br/>
-   * 3. Change charset (if needed) and save file & charset attribute
+   * settings<br>
+   * 3. Change charset (if needed) and save file &amp; charset attribute
    *
-   * @param dataObject
-   * @param requestedCharset
-   * @return
+   * @param dataObject Object that represents the file
+   * @param requestedCharset Charset which should be used to save the file
+   *
+   * @return true if the operation was successful
    */
   public boolean run(DataObject dataObject, MappedCharset requestedCharset) {
     boolean changedCharset = false;
-
     FileObject fo = dataObject.getPrimaryFile();
     MappedCharset currentCharset = FileInfoReader.readCharset(fo);
 

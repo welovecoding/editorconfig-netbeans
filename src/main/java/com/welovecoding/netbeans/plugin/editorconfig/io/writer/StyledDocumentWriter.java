@@ -99,14 +99,6 @@ public class StyledDocumentWriter {
     writeOnFileWithLines(file, charset, lines);
   }
 
-  /**
-   * Writes a file with a proper (and detectable) character set.
-   *
-   * @param file
-   * @param charset
-   * @param lines
-   * @throws FileAccessException
-   */
   public static void writeOnFileWithLines(File file, Charset charset, List<String> lines)
           throws FileAccessException {
     try {

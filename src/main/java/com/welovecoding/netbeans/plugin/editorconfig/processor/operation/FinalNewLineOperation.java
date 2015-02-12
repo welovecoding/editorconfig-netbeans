@@ -17,10 +17,10 @@ public class FinalNewLineOperation {
    * Inserts the given content with a final new line. We have to work with a
    * StringBuilder to work with a reference of the content.
    *
-   * @param content Content of a file
-   * @param lineEnding the string representation of a new line ("\r", "\n" or
-   * "\r\n")
-   * @return whether the operation has been performed
+   * @param info Object that represents the configuration options (mapped by an
+   * EditorConfig rule) for a specific file
+   *
+   * @return true if the operation was performed
    */
   public boolean operate(FileInfo info) {
     return operate(info.getContent(), true, info.getEndOfLine());

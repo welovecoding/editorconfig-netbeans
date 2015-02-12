@@ -93,7 +93,7 @@ public class FileChangeListener extends FileChangeAdapter {
    * Method is triggered when content has changed and it's possible to display
    * content in NetBeans. Method is also triggered when project will be opened.
    *
-   * @param event
+   * @param event Event for listening on filesystem changes
    */
   @Override
   public void fileDataCreated(FileEvent event) {

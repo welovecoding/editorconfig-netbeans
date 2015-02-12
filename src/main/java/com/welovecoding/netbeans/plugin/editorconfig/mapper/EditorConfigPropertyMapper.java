@@ -129,13 +129,16 @@ public class EditorConfigPropertyMapper {
   }
 
   /**
+   * Maps a charset string into a charset object.
    *
-   * @param ecCharset latin1, utf-8, utf-8-bom, utf-16be or utf-16le
-   * @return
+   * @param ecCharset String value for these charsets: "latin1", "utf-8",
+   * "utf-8-bom", "utf-16be" or "utf-16le"
+   * 
+   * @return the mapped charset
    */
   protected static synchronized MappedCharset mapCharset(String ecCharset) {
     MappedCharset charset;
-
+    
     if (ecCharset == null) {
       return SupportedCharsets.UTF_8;
     }

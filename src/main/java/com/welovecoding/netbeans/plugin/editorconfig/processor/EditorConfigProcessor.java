@@ -60,7 +60,8 @@ public class EditorConfigProcessor {
    *
    * After all operations were performed, the changes will be flushed.
    *
-   * @param dataObject
+   * @param dataObject Object that represents the file which was recognized by
+   * an EditorConfig rule
    */
   public void applyRulesToFile(DataObject dataObject) {
     FileObject primaryFile = dataObject.getPrimaryFile();

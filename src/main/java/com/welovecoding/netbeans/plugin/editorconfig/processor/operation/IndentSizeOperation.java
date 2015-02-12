@@ -20,8 +20,9 @@ public class IndentSizeOperation extends CodeStyleOperation {
    * combined with saving the file. Reformatting and saving the file is part of
    * {@link com.welovecoding.netbeans.plugin.editorconfig.io.writer.StyledDocumentWriter#writeWithEditorKit}.
    *
-   * @param value
-   * @return whether the operation has been performed
+   * @param value Indent size which should be set
+   *
+   * @return true if the operation was performed
    */
   public boolean changeIndentSize(int value) {
     if (value == -2) {
