@@ -1,5 +1,6 @@
 package com.welovecoding.netbeans.plugin.editorconfig.filetype;
 
+import static com.welovecoding.netbeans.plugin.editorconfig.config.Settings.MIME_TYPE;
 import java.util.logging.Logger;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.MIMEResolver;
@@ -9,7 +10,6 @@ import org.openide.util.lookup.ServiceProvider;
 public class FilenameResolver extends MIMEResolver {
 
   private static final Logger LOG = Logger.getLogger(FilenameResolver.class.getSimpleName());
-  private static final String MIME_TYPE = "text/plain+ec";
 
   public FilenameResolver() {
     super(MIME_TYPE);
