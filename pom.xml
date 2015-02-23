@@ -13,7 +13,9 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <netbeans.api.version>RELEASE80</netbeans.api.version>
-    <nbm.signing.keystorepassword>password</nbm.signing.keystorepassword>
+    <nbm.signing.keystore></nbm.signing.keystore>
+    <nbm.signing.keystorealias></nbm.signing.keystorealias>
+    <nbm.signing.keystorepassword></nbm.signing.keystorepassword>
     <nbm.skip>false</nbm.skip>
   </properties>
     
@@ -191,8 +193,8 @@
         <configuration>
           <skipNbm>${nbm.skip}</skipNbm>
           <requiresRestart>true</requiresRestart>
-          <keystore>../certificate/keystore.jks</keystore>
-          <keystorealias>yser</keystorealias>
+          <keystore>${nbm.signing.keystore}</keystore>
+          <keystorealias>${nbm.signing.keystorealias}</keystorealias>
           <keystorepassword>${nbm.signing.keystorepassword}</keystorepassword>
           <licenseName>BETA DISCLAIMER</licenseName>
           <licenseFile>LICENSE.txt</licenseFile>
