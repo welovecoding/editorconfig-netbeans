@@ -117,7 +117,7 @@ public class EditorConfigProcessor {
       content = new StringBuilder(primaryFile.asText());
     } catch (IOException ex) {
       LOG.log(Level.WARNING, "Failed to get the text of the file");
-      content = new StringBuilder();
+      content = new StringBuilder("");
     }
 
     info.setContent(content);
