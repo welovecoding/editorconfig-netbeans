@@ -51,7 +51,7 @@ indent_size = 2
 
 ###  :construction:  1. charset
 
-*Values:* `latin1`, `utf-8`, `utf-8-bom`, `utf-16be`, `utf-16le`, `utf-8-bom`
+*Values:* `latin1`, `utf-8`, `utf-8-bom`, `utf-16be`, `utf-16le`
 
 ### :white_check_mark: 2. end_of_line
 
