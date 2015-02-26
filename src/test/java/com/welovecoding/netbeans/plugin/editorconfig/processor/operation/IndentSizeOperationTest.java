@@ -69,9 +69,9 @@ public class IndentSizeOperationTest {
     ).getPreferences();
 
     // Check indent size before change
-    int indentSizeBefore = codeStyle.getInt(SimpleValueNames.INDENT_SHIFT_WIDTH, -1);
-    // XXX 4 is returned if org-netbeans-modules-csl-api is added
-//    assertEquals(-1, indentSizeBefore);
+    // Note: "org-netbeans-modules-csl-api" sets default value to 4
+    int indentSizeBefore = codeStyle.getInt(SimpleValueNames.INDENT_SHIFT_WIDTH, 4);
+    assertEquals(4, indentSizeBefore);
 
     // Change indent size within an operation
     boolean changeNeeded = new IndentSizeOperation(dataObject.getPrimaryFile()).changeIndentSize(indentWidth);
