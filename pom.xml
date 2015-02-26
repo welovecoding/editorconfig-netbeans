@@ -12,7 +12,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <netbeans.api.version>RELEASE802</netbeans.api.version>
+    <netbeans.api.version>RELEASE80</netbeans.api.version>
     <nbm.signing.keystore></nbm.signing.keystore>
     <nbm.signing.keystorealias></nbm.signing.keystorealias>
     <nbm.signing.keystorepassword></nbm.signing.keystorepassword>
