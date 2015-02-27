@@ -5,11 +5,11 @@
   <artifactId>editorconfig</artifactId>
   <version>0.0.4-SNAPSHOT</version>
   <packaging>nbm</packaging>
-  
+
   <name>welovecoding | EditorConfig Plugin</name>
   <description>A NetBeans IDE plugin supporting the EditorConfig standard.</description>
   <url>https://github.com/welovecoding/editorconfig-netbeans</url>
-    
+
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <netbeans.api.version>RELEASE80</netbeans.api.version>
@@ -18,7 +18,7 @@
     <nbm.signing.keystorepassword></nbm.signing.keystorepassword>
     <nbm.skip>false</nbm.skip>
   </properties>
-    
+
   <repositories>
     <repository>
       <id>netbeans</id>
@@ -29,7 +29,7 @@
       </snapshots>
     </repository>
   </repositories>
-  
+
   <scm>
     <connection>scm:git:git@github.com:welovecoding/editorconfig-netbeans.git</connection>
     <developerConnection>scm:git:git@github.com:welovecoding/editorconfig-netbeans.git</developerConnection>
@@ -48,7 +48,7 @@
       <url>file://${project.basedir}/maven-repo/</url>
     </repository>
   </distributionManagement>
-    
+
   <dependencies>
     <dependency>
       <groupId>org.netbeans.api</groupId>
@@ -152,7 +152,7 @@
       <version>${netbeans.api.version}</version>
       <scope>test</scope>
       <type>jar</type>
-    </dependency>   
+    </dependency>
     <dependency>
       <groupId>org.netbeans.api</groupId>
       <artifactId>org-openide-nodes</artifactId>
@@ -173,6 +173,31 @@
       <artifactId>org-openide-dialogs</artifactId>
       <version>${netbeans.api.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.netbeans.api</groupId>
+      <artifactId>org-netbeans-modules-lexer</artifactId>
+      <version>${netbeans.api.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.netbeans.api</groupId>
+      <artifactId>org-netbeans-modules-csl-api</artifactId>
+      <version>${netbeans.api.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.netbeans.api</groupId>
+      <artifactId>org-netbeans-modules-options-api</artifactId>
+      <version>${netbeans.api.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.netbeans.api</groupId>
+      <artifactId>org-netbeans-spi-editor-hints</artifactId>
+      <version>${netbeans.api.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.netbeans.modules</groupId>
+      <artifactId>org-netbeans-modules-editor-errorstripe</artifactId>
+      <version>${netbeans.api.version}</version>
+    </dependency>
     <!-- Encoding Detection -->
     <!-- https://code.google.com/p/juniversalchardet/ -->
     <dependency>
@@ -181,8 +206,14 @@
       <version>1.0.3</version>
       <type>jar</type>
     </dependency>
+    <!-- ANTLR4 -->
+    <dependency>
+      <groupId>org.antlr</groupId>
+      <artifactId>antlr4-runtime</artifactId>
+      <version>4.5</version>
+    </dependency>
   </dependencies>
-    
+
   <build>
     <plugins>
       <plugin>
@@ -239,7 +270,7 @@
             <phase>deploy</phase>
             <goals>
               <goal>jar-no-fork</goal>
-            </goals> 
+            </goals>
           </execution>
         </executions>
       </plugin>
@@ -247,32 +278,32 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
         <version>2.9.1</version>
-        <executions> 
+        <executions>
           <!-- add javadoc.jar to (snapshot) release -->
-          <execution> 
+          <execution>
             <id>attach-javadocs</id>
             <phase>deploy</phase>
             <goals>
               <goal>jar</goal>
-            </goals> 
-          </execution> 
-        </executions> 
+            </goals>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-deploy-plugin</artifactId>
         <version>2.8.1</version>
-        <executions> 
+        <executions>
           <!-- http://stackoverflow.com/questions/4725668/how-to-deploy-snapshot-with-sources-and-javadoc -->
           <!-- explicitly define maven-deploy-plugin after others to force exec order -->
-          <execution> 
+          <execution>
             <id>deploy</id>
             <phase>deploy</phase>
             <goals>
               <goal>deploy</goal>
-            </goals> 
-          </execution> 
-        </executions> 
+            </goals>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
@@ -287,5 +318,5 @@
         </configuration>
       </plugin>
     </plugins>
-  </build>  
+  </build>
 </project>

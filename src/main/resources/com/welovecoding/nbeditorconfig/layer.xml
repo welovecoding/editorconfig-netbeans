@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE filesystem PUBLIC "-//NetBeans//DTD Filesystem 1.2//EN" "http://www.netbeans.org/dtds/filesystem-1_2.dtd">
+<filesystem>
+  <folder name="Editors">
+    <folder name="text">
+      <folder name="x-editorconfig">
+        <attr name="SystemFileSystem.localizingBundle" stringvalue="com.welovecoding.nbeditorconfig.Bundle"/>
+        <file name="language.instance">
+          <attr name="instanceCreate" methodvalue="com.welovecoding.netbeans.plugin.editorconfig.editor.api.lexer.ECTokenId.language"/>
+          <attr name="instanceOf" stringvalue="org.netbeans.api.lexer.Language"/>
+        </file>
+        <folder name="CodeTemplates">
+          <folder name="Defaults">
+            <file name="editorconfig-code-templates.xml" url="editorconfig-code-templates.xml">
+              <attr name="SystemFileSystem.localizingBundle" stringvalue="com.welovecoding.nbeditorconfig.Bundle"/>
+            </file>
+          </folder>
+        </folder>
+        <folder name="FontsColors">
+          <folder name="NetBeans">
+            <folder name="Defaults">
+              <file name="FontAndColors.xml" url="FontAndColors.xml">
+                <attr name="SystemFileSystem.localizingBundle" stringvalue="com.welovecoding.nbeditorconfig.Bundle"/>
+              </file>
+            </folder>
+          </folder>
+        </folder>
+      </folder>
+    </folder>
+  </folder>
+  <folder name="OptionsDialog">
+    <folder name="PreviewExamples">
+      <folder name="text">
+        <file name="x-editorconfig" url="EditorConfigExample.editorconfig"/>
+      </folder>
+    </folder>
+  </folder>
+</filesystem>
