@@ -105,7 +105,7 @@ public class EditorConfigDataObject extends MultiDataObject {
           description = "description.html",
           folder = "Other",
           targetName = "",
-          content = ".editorconfig",
+          content = "../../../../nbeditorconfig/EditorConfigExample.editorconfig",
           iconBase = LOGO_PATH)
   public static WizardDescriptor.InstantiatingIterator templateIterator() {
     return null;
