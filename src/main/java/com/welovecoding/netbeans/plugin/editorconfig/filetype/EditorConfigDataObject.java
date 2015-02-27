@@ -96,6 +96,10 @@ public class EditorConfigDataObject extends MultiDataObject {
     return 1;
   }
 
+  // TODO: We should only have one template
+  // At the moment we have:
+  // - src\main\resources\com\welovecoding\netbeans\plugin\editorconfig\filetype\.editorconfig
+  // - src\main\resources\com\welovecoding\nbeditorconfig\EditorConfigExample.editorconfig
   @TemplateRegistration(
           displayName = "#LBL_EditorConfig_template_displayName",
           description = "description.html",
