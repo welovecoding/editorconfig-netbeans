@@ -1,10 +1,10 @@
 package com.welovecoding.netbeans.plugin.editorconfig.editor.csl;
 
+import com.welovecoding.netbeans.plugin.editorconfig.config.Settings;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import javax.swing.ImageIcon;
-import org.netbeans.api.annotations.common.StaticResource;
 import org.netbeans.modules.csl.api.ElementHandle;
 import org.netbeans.modules.csl.api.ElementKind;
 import org.netbeans.modules.csl.api.HtmlFormatter;
@@ -22,9 +22,15 @@ public class EditorConfigSectionStructureItem implements StructureItem {
   private final int startPosition;
   private final int endPosition;
   private final List<StructureItem> properties;
-  @StaticResource
-  private static final String ICON_PATH = "com/welovecoding/nbeditorconfig/section16.png"; // NOI18N
 
+  /**
+   * StructureItem for a section. It can have properties as children.
+   *
+   * @param section section name
+   * @param startPosition start position of section
+   * @param endPosition end position of section
+   * @param properties properties (children) of section
+   */
   public EditorConfigSectionStructureItem(String section, int startPosition, int endPosition, List<StructureItem> properties) {
     this.section = section;
     this.startPosition = startPosition;
@@ -84,7 +90,7 @@ public class EditorConfigSectionStructureItem implements StructureItem {
 
   @Override
   public ImageIcon getCustomIcon() {
-    return ImageUtilities.loadImageIcon(ICON_PATH, true);
+    return ImageUtilities.loadImageIcon(Settings.SECTION_ICON_PATH, true);
   }
 
 }

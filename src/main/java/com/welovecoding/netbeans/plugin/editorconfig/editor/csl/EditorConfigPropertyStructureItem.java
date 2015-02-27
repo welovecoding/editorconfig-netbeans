@@ -21,6 +21,14 @@ public class EditorConfigPropertyStructureItem implements StructureItem {
   private final int startPosition;
   private final int endPosition;
 
+  /**
+   * StructureItem for a property.
+   *
+   * @param key property key
+   * @param value property value
+   * @param startPosition start position of a property
+   * @param endPosition end position of a property
+   */
   public EditorConfigPropertyStructureItem(String key, String value, int startPosition, int endPosition) {
     this.key = key;
     this.value = value;
