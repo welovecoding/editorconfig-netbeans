@@ -1,5 +1,6 @@
 package com.welovecoding.netbeans.plugin.editorconfig.editor.parser;
 
+import static com.welovecoding.netbeans.plugin.editorconfig.config.Settings.EDITORCONFIG;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.text.Document;
@@ -36,7 +37,7 @@ public class SyntaxErrorsTask extends ParserResultTask<ECParserResult> {
               line);
       errors.add(errorDescription);
     }
-    HintsController.setErrors(document, "editorconfig", errors); // NOI18N
+    HintsController.setErrors(document, EDITORCONFIG, errors); // NOI18N
   }
 
   @Override

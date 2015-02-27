@@ -1,5 +1,6 @@
 package com.welovecoding.netbeans.plugin.editorconfig.editor.api.lexer;
 
+import com.welovecoding.netbeans.plugin.editorconfig.config.Settings;
 import com.welovecoding.netbeans.plugin.editorconfig.editor.lexer.ECLexer;
 import java.util.Collection;
 import java.util.Collections;
@@ -78,7 +79,6 @@ public enum ECTokenId implements TokenId {
   public static final int TOKEN_PROPERTY_VALUE = 18;
   public static final int TOKEN_EOF = -1;
 
-  public static final String EDITORCONFIG_MIME_TYPE = "text/x-editorconfig"; // NOI18N
   private final String fixedText;
   private final Category primaryCategory;
   private final int id;
@@ -127,7 +127,7 @@ public enum ECTokenId implements TokenId {
 
     @Override
     protected String mimeType() {
-      return EDITORCONFIG_MIME_TYPE;
+      return Settings.MIME_TYPE;
     }
 
   }.language();

@@ -1,6 +1,6 @@
 package com.welovecoding.netbeans.plugin.editorconfig.editor.csl;
 
-import com.welovecoding.netbeans.plugin.editorconfig.editor.api.lexer.ECTokenId;
+import com.welovecoding.netbeans.plugin.editorconfig.config.Settings;
 import java.util.Collections;
 import java.util.Set;
 import org.netbeans.modules.csl.api.ElementHandle;
@@ -35,7 +35,7 @@ public class EditorConfigElementHandle implements ElementHandle {
 
   @Override
   public String getMimeType() {
-    return ECTokenId.EDITORCONFIG_MIME_TYPE;
+    return Settings.MIME_TYPE;
   }
 
   @Override

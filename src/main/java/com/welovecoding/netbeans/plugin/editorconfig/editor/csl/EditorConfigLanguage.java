@@ -1,5 +1,6 @@
 package com.welovecoding.netbeans.plugin.editorconfig.editor.csl;
 
+import com.welovecoding.netbeans.plugin.editorconfig.config.Settings;
 import com.welovecoding.netbeans.plugin.editorconfig.editor.api.lexer.ECTokenId;
 import com.welovecoding.netbeans.plugin.editorconfig.editor.parser.ECParser;
 import com.welovecoding.netbeans.plugin.editorconfig.options.EditorConfigOptions;
@@ -13,7 +14,7 @@ import org.netbeans.modules.parsing.spi.Parser;
  *
  * @author junichi11
  */
-@LanguageRegistration(mimeType = ECTokenId.EDITORCONFIG_MIME_TYPE, useMultiview = true)
+@LanguageRegistration(mimeType = Settings.MIME_TYPE, useMultiview = true)
 public class EditorConfigLanguage extends DefaultLanguageConfig {
 
   @Override
@@ -49,7 +50,7 @@ public class EditorConfigLanguage extends DefaultLanguageConfig {
 
   @Override
   public String getPreferredExtension() {
-    return "editorconfig"; // NOI18N
+    return Settings.EDITORCONFIG;
   }
 
 }

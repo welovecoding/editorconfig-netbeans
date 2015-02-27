@@ -1,5 +1,6 @@
 package com.welovecoding.netbeans.plugin.editorconfig.options;
 
+import com.welovecoding.netbeans.plugin.editorconfig.config.Settings;
 import java.util.prefs.Preferences;
 import org.openide.util.NbPreferences;
 
@@ -10,7 +11,6 @@ import org.openide.util.NbPreferences;
 public class EditorConfigOptions {
 
   private static final EditorConfigOptions INSTANCE = new EditorConfigOptions();
-  private static final String EDITOR_CONFIG = "editorconfig"; // NOI18N
   private static final String LINE_COMMENT_PREFIX = "comment.prefix"; // NOI18N
 
   private EditorConfigOptions() {
@@ -34,6 +34,6 @@ public class EditorConfigOptions {
   }
 
   private Preferences getPreferences() {
-    return NbPreferences.forModule(EditorConfigOptions.class).node(EDITOR_CONFIG);
+    return NbPreferences.forModule(EditorConfigOptions.class).node(Settings.EDITORCONFIG);
   }
 }
