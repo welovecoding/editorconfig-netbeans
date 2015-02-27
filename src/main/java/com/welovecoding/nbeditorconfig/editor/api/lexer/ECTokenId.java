@@ -41,13 +41,13 @@ public enum ECTokenId implements TokenId {
 
   private enum Category {
 
-    WHITESPACE("whitespace"), // NOI18N
-    KEYWORD("keyword"), // NOI18N
-    SECTION("section"), // NOI18N
-    SECTION_DELIMITER("section_delimiter"), // NOI18N
-    COMMENT("comment"), // NOI18N
-    STRING("string"), // NOI18N
-    EQUALS("equals"); // NOI18N
+    WHITESPACE("wlc-nbeditorconfig-whitespace"), // NOI18N
+    KEYWORD("wlc-nbeditorconfig-keyword"), // NOI18N
+    SECTION("wlc-nbeditorconfig-section"), // NOI18N
+    SECTION_DELIMITER("wlc-nbeditorconfig-section-delimiter"), // NOI18N
+    COMMENT("wlc-nbeditorconfig-comment"), // NOI18N
+    STRING("wlc-nbeditorconfig-string"), // NOI18N
+    EQUALS("wlc-nbeditorconfig-equals"); // NOI18N
     private final String name;
 
     Category(String name) {

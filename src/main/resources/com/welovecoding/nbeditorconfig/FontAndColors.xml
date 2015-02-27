@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE fontscolors PUBLIC "-//NetBeans//DTD Editor Fonts and Colors settings 1.1//EN" "http://www.netbeans.org/dtds/EditorFontsColors-1_1.dtd">
 <fontscolors>
-  <fontcolor name="comment" default="comment"/>
-  <fontcolor name="keyword" default="keyword"/>
-  <fontcolor name="whitespace" default="whitespace"/>
-  <fontcolor foreColor="ff509a05" name="section"/>
-  <fontcolor name="section_delimiter" default="section">
+  <fontcolor name="wlc-nbeditorconfig-comment" default="comment"/>
+  <fontcolor name="wlc-nbeditorconfig-keyword" default="keyword"/>
+  <fontcolor name="wlc-nbeditorconfig-whitespace" default="whitespace"/>
+  <fontcolor name="wlc-nbeditorconfig-section" foreColor="ff509a05"/>
+  <fontcolor name="wlc-nbeditorconfig-section-delimiter" default="section">
     <font style="bold"/>
   </fontcolor>
-  <fontcolor foreColor="ff000000" name="equals"/>
+  <fontcolor name="wlc-nbeditorconfig-equals" foreColor="ff000000"/>
 </fontscolors>
