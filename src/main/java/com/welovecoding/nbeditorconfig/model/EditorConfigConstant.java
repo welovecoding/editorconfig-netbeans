@@ -1,6 +1,9 @@
 package com.welovecoding.nbeditorconfig.model;
 
 public class EditorConfigConstant {
+  
+  public static final String ROOT = "root";
+  public static final String MAX_LINE_LENGTH = "max_line_length";
 
   /**
    * Set to latin1, utf-8, utf-8-bom, utf-16be or utf-16le to control the
