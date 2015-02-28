@@ -130,7 +130,7 @@ public class StyledDocumentWriter {
       document.remove(0, document.getLength());
 
       LOG.log(Level.INFO, "Write to \"is\": {0}", is);
-      LOG.log(Level.INFO, "Write to \"document\": {0}", is);
+      LOG.log(Level.INFO, "Write to \"document\": {0}", document);
 
       kit.read(is, document, document.getLength());
       cookie.saveDocument();
