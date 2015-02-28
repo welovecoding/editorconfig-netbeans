@@ -3,9 +3,10 @@
 <fontscolors>
   <fontcolor name="wlc-nbeditorconfig-comment" default="comment"/>
   <fontcolor name="wlc-nbeditorconfig-keyword" default="keyword"/>
+  <fontcolor name="wlc-nbeditorconfig-string" default="string"/>
   <fontcolor name="wlc-nbeditorconfig-whitespace" default="whitespace"/>
   <fontcolor name="wlc-nbeditorconfig-section" foreColor="ff509a05"/>
-  <fontcolor name="wlc-nbeditorconfig-section-delimiter" default="section">
+  <fontcolor name="wlc-nbeditorconfig-section-delimiter" default="wlc-nbeditorconfig-section">
     <font style="bold"/>
   </fontcolor>
   <fontcolor name="wlc-nbeditorconfig-equals" foreColor="ff000000"/>
