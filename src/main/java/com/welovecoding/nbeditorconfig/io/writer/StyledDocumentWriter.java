@@ -126,13 +126,14 @@ public class StyledDocumentWriter {
       Caret caret = info.getCaret();
       caretPosition = info.getCurrentCaretPosition();
 
-      // Write file
+      // Wipe document
       document.remove(0, document.getLength());
 
       LOG.log(Level.INFO, "Write to \"is\": {0}", is);
       LOG.log(Level.INFO, "Write to \"document\": {0}", document);
 
-      kit.read(is, document, document.getLength());
+      // Read input stream into the document (which is a "write" operation)
+      kit.read(is, document, 0);
       cookie.saveDocument();
       info.getFileObject().setAttribute(ENCODING_SETTING, info.getCharset().name());
 
