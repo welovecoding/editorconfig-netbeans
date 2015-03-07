@@ -1,14 +1,19 @@
-[![](https://travis-ci.org/welovecoding/editorconfig-netbeans.svg?branch=master)](https://travis-ci.org/welovecoding/editorconfig-netbeans)
-
 # EditorConfig NetBeans Plugin
-
 
 A NetBeans IDE plugin supporting the [EditorConfig][] standard.
 
-**Screenshot**
+- Supports NetBeans 8 and above
+- Requires Java 8
+
+[![](https://travis-ci.org/welovecoding/editorconfig-netbeans.svg?branch=master)](https://travis-ci.org/welovecoding/editorconfig-netbeans)
+
+## Features
 
 ![Plugin Screenshot](https://dl.dropboxusercontent.com/u/74217418/screenshots/github/editorconfig-plugin/screen-1.png)
 
+- Reads EditorConfig files
+- [Syntax highlighting](https://dl.dropboxusercontent.com/u/74217418/screenshots/github/editorconfig-plugin/syntax-highlighting.png)
+- [Navigation in EditorConfig files](https://dl.dropboxusercontent.com/u/74217418/screenshots/github/editorconfig-plugin/navigator-with-go-to-source.png)
 
 ## EditorConfig Project
 
