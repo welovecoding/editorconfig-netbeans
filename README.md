@@ -7,6 +7,8 @@ A NetBeans IDE plugin supporting the [EditorConfig][] standard.
 
 [![](https://travis-ci.org/welovecoding/editorconfig-netbeans.svg?branch=master)](https://travis-ci.org/welovecoding/editorconfig-netbeans)
 
+[**DOWNLOAD**](./releases)
+
 ## Features
 
 ![Plugin Screenshot](https://dl.dropboxusercontent.com/u/74217418/screenshots/github/editorconfig-plugin/screen-1.png)
