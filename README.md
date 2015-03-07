@@ -108,22 +108,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 ## Contributors
 
-[![Benny Neugebauer on Stack Exchange][stack_exchange_flair_bennyn]][stack_exchange_link_bennyn]
+[![Benny Neugebauer](https://avatars1.githubusercontent.com/u/469989?v=3&s=100)](http://www.bennyn.de/) | [![Michael Koppen](https://avatars1.githubusercontent.com/u/1138344?v=3&s=100)](http://beanbelt.blogspot.de/) | [![Junichi Yamamoto](https://avatars1.githubusercontent.com/u/738383?v=3&s=100)](http://junichi11.com/)
+:---:|:---:|:---:
+[**Benny Neugebauer**](http://www.bennyn.de/) | [**Michael Koppen**](http://beanbelt.blogspot.de/) | [**Junichi Yamamoto**](http://junichi11.com/)
 
-[![Michael Koppen on Stack Exchange][stack_exchange_flair_yser]][stack_exchange_link_yser]
-
-## Credits
-
-- @geertjanw ([Geertjan Wielenga](https://blogs.oracle.com/geertjan)) for his posts on [EditorConfig and NetBeans IDE](https://blogs.oracle.com/geertjan/entry/editorconfig_and_netbeans_ide) [(Part 2)](https://blogs.oracle.com/geertjan/entry/editorconfig_and_netbeans_ide_part) [(Part 3)](https://blogs.oracle.com/geertjan/entry/editorconfig_and_netbeans_ide_part1)
-
-# Inspiring projects
-
-- [Change line endings Plugin](https://github.com/junichi11/netbeans-change-lf) by @junichi11
-- [Encoding Plugin](https://github.com/junichi11/netbeans-encoding-plugin) by @junichi11
-- [JSBeautify](https://github.com/drewhamlett/netbeans-jsbeautify) by @drewhamlett
-
-
-[stack_exchange_link_bennyn]: http://stackexchange.com/users/203782/benny-neugebauer?tab=accounts
-[stack_exchange_link_yser]: http://stackexchange.com/users/3210455/yser?tab=accounts
-[stack_exchange_flair_bennyn]: http://stackexchange.com/users/flair/203782.png?theme=default
-[stack_exchange_flair_yser]: http://stackexchange.com/users/flair/3210455.png?theme=default
+### Special Credits
+- [Geertjan Wielenga](https://blogs.oracle.com/geertjan) for his posts on [EditorConfig and NetBeans IDE](https://blogs.oracle.com/geertjan/entry/editorconfig_and_netbeans_ide)
