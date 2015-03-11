@@ -266,20 +266,20 @@ public class EditorConfigParser extends Parser {
       {
         setState(27);
         sectionHeader();
-        setState(29);
+        setState(31);
         _errHandler.sync(this);
         _la = _input.LA(1);
-        do {
+        while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << PROPERTY_KEY_ROOT) | (1L << PROPERTY_KEY_CHARSET) | (1L << PROPERTY_KEY_END_OF_LINE) | (1L << PROPERTY_KEY_INDENT_SIZE) | (1L << PROPERTY_KEY_INDENT_STYLE) | (1L << PROPERTY_KEY_INSERT_FINAL_NEWLINE) | (1L << PROPERTY_KEY_MAX_LINE_LENGTH) | (1L << PROPERTY_KEY_TAB_WIDTH) | (1L << PROPERTY_KEY_TRIM_TRAILING_WHITESPACE) | (1L << PROPERTY_KEY_UNKNOWN))) != 0)) {
           {
             {
               setState(28);
               propertyStatement();
             }
           }
-          setState(31);
+          setState(33);
           _errHandler.sync(this);
           _la = _input.LA(1);
-        } while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << PROPERTY_KEY_ROOT) | (1L << PROPERTY_KEY_CHARSET) | (1L << PROPERTY_KEY_END_OF_LINE) | (1L << PROPERTY_KEY_INDENT_SIZE) | (1L << PROPERTY_KEY_INDENT_STYLE) | (1L << PROPERTY_KEY_INSERT_FINAL_NEWLINE) | (1L << PROPERTY_KEY_MAX_LINE_LENGTH) | (1L << PROPERTY_KEY_TAB_WIDTH) | (1L << PROPERTY_KEY_TRIM_TRAILING_WHITESPACE) | (1L << PROPERTY_KEY_UNKNOWN))) != 0));
+        }
       }
     } catch (RecognitionException re) {
       _localctx.exception = re;
@@ -336,11 +336,11 @@ public class EditorConfigParser extends Parser {
     try {
       enterOuterAlt(_localctx, 1);
       {
-        setState(33);
-        match(SECTION_LDELIMITER);
         setState(34);
-        match(SECTION_NAME);
+        match(SECTION_LDELIMITER);
         setState(35);
+        match(SECTION_NAME);
+        setState(36);
         match(SECTION_RDELIMITER);
       }
     } catch (RecognitionException re) {
@@ -398,11 +398,11 @@ public class EditorConfigParser extends Parser {
     try {
       enterOuterAlt(_localctx, 1);
       {
-        setState(37);
-        match(PROPERTY_KEY_ROOT);
         setState(38);
-        match(ASSIGNMENT);
+        match(PROPERTY_KEY_ROOT);
         setState(39);
+        match(ASSIGNMENT);
+        setState(40);
         propertyValue();
       }
     } catch (RecognitionException re) {
@@ -464,11 +464,11 @@ public class EditorConfigParser extends Parser {
     try {
       enterOuterAlt(_localctx, 1);
       {
-        setState(41);
-        propertyKey();
         setState(42);
-        match(ASSIGNMENT);
+        propertyKey();
         setState(43);
+        match(ASSIGNMENT);
+        setState(44);
         propertyValue();
       }
     } catch (RecognitionException re) {
@@ -563,7 +563,7 @@ public class EditorConfigParser extends Parser {
     try {
       enterOuterAlt(_localctx, 1);
       {
-        setState(45);
+        setState(46);
         _la = _input.LA(1);
         if (!((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << PROPERTY_KEY_ROOT) | (1L << PROPERTY_KEY_CHARSET) | (1L << PROPERTY_KEY_END_OF_LINE) | (1L << PROPERTY_KEY_INDENT_SIZE) | (1L << PROPERTY_KEY_INDENT_STYLE) | (1L << PROPERTY_KEY_INSERT_FINAL_NEWLINE) | (1L << PROPERTY_KEY_MAX_LINE_LENGTH) | (1L << PROPERTY_KEY_TAB_WIDTH) | (1L << PROPERTY_KEY_TRIM_TRAILING_WHITESPACE) | (1L << PROPERTY_KEY_UNKNOWN))) != 0))) {
           _errHandler.recoverInline(this);
@@ -626,7 +626,7 @@ public class EditorConfigParser extends Parser {
     try {
       enterOuterAlt(_localctx, 1);
       {
-        setState(47);
+        setState(48);
         match(PROPERTY_VALUE);
       }
     } catch (RecognitionException re) {
@@ -640,19 +640,20 @@ public class EditorConfigParser extends Parser {
   }
 
   public static final String _serializedATN
-          = "\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3\24\64\4\2\t\2\4\3"
+          = "\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3\24\65\4\2\t\2\4\3"
           + "\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\3\2\5\2\22\n\2\3\2\7\2\25"
-          + "\n\2\f\2\16\2\30\13\2\5\2\32\n\2\3\2\3\2\3\3\3\3\6\3 \n\3\r\3\16\3!\3"
-          + "\4\3\4\3\4\3\4\3\5\3\5\3\5\3\5\3\6\3\6\3\6\3\6\3\7\3\7\3\b\3\b\3\b\2\2"
-          + "\t\2\4\6\b\n\f\16\2\3\3\2\4\r\60\2\31\3\2\2\2\4\35\3\2\2\2\6#\3\2\2\2"
-          + "\b\'\3\2\2\2\n+\3\2\2\2\f/\3\2\2\2\16\61\3\2\2\2\20\22\5\b\5\2\21\20\3"
-          + "\2\2\2\21\22\3\2\2\2\22\26\3\2\2\2\23\25\5\4\3\2\24\23\3\2\2\2\25\30\3"
-          + "\2\2\2\26\24\3\2\2\2\26\27\3\2\2\2\27\32\3\2\2\2\30\26\3\2\2\2\31\21\3"
-          + "\2\2\2\31\32\3\2\2\2\32\33\3\2\2\2\33\34\7\2\2\3\34\3\3\2\2\2\35\37\5"
-          + "\6\4\2\36 \5\n\6\2\37\36\3\2\2\2 !\3\2\2\2!\37\3\2\2\2!\"\3\2\2\2\"\5"
-          + "\3\2\2\2#$\7\16\2\2$%\7\23\2\2%&\7\17\2\2&\7\3\2\2\2\'(\7\4\2\2()\7\20"
-          + "\2\2)*\5\16\b\2*\t\3\2\2\2+,\5\f\7\2,-\7\20\2\2-.\5\16\b\2.\13\3\2\2\2"
-          + "/\60\t\2\2\2\60\r\3\2\2\2\61\62\7\24\2\2\62\17\3\2\2\2\6\21\26\31!";
+          + "\n\2\f\2\16\2\30\13\2\5\2\32\n\2\3\2\3\2\3\3\3\3\7\3 \n\3\f\3\16\3#\13"
+          + "\3\3\4\3\4\3\4\3\4\3\5\3\5\3\5\3\5\3\6\3\6\3\6\3\6\3\7\3\7\3\b\3\b\3\b"
+          + "\2\2\t\2\4\6\b\n\f\16\2\3\3\2\4\r\61\2\31\3\2\2\2\4\35\3\2\2\2\6$\3\2"
+          + "\2\2\b(\3\2\2\2\n,\3\2\2\2\f\60\3\2\2\2\16\62\3\2\2\2\20\22\5\b\5\2\21"
+          + "\20\3\2\2\2\21\22\3\2\2\2\22\26\3\2\2\2\23\25\5\4\3\2\24\23\3\2\2\2\25"
+          + "\30\3\2\2\2\26\24\3\2\2\2\26\27\3\2\2\2\27\32\3\2\2\2\30\26\3\2\2\2\31"
+          + "\21\3\2\2\2\31\32\3\2\2\2\32\33\3\2\2\2\33\34\7\2\2\3\34\3\3\2\2\2\35"
+          + "!\5\6\4\2\36 \5\n\6\2\37\36\3\2\2\2 #\3\2\2\2!\37\3\2\2\2!\"\3\2\2\2\""
+          + "\5\3\2\2\2#!\3\2\2\2$%\7\16\2\2%&\7\23\2\2&\'\7\17\2\2\'\7\3\2\2\2()\7"
+          + "\4\2\2)*\7\20\2\2*+\5\16\b\2+\t\3\2\2\2,-\5\f\7\2-.\7\20\2\2./\5\16\b"
+          + "\2/\13\3\2\2\2\60\61\t\2\2\2\61\r\3\2\2\2\62\63\7\24\2\2\63\17\3\2\2\2"
+          + "\6\21\26\31!";
   public static final ATN _ATN
           = new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 
