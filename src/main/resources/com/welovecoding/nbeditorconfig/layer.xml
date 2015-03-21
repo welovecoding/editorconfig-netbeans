@@ -6,7 +6,7 @@
       <folder name="x-editorconfig">
         <attr name="SystemFileSystem.localizingBundle" stringvalue="com.welovecoding.nbeditorconfig.Bundle"/>
         <file name="language.instance">
-          <attr name="instanceCreate" methodvalue="com.welovecoding.netbeans.plugin.editorconfig.editor.api.lexer.ECTokenId.language"/>
+          <attr name="instanceCreate" methodvalue="com.welovecoding.nbeditorconfig.editor.api.lexer.ECTokenId.language"/>
           <attr name="instanceOf" stringvalue="org.netbeans.api.lexer.Language"/>
         </file>
         <folder name="CodeTemplates">
@@ -21,7 +21,7 @@
             <folder name="Defaults">
               <file name="FontAndColors.xml" url="FontAndColors.xml">
                 <attr name="SystemFileSystem.localizingBundle" stringvalue="com.welovecoding.nbeditorconfig.Bundle"/>
-              </file>
+                            </file>
             </folder>
           </folder>
         </folder>
