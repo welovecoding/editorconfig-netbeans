@@ -1,12 +1,21 @@
 package com.welovecoding.nbeditorconfig.processor;
 
+import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.Charset;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.SwingUtilities;
 import javax.swing.text.Caret;
 import org.openide.cookies.EditorCookie;
 import org.openide.filesystems.FileObject;
 import org.openide.loaders.DataObject;
+import org.openide.text.NbDocument;
 
 public class FileInfo {
+
+  private static final Logger LOG = Logger.getLogger(FileInfo.class.getSimpleName());
+
+  private Caret currentCaret;
 
   // File references
   private DataObject dataObject;
@@ -32,15 +41,28 @@ public class FileInfo {
   }
 
   public Caret getCaret() {
-    return cookie.getOpenedPanes()[0].getCaret();
+    Runnable runner = () -> {
+      NbDocument.runAtomic(cookie.getDocument(), () -> {
+        currentCaret = cookie.getOpenedPanes()[0].getCaret();
+      });
+    };
+    if (SwingUtilities.isEventDispatchThread()) {
+      runner.run();
+    } else {
+      try {
+        SwingUtilities.invokeAndWait(runner);
+      } catch (InterruptedException | InvocationTargetException ex) {
+        LOG.log(Level.SEVERE, "Could not determine actual caret in editor.", ex);
+      }
+    }
+    return currentCaret;
   }
 
   public int getCurrentCaretPosition() {
     int position = -1;
 
     if (openedInEditor) {
-      Caret caret = cookie.getOpenedPanes()[0].getCaret();
-      position = caret.getDot();
+      position = getCaret().getDot();
     }
 
     return position;
