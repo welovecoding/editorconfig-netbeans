@@ -2,3 +2,4 @@
 .DS_Store
 nb-configuration.xml
 release.properties
+nbactions.xml
