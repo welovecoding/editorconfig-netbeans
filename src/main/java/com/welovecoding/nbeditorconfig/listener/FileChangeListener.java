@@ -21,30 +21,23 @@ public class FileChangeListener extends FileChangeAdapter {
 
   private static final Logger LOG = Logger.getLogger(FileChangeListener.class.getSimpleName());
   private final Project project;
+  private final FileObject editorConfigFileObject;
+
+  static {
+    LOG.setLevel(Level.INFO);
+  }
 
   public FileChangeListener(Project project, FileObject editorConfigFileObject) {
     this.project = project;
-    LOG.log(Level.INFO, "Attached FileChangeListener to: {0}", editorConfigFileObject.getParent().getPath());
-  }
-
-  @Override
-  public void fileAttributeChanged(FileAttributeEvent event) {
-    super.fileAttributeChanged(event);
-    LOG.log(Level.INFO, "Attribute changed: {0}", event.getFile().getPath());
-  }
-
-  @Override
-  public void fileRenamed(FileRenameEvent event) {
-    super.fileRenamed(event);
-    LOG.log(Level.INFO, "Renamed file: {0}", event.getFile().getPath());
+    this.editorConfigFileObject = editorConfigFileObject;
+    LOG.log(Level.INFO, "[EC for {0}] Attached FileChangeListener to: {1}", new Object[]{editorConfigFileObject.getPath(), editorConfigFileObject.getParent().getPath()});
   }
 
   @Override
   public void fileDeleted(FileEvent event) {
     super.fileDeleted(event);
-    LOG.log(Level.INFO, "Deleted file: {0}", event.getFile().getPath());
-    //TODO processDeletedEditorConfig
-    //TODO processDeletedFolderWhichMayContainsFoldersWithListeners -> remove them
+    LOG.log(Level.INFO, "[EC for {0}] Deleted file: {1}", new Object[]{editorConfigFileObject.getPath(), event.getFile().getPath()});
+    event.getFile().removeRecursiveListener(this);
   }
 
   @Override
@@ -52,7 +45,7 @@ public class FileChangeListener extends FileChangeAdapter {
     super.fileChanged(event);
     String path = event.getFile().getPath();
 
-    LOG.log(Level.INFO, "File content changed: {0}", path);
+    LOG.log(Level.INFO, "[EC for {0}] File content changed: {1}", new Object[]{editorConfigFileObject.getPath(), path});
 
     if (applyRulesToFile(event)) {
       try {
@@ -63,7 +56,7 @@ public class FileChangeListener extends FileChangeAdapter {
         Exceptions.printStackTrace(ex);
       }
     } else {
-      LOG.log(Level.INFO, "Rules will not be applied to: {0}", path);
+      LOG.log(Level.INFO, "[EC for {0}] Rules will not be applied to: {1}", new Object[]{editorConfigFileObject.getPath(), path});
     }
   }
 
@@ -85,7 +78,7 @@ public class FileChangeListener extends FileChangeAdapter {
   @Override
   public void fileFolderCreated(FileEvent event) {
     super.fileFolderCreated(event);
-    LOG.log(Level.INFO, "Created folder: {0}", event.getFile().getPath());
+    LOG.log(Level.FINE, "[EC for {0}] Created folder: {1}", new Object[]{editorConfigFileObject.getPath(), event.getFile().getPath()});
     //TODO search for editor-configs and attach listeners
   }
 
@@ -99,8 +92,19 @@ public class FileChangeListener extends FileChangeAdapter {
   public void fileDataCreated(FileEvent event) {
     super.fileDataCreated(event);
     FileObject primaryFile = event.getFile();
-    LOG.log(Level.INFO, "Added new file to project: {0} (MIME type: {1})",
-            new Object[]{primaryFile.getPath(), primaryFile.getMIMEType()});
+    LOG.log(Level.FINE, "[EC for {0}] Added new file to project: {1} (MIME type: {2})",
+            new Object[]{editorConfigFileObject.getPath(), primaryFile.getPath(), primaryFile.getMIMEType()});
   }
 
+  @Override
+  public void fileAttributeChanged(FileAttributeEvent event) {
+    super.fileAttributeChanged(event);
+    LOG.log(Level.FINE, "[EC for {0}] Attribute changed: {1}", new Object[]{editorConfigFileObject.getPath(), event.getFile().getPath()});
+  }
+
+  @Override
+  public void fileRenamed(FileRenameEvent event) {
+    super.fileRenamed(event);
+    LOG.log(Level.FINE, "[EC for {0}] Renamed file: {1}", new Object[]{editorConfigFileObject.getPath(), event.getFile().getPath()});
+  }
 }

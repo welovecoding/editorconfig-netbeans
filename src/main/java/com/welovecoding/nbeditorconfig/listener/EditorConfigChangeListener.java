@@ -11,7 +11,10 @@ import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileRenameEvent;
 
 /**
- * http://bits.netbeans.org/dev/javadoc/
+ * This kind of listener is attached to editorconfig files within a project.
+ * When this listener is attached to an editorconfig a FileChangeListener will
+ * be attached to all files in the folder with the editorconfig and subsequent
+ * ones. http://bits.netbeans.org/dev/javadoc/
  */
 public class EditorConfigChangeListener extends FileChangeAdapter {
 
@@ -20,6 +23,10 @@ public class EditorConfigChangeListener extends FileChangeAdapter {
   private final FileObject editorConfigFileObject;
   private final FileChangeListener subsequentFilesListener;
 
+  static {
+    LOG.setLevel(Level.INFO);
+  }
+
   public EditorConfigChangeListener(Project project, FileObject editorConfigFileObject) {
     this.project = project;
     this.editorConfigFileObject = editorConfigFileObject;
@@ -27,26 +34,17 @@ public class EditorConfigChangeListener extends FileChangeAdapter {
     LOG.log(Level.INFO, "Attached EditorConfigChangeListener to: {0}", editorConfigFileObject.getPath());
     this.subsequentFilesListener = new FileChangeListener(project, editorConfigFileObject);
     editorConfigFileObject.getParent().addRecursiveListener(subsequentFilesListener);
-  }
 
-  @Override
-  public void fileAttributeChanged(FileAttributeEvent event) {
-    super.fileAttributeChanged(event);
-    LOG.log(Level.INFO, "Attribute changed: {0}", event.getFile().getPath());
-  }
-
-  @Override
-  public void fileRenamed(FileRenameEvent event) {
-    super.fileRenamed(event);
-    LOG.log(Level.INFO, "Renamed file: {0}", event.getFile().getPath());
+    // immediately apply editorconfig
+    propagateChanges();
   }
 
   @Override
   public void fileDeleted(FileEvent event) {
     super.fileDeleted(event);
     LOG.log(Level.INFO, "Deleted file: {0}", event.getFile().getPath());
-    //TODO processDeletedEditorConfig
-    //TODO processDeletedFolderWhichMayContainsFoldersWithListeners -> remove them
+    event.getFile().getParent().removeRecursiveListener(subsequentFilesListener);
+    event.getFile().removeFileChangeListener(this);
   }
 
   @Override
@@ -54,6 +52,10 @@ public class EditorConfigChangeListener extends FileChangeAdapter {
     super.fileChanged(event);
     LOG.log(Level.INFO, "EditorConfigs content changed: {0}", event.getFile().getPath());
 
+    propagateChanges();
+  }
+
+  private void propagateChanges() {
     for (FileObject fo : Collections.list(editorConfigFileObject.getParent().getChildren(true))) {
       LOG.log(Level.INFO, "Updating subsequent file: {0}", fo.getPath());
       subsequentFilesListener.fileChanged(new FileEvent(fo));
@@ -63,7 +65,7 @@ public class EditorConfigChangeListener extends FileChangeAdapter {
   @Override
   public void fileFolderCreated(FileEvent event) {
     super.fileFolderCreated(event);
-    LOG.log(Level.INFO, "Created folder: {0}", event.getFile().getPath());
+    LOG.log(Level.FINE, "Created folder: {0}", event.getFile().getPath());
     //TODO search for editor-configs and attach listeners
   }
 
@@ -76,7 +78,18 @@ public class EditorConfigChangeListener extends FileChangeAdapter {
   @Override
   public void fileDataCreated(FileEvent event) {
     super.fileDataCreated(event);
-    LOG.log(Level.INFO, "fileDataCreated: {0}", event.getFile().getPath());
+    LOG.log(Level.FINE, "fileDataCreated: {0}", event.getFile().getPath());
   }
 
+  @Override
+  public void fileAttributeChanged(FileAttributeEvent event) {
+    super.fileAttributeChanged(event);
+    LOG.log(Level.FINE, "Attribute changed: {0}", event.getFile().getPath());
+  }
+
+  @Override
+  public void fileRenamed(FileRenameEvent event) {
+    super.fileRenamed(event);
+    LOG.log(Level.FINE, "Renamed file: {0}", event.getFile().getPath());
+  }
 }
