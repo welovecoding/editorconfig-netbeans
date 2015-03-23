@@ -85,6 +85,16 @@ public class EditorConfig {
       String dir = new File(filePath).getParent();
       while (dir != null && !root) {
         String configPath = dir + "/" + configFilename;
+
+        /**
+         * allows .../*.editorconfig files
+         */
+        for (File file : new File(dir).listFiles()) {
+          if (getFileExtension(file).equals(configFilename)) {
+            configPath = file.getAbsolutePath();
+          }
+        }
+
         if (new File(configPath).exists()) {
           FileInputStream stream = new FileInputStream(configPath);
           InputStreamReader reader = new InputStreamReader(stream, "UTF-8");
@@ -113,6 +123,15 @@ public class EditorConfig {
       result.add(new OutPair(keyValue.getKey(), keyValue.getValue()));
     }
     return result;
+  }
+
+  private String getFileExtension(File file) {
+    String name = file.getName();
+    int lastIndexOf = name.lastIndexOf(".");
+    if (lastIndexOf == -1) {
+      return ""; // empty extension
+    }
+    return name.substring(lastIndexOf);
   }
 
   private void checkAssertions() throws VersionException {
