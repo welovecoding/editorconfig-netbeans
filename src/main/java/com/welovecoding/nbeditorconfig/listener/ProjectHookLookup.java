@@ -1,4 +1,4 @@
-package com.welovecoding.nbeditorconfig.hook;
+package com.welovecoding.nbeditorconfig.listener;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -27,9 +27,13 @@ import org.openide.util.lookup.Lookups;
 /**
  * Listener for newly opened Projects.
  */
-public class EditorConfigHookLookup implements LookupProvider {
+public class ProjectHookLookup implements LookupProvider {
 
-  private static final Logger LOG = Logger.getLogger(EditorConfigHookLookup.class.getSimpleName());
+  private static final Logger LOG = Logger.getLogger(ProjectHookLookup.class.getSimpleName());
+
+  static {
+    LOG.setLevel(Level.INFO);
+  }
 
   @Override
   public Lookup createAdditionalLookup(Lookup lookup) {
@@ -38,7 +42,7 @@ public class EditorConfigHookLookup implements LookupProvider {
 
     LOG.log(Level.INFO, "Setup hooks for: {0}", projectName);
 
-    return Lookups.fixed(new EditorConfigProjectOpenedHook(project));
+    return Lookups.fixed(new ProjectOpenCloseListener(project));
   }
 
 }
