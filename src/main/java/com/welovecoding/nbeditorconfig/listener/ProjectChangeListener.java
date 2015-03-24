@@ -27,7 +27,7 @@ public class ProjectChangeListener extends FileChangeAdapter {
   @Override
   public void fileFolderCreated(FileEvent event) {
     super.fileFolderCreated(event);
-    LOG.log(Level.INFO, "PROJECTLISTENER: Created folder: {0}", event.getFile().getPath());
+    LOG.log(Level.INFO, "Created folder: {0}", event.getFile().getPath());
     ListenerAttacher.attachListeners(event.getFile(), project);
   }
 
@@ -40,32 +40,32 @@ public class ProjectChangeListener extends FileChangeAdapter {
   @Override
   public void fileDataCreated(FileEvent event) {
     super.fileDataCreated(event);
-    LOG.log(Level.INFO, "PROJECTLISTENER: fileDataCreated: {0}", event.getFile().getPath());
+    LOG.log(Level.INFO, "fileDataCreated: {0}", event.getFile().getPath());
     ListenerAttacher.attachListeners(event.getFile(), project);
   }
 
   @Override
   public void fileAttributeChanged(FileAttributeEvent event) {
     super.fileAttributeChanged(event);
-    LOG.log(Level.FINE, "PROJECTLISTENER: Attribute changed: {0}", event.getFile().getPath());
+    LOG.log(Level.FINE, "Attribute changed: {0}", event.getFile().getPath());
   }
 
   @Override
   public void fileRenamed(FileRenameEvent event) {
     super.fileRenamed(event);
-    LOG.log(Level.FINE, "PROJECTLISTENER: Renamed file: {0}", event.getFile().getPath());
+    LOG.log(Level.FINE, "Renamed file: {0}", event.getFile().getPath());
   }
 
   @Override
   public void fileDeleted(FileEvent event) {
     super.fileDeleted(event);
-    LOG.log(Level.FINE, "PROJECTLISTENER: Deleted file: {0}", event.getFile().getPath());
+    LOG.log(Level.FINE, "Deleted file: {0}", event.getFile().getPath());
   }
 
   @Override
   public void fileChanged(FileEvent event) {
     super.fileChanged(event);
-    LOG.log(Level.FINE, "PROJECTLISTENER: File content changed: {0}", event.getFile().getPath());
+    LOG.log(Level.FINE, "File content changed: {0}", event.getFile().getPath());
   }
 
 }

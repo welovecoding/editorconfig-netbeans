@@ -7,10 +7,6 @@ import java.util.logging.Logger;
 import org.netbeans.api.project.Project;
 import org.openide.filesystems.FileObject;
 
-/**
- *
- * @author Michael Koppen
- */
 public class ListenerAttacher {
 
   private static final Logger LOG = Logger.getLogger(ListenerAttacher.class.getSimpleName());
@@ -22,8 +18,8 @@ public class ListenerAttacher {
   /**
    * Recursively attach listeners to folders containing a .editorconfig file.
    *
-   * @param root
-   * @param project
+   * @param file file or folder to attach listener
+   * @param project the project the file is related to
    */
   public static void attachListeners(FileObject file, Project project) {
     if (project.getProjectDirectory().equals(file)) {
@@ -34,8 +30,8 @@ public class ListenerAttacher {
       if (SmartSkip.skipDirectory(file)) {
         LOG.log(Level.INFO, "\u00ac Skipped directory: {0}", file.getPath());
       } else {
-        for (FileObject subFile : file.getChildren()) {
-          attachListeners(subFile, project);
+        for (FileObject child : file.getChildren()) {
+          attachListeners(child, project);
         }
       }
     } else {
