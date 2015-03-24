@@ -128,10 +128,11 @@ public class EditorConfig {
   private String getFileExtension(File file) {
     String name = file.getName();
     int lastIndexOf = name.lastIndexOf(".");
-    if (lastIndexOf == -1) {
+    if (lastIndexOf > -1) {
+      return name.substring(lastIndexOf);
+    } else {
       return ""; // empty extension
     }
-    return name.substring(lastIndexOf);
   }
 
   private void checkAssertions() throws VersionException {
