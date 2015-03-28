@@ -51,7 +51,12 @@ public class Installer extends ModuleInstall {
         return 0;
       }
     }
-
+    
+    /**
+     * Example: Patch version is "0_31" in Java 1.8.0_31
+     * 
+     * @return 
+     */
     public static String getPatch() {
       try {
         return getMappedVersion()[2];
@@ -61,7 +66,7 @@ public class Installer extends ModuleInstall {
     }
 
     private static String[] getMappedVersion() throws Exception {
-      String[] splittedVersion = System.getProperty("java.version").split("\\."); //NOI18N
+      String[] splittedVersion = System.getProperty("java.version").split("\\."); // NOI18N
       if (splittedVersion.length >= 3) {
         return splittedVersion;
       } else {
