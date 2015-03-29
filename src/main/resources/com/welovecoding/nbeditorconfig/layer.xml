@@ -21,7 +21,7 @@
             <folder name="Defaults">
               <file name="FontAndColors.xml" url="FontAndColors.xml">
                 <attr name="SystemFileSystem.localizingBundle" stringvalue="com.welovecoding.nbeditorconfig.Bundle"/>
-                            </file>
+              </file>
             </folder>
           </folder>
         </folder>

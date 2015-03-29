@@ -1,4 +1,5 @@
 Manifest-Version: 1.0
+OpenIDE-Module-Install: com/welovecoding/nbeditorconfig/listener/Installer.class
 OpenIDE-Module-Layer: com/welovecoding/nbeditorconfig/layer.xml
 OpenIDE-Module-Localizing-Bundle: com/welovecoding/nbeditorconfig/Bundle.properties
 
