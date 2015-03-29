@@ -1,5 +1,6 @@
 package com.welovecoding.nbeditorconfig.listener;
 
+import static com.welovecoding.nbeditorconfig.config.LoggerSettings.LISTENER_LOG_LEVEL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.netbeans.api.project.Project;
@@ -32,7 +33,7 @@ public class ProjectHookLookup implements LookupProvider {
   private static final Logger LOG = Logger.getLogger(ProjectHookLookup.class.getName());
 
   static {
-    LOG.setLevel(Level.INFO);
+    LOG.setLevel(LISTENER_LOG_LEVEL);
   }
 
   @Override

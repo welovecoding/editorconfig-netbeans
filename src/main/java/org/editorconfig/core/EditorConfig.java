@@ -11,6 +11,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -20,6 +22,8 @@ import java.util.regex.Pattern;
  * @author Dennis.Ushakov
  */
 public class EditorConfig {
+
+  private static final Logger LOG = Logger.getLogger(EditorConfig.class.getName());
 
   private static boolean DEBUG = System.getProperty("editorconfig.debug") != null;
 
@@ -92,8 +96,11 @@ public class EditorConfig {
         for (File file : new File(dir).listFiles()) {
           if (getFileExtension(file).equals(configFilename)) {
             configPath = file.getAbsolutePath();
+            break;
           }
         }
+
+        LOG.log(Level.INFO, "Used EditorConfig: {0}", configPath);
 
         if (new File(configPath).exists()) {
           FileInputStream stream = new FileInputStream(configPath);

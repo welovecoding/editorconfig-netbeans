@@ -1,7 +1,10 @@
 package com.welovecoding.nbeditorconfig.listener;
 
+import static com.welovecoding.nbeditorconfig.config.LoggerSettings.LISTENER_LOG_LEVEL;
 import com.welovecoding.nbeditorconfig.processor.EditorConfigProcessor;
 import com.welovecoding.nbeditorconfig.processor.SmartSkip;
+import com.welovecoding.nbeditorconfig.processor.WriteEditorAction;
+import com.welovecoding.nbeditorconfig.processor.WriteStringToFileAction;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.netbeans.api.project.Project;
@@ -24,7 +27,7 @@ public class FileChangeListener extends FileChangeAdapter {
   private final FileObject editorConfigFileObject;
 
   static {
-    LOG.setLevel(Level.INFO);
+    LOG.setLevel(LISTENER_LOG_LEVEL);
   }
 
   public FileChangeListener(Project project, FileObject editorConfigFileObject) {
@@ -47,17 +50,22 @@ public class FileChangeListener extends FileChangeAdapter {
 
     LOG.log(Level.INFO, "[EC for {0}] File content changed: {1}", new Object[]{editorConfigFileObject.getPath(), path});
 
-    if (applyRulesToFile(event)) {
-      try {
-        new EditorConfigProcessor().applyRulesToFile(DataObject.find(event.getFile()));
-      } catch (DataObjectNotFoundException ex) {
-        Exceptions.printStackTrace(ex);
-      } catch (Exception ex) {
-        Exceptions.printStackTrace(ex);
+    if (!event.firedFrom(new WriteEditorAction()) && !event.firedFrom(new WriteStringToFileAction())) {
+      if (applyRulesToFile(event)) {
+        try {
+          new EditorConfigProcessor().applyRulesToFile(DataObject.find(event.getFile()));
+        } catch (DataObjectNotFoundException ex) {
+          Exceptions.printStackTrace(ex);
+        } catch (Exception ex) {
+          Exceptions.printStackTrace(ex);
+        }
+      } else {
+        LOG.log(Level.INFO, "[EC for {0}] Rules will not be applied to: {1}", new Object[]{editorConfigFileObject.getPath(), path});
       }
     } else {
-      LOG.log(Level.INFO, "[EC for {0}] Rules will not be applied to: {1}", new Object[]{editorConfigFileObject.getPath(), path});
+      LOG.log(Level.INFO, "[EC for {0}] Rules will not be applied to: {1} - Change triggered by EditorConfig plugin", new Object[]{editorConfigFileObject.getPath(), path});
     }
+
   }
 
   private boolean applyRulesToFile(FileEvent event) {

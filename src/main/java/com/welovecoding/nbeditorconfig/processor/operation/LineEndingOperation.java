@@ -1,6 +1,6 @@
 package com.welovecoding.nbeditorconfig.processor.operation;
 
-import static com.welovecoding.nbeditorconfig.processor.EditorConfigProcessor.OPERATION_LOG_LEVEL;
+import com.welovecoding.nbeditorconfig.config.LoggerSettings;
 import com.welovecoding.nbeditorconfig.processor.FileInfo;
 import java.io.BufferedReader;
 import java.io.StringReader;
@@ -13,7 +13,7 @@ public class LineEndingOperation {
   private static final Logger LOG = Logger.getLogger(LineEndingOperation.class.getName());
 
   static {
-    LOG.setLevel(OPERATION_LOG_LEVEL);
+    LOG.setLevel(LoggerSettings.OPERATION_LOG_LEVEL);
   }
 
   public boolean operate(FileInfo info) {

@@ -1,9 +1,10 @@
 package com.welovecoding.nbeditorconfig.mapper;
 
+import com.welovecoding.nbeditorconfig.config.LoggerSettings;
 import com.welovecoding.nbeditorconfig.io.model.MappedCharset;
 import com.welovecoding.nbeditorconfig.io.model.SupportedCharsets;
-import com.welovecoding.nbeditorconfig.model.MappedEditorConfig;
 import com.welovecoding.nbeditorconfig.model.EditorConfigConstant;
+import com.welovecoding.nbeditorconfig.model.MappedEditorConfig;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,6 +18,10 @@ import org.netbeans.editor.BaseDocument;
 public class EditorConfigPropertyMapper {
 
   private static final Logger LOG = Logger.getLogger(EditorConfigPropertyMapper.class.getName());
+
+  static {
+    LOG.setLevel(LoggerSettings.MAPPER_LOG_LEVEL);
+  }
 
   public static synchronized MappedEditorConfig createEditorConfig(String filePath) {
     return createEditorConfig(filePath, null);
@@ -133,12 +138,12 @@ public class EditorConfigPropertyMapper {
    *
    * @param ecCharset String value for these charsets: "latin1", "utf-8",
    * "utf-8-bom", "utf-16be" or "utf-16le"
-   * 
+   *
    * @return the mapped charset
    */
   protected static synchronized MappedCharset mapCharset(String ecCharset) {
     MappedCharset charset;
-    
+
     if (ecCharset == null) {
       return SupportedCharsets.UTF_8;
     }

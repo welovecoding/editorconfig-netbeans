@@ -11,21 +11,27 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.openide.filesystems.FileLock;
 import org.openide.filesystems.FileObject;
+import org.openide.filesystems.FileSystem;
 import org.openide.util.Exceptions;
 
-public abstract class WriteFileTask implements Runnable {
+public abstract class WriteFileAction implements FileSystem.AtomicAction, Runnable {
 
-  private static final Logger LOG = Logger.getLogger(WriteFileTask.class.getName());
+  private static final Logger LOG = Logger.getLogger(WriteFileAction.class.getName());
 
   private final FileObject fileObject;
   private final Charset charset;
 
-  public WriteFileTask(FileObject fileObject, Charset charset) {
+  public WriteFileAction() {
+    fileObject = null;
+    charset = null;
+  }
+
+  public WriteFileAction(FileObject fileObject, Charset charset) {
     this.fileObject = fileObject;
     this.charset = charset;
   }
 
-  public WriteFileTask(FileObject fileObject) {
+  public WriteFileAction(FileObject fileObject) {
     this.fileObject = fileObject;
     MappedCharset mappedCharset = FileInfoReader.readCharset(fileObject);
     this.charset = mappedCharset.getCharset();

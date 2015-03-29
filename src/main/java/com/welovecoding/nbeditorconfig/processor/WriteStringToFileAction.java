@@ -7,17 +7,22 @@ import java.util.logging.Logger;
 import org.openide.filesystems.FileObject;
 import org.openide.util.Exceptions;
 
-public class WriteStringToFileTask extends WriteFileTask {
+public class WriteStringToFileAction extends WriteFileAction {
 
-  private static final Logger LOG = Logger.getLogger(WriteStringToFileTask.class.getName());
+  private static final Logger LOG = Logger.getLogger(WriteStringToFileAction.class.getName());
   private final String content;
 
-  public WriteStringToFileTask(FileInfo info) {
+  public WriteStringToFileAction() {
+    super();
+    content = "";
+  }
+
+  public WriteStringToFileAction(FileInfo info) {
     super(info.getFileObject(), info.getCharset());
     this.content = info.getContent().toString();
   }
 
-  public WriteStringToFileTask(FileObject fileObject, Charset charset, String content) {
+  public WriteStringToFileAction(FileObject fileObject, Charset charset, String content) {
     super(fileObject, charset);
     this.content = content;
   }
@@ -29,6 +34,16 @@ public class WriteStringToFileTask extends WriteFileTask {
     } catch (IOException ex) {
       Exceptions.printStackTrace(ex);
     }
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    return obj != null && obj instanceof WriteStringToFileAction;
+  }
+
+  @Override
+  public int hashCode() {
+    return getClass().getName().hashCode();
   }
 
 }

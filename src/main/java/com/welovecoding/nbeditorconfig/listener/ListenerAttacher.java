@@ -1,6 +1,8 @@
 package com.welovecoding.nbeditorconfig.listener;
 
-import com.welovecoding.nbeditorconfig.config.Settings;
+import static com.welovecoding.nbeditorconfig.config.LoggerSettings.LISTENER_LOG_LEVEL;
+import static com.welovecoding.nbeditorconfig.config.Settings.DEFAULT_FILE_NAME;
+import static com.welovecoding.nbeditorconfig.config.Settings.EXTENSION;
 import com.welovecoding.nbeditorconfig.processor.SmartSkip;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -12,7 +14,7 @@ public class ListenerAttacher {
   private static final Logger LOG = Logger.getLogger(ListenerAttacher.class.getName());
 
   static {
-    LOG.setLevel(Level.INFO);
+    LOG.setLevel(LISTENER_LOG_LEVEL);
   }
 
   /**
@@ -35,7 +37,7 @@ public class ListenerAttacher {
         }
       }
     } else {
-      if (file.getExt().equals(Settings.EXTENSION)) {
+      if (file.getExt().equals(EXTENSION) || file.getName().equals(DEFAULT_FILE_NAME)) {
         file.addFileChangeListener(new EditorConfigChangeListener(project, file));
         LOG.log(Level.INFO, "\u00ac Found EditorConfig: {0}", file.getPath());
       } else {
