@@ -19,7 +19,7 @@ import org.openide.util.Exceptions;
  */
 public class FileChangeListener extends FileChangeAdapter {
 
-  private static final Logger LOG = Logger.getLogger(FileChangeListener.class.getSimpleName());
+  private static final Logger LOG = Logger.getLogger(FileChangeListener.class.getName());
   private final Project project;
   private final FileObject editorConfigFileObject;
 

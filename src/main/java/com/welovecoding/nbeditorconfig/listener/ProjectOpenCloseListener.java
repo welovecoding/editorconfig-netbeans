@@ -8,7 +8,7 @@ import org.openide.filesystems.FileObject;
 
 public class ProjectOpenCloseListener extends ProjectOpenedHook {
 
-  private static final Logger LOG = Logger.getLogger(ProjectOpenCloseListener.class.getSimpleName());
+  private static final Logger LOG = Logger.getLogger(ProjectOpenCloseListener.class.getName());
   private Project project;
 
   static {

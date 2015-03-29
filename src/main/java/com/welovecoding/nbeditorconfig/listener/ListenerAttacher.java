@@ -9,7 +9,7 @@ import org.openide.filesystems.FileObject;
 
 public class ListenerAttacher {
 
-  private static final Logger LOG = Logger.getLogger(ListenerAttacher.class.getSimpleName());
+  private static final Logger LOG = Logger.getLogger(ListenerAttacher.class.getName());
 
   static {
     LOG.setLevel(Level.INFO);

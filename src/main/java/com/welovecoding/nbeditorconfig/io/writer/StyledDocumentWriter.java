@@ -34,7 +34,7 @@ import org.openide.util.Utilities;
 
 public class StyledDocumentWriter {
 
-  private static final Logger LOG = Logger.getLogger(StyledDocumentWriter.class.getSimpleName());
+  private static final Logger LOG = Logger.getLogger(StyledDocumentWriter.class.getName());
 
   private static EditorCookie getEditorCookie(DataObject dataObject) {
     return dataObject.getLookup().lookup(EditorCookie.class);

@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 public class LineEndingOperation {
 
-  private static final Logger LOG = Logger.getLogger(LineEndingOperation.class.getSimpleName());
+  private static final Logger LOG = Logger.getLogger(LineEndingOperation.class.getName());
 
   static {
     LOG.setLevel(OPERATION_LOG_LEVEL);

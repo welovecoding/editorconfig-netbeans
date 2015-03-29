@@ -31,7 +31,7 @@ import org.openide.util.Utilities;
 
 public class EditorConfigProcessor {
 
-  private static final Logger LOG = Logger.getLogger(EditorConfigProcessor.class.getSimpleName());
+  private static final Logger LOG = Logger.getLogger(EditorConfigProcessor.class.getName());
   public static final Level OPERATION_LOG_LEVEL = Level.INFO;
 
   private String filePath;

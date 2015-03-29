@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 public class TrimTrailingWhiteSpaceOperation {
 
-  private static final Logger LOG = Logger.getLogger(TrimTrailingWhiteSpaceOperation.class.getSimpleName());
+  private static final Logger LOG = Logger.getLogger(TrimTrailingWhiteSpaceOperation.class.getName());
 
   static {
     LOG.setLevel(OPERATION_LOG_LEVEL);

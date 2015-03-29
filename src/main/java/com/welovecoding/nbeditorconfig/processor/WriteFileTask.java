@@ -15,7 +15,7 @@ import org.openide.util.Exceptions;
 
 public abstract class WriteFileTask implements Runnable {
 
-  private static final Logger LOG = Logger.getLogger(WriteFileTask.class.getSimpleName());
+  private static final Logger LOG = Logger.getLogger(WriteFileTask.class.getName());
 
   private final FileObject fileObject;
   private final Charset charset;

@@ -29,7 +29,7 @@ import org.openide.util.lookup.Lookups;
  */
 public class ProjectHookLookup implements LookupProvider {
 
-  private static final Logger LOG = Logger.getLogger(ProjectHookLookup.class.getSimpleName());
+  private static final Logger LOG = Logger.getLogger(ProjectHookLookup.class.getName());
 
   static {
     LOG.setLevel(Level.INFO);

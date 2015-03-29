@@ -7,7 +7,7 @@ import java.util.logging.Logger;
 
 public class FinalNewLineOperation {
 
-  private static final Logger LOG = Logger.getLogger(FinalNewLineOperation.class.getSimpleName());
+  private static final Logger LOG = Logger.getLogger(FinalNewLineOperation.class.getName());
 
   static {
     LOG.setLevel(OPERATION_LOG_LEVEL);

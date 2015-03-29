@@ -9,7 +9,7 @@ import org.openide.filesystems.FileObject;
 
 public abstract class CodeStyleOperation {
 
-  private static final Logger LOG = Logger.getLogger(IndentSizeOperation.class.getSimpleName());
+  private static final Logger LOG = Logger.getLogger(IndentSizeOperation.class.getName());
   protected FileObject file;
 
   public CodeStyleOperation() {

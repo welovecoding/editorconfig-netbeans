@@ -9,7 +9,7 @@ import org.openide.util.Exceptions;
 
 public class WriteStringToFileTask extends WriteFileTask {
 
-  private static final Logger LOG = Logger.getLogger(WriteStringToFileTask.class.getSimpleName());
+  private static final Logger LOG = Logger.getLogger(WriteStringToFileTask.class.getName());
   private final String content;
 
   public WriteStringToFileTask(FileInfo info) {
