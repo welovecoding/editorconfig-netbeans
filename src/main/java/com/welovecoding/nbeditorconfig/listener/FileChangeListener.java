@@ -63,7 +63,7 @@ public class FileChangeListener extends FileChangeAdapter {
         LOG.log(Level.INFO, "[EC for {0}] Rules will not be applied to: {1}", new Object[]{editorConfigFileObject.getPath(), path});
       }
     } else {
-      LOG.log(Level.INFO, "[EC for {0}] Rules will not be applied to: {1} ### It's our change ###", new Object[]{editorConfigFileObject.getPath(), path});
+      LOG.log(Level.INFO, "[EC for {0}] Rules will not be applied to: {1} - Change triggered by EditorConfig plugin", new Object[]{editorConfigFileObject.getPath(), path});
     }
 
   }
