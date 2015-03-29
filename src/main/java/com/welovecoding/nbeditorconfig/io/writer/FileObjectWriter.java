@@ -23,7 +23,7 @@ import org.openide.util.UserQuestionException;
 
 public class FileObjectWriter {
 
-  private static final Logger LOG = Logger.getLogger(FileObjectWriter.class.getSimpleName());
+  private static final Logger LOG = Logger.getLogger(FileObjectWriter.class.getName());
 
   public static synchronized void writeWithAtomicAction(DataObject dataObject, Charset cs, String content) {
     try {

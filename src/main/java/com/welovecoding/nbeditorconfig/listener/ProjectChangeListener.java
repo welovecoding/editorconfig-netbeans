@@ -14,7 +14,7 @@ import org.openide.filesystems.FileRenameEvent;
  */
 public class ProjectChangeListener extends FileChangeAdapter {
 
-  private static final Logger LOG = Logger.getLogger(ProjectChangeListener.class.getSimpleName());
+  private static final Logger LOG = Logger.getLogger(ProjectChangeListener.class.getName());
   private final Project project;
 
   static {

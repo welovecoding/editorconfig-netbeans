@@ -104,7 +104,7 @@ public class EditorConfigDataObject extends MultiDataObject {
           targetName = "",
           content = "../EditorConfigExample.editorconfig",
           iconBase = LOGO_PATH,
-          position = 100)
+          position = 112)
   public static WizardDescriptor.InstantiatingIterator templateIterator() {
     return null;
   }

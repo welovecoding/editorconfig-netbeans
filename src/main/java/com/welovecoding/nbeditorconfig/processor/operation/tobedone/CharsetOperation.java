@@ -11,7 +11,7 @@ import org.openide.loaders.DataObject;
 
 public class CharsetOperation {
 
-  private static final Logger LOG = Logger.getLogger(CharsetOperation.class.getSimpleName());
+  private static final Logger LOG = Logger.getLogger(CharsetOperation.class.getName());
 
   static {
     LOG.setLevel(LoggerSettings.OPERATION_LOG_LEVEL);

@@ -13,7 +13,7 @@ import org.openide.text.NbDocument;
 
 public class FileInfo {
 
-  private static final Logger LOG = Logger.getLogger(FileInfo.class.getSimpleName());
+  private static final Logger LOG = Logger.getLogger(FileInfo.class.getName());
 
   private Caret currentCaret;
 
