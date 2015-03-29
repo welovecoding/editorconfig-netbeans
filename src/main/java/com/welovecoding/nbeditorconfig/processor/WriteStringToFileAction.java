@@ -9,7 +9,7 @@ import org.openide.util.Exceptions;
 
 public class WriteStringToFileAction extends WriteFileAction {
 
-  private static final Logger LOG = Logger.getLogger(WriteStringToFileAction.class.getSimpleName());
+  private static final Logger LOG = Logger.getLogger(WriteStringToFileAction.class.getName());
   private final String content;
 
   public WriteStringToFileAction() {

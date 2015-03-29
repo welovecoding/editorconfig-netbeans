@@ -17,7 +17,7 @@ import org.netbeans.editor.BaseDocument;
 
 public class EditorConfigPropertyMapper {
 
-  private static final Logger LOG = Logger.getLogger(EditorConfigPropertyMapper.class.getSimpleName());
+  private static final Logger LOG = Logger.getLogger(EditorConfigPropertyMapper.class.getName());
 
   static {
     LOG.setLevel(LoggerSettings.MAPPER_LOG_LEVEL);

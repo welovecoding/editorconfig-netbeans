@@ -16,7 +16,7 @@ import org.openide.util.Exceptions;
 
 public abstract class WriteFileAction implements FileSystem.AtomicAction, Runnable {
 
-  private static final Logger LOG = Logger.getLogger(WriteFileAction.class.getSimpleName());
+  private static final Logger LOG = Logger.getLogger(WriteFileAction.class.getName());
 
   private final FileObject fileObject;
   private final Charset charset;

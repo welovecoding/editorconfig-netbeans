@@ -1,6 +1,6 @@
 package com.welovecoding.nbeditorconfig.processor;
 
-import com.welovecoding.nbeditorconfig.config.LoggerSettings;
+import static com.welovecoding.nbeditorconfig.config.LoggerSettings.PROCESSOR_LOG_LEVEL;
 import com.welovecoding.nbeditorconfig.io.model.MappedCharset;
 import com.welovecoding.nbeditorconfig.mapper.EditorConfigPropertyMapper;
 import com.welovecoding.nbeditorconfig.model.EditorConfigConstant;
@@ -32,13 +32,13 @@ import org.openide.util.Utilities;
 
 public class EditorConfigProcessor {
 
-  private static final Logger LOG = Logger.getLogger(EditorConfigProcessor.class.getSimpleName());
+  private static final Logger LOG = Logger.getLogger(EditorConfigProcessor.class.getName());
 
   private String filePath;
   private final String projectPath;
 
   static {
-    LOG.setLevel(LoggerSettings.PROCESSOR_LOG_LEVEL);
+    LOG.setLevel(PROCESSOR_LOG_LEVEL);
   }
 
   public EditorConfigProcessor() {
