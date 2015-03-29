@@ -1,5 +1,6 @@
 package com.welovecoding.nbeditorconfig.listener;
 
+import static com.welovecoding.nbeditorconfig.config.LoggerSettings.LISTENER_LOG_LEVEL;
 import java.util.Collections;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -24,7 +25,7 @@ public class EditorConfigChangeListener extends FileChangeAdapter {
   private final FileChangeListener subsequentFilesListener;
 
   static {
-    LOG.setLevel(Level.INFO);
+    LOG.setLevel(LISTENER_LOG_LEVEL);
   }
 
   public EditorConfigChangeListener(Project project, FileObject editorConfigFileObject) {

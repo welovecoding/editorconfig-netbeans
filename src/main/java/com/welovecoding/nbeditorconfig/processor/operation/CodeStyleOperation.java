@@ -1,6 +1,6 @@
 package com.welovecoding.nbeditorconfig.processor.operation;
 
-import static com.welovecoding.nbeditorconfig.processor.EditorConfigProcessor.OPERATION_LOG_LEVEL;
+import static com.welovecoding.nbeditorconfig.config.LoggerSettings.OPERATION_LOG_LEVEL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
@@ -9,15 +9,14 @@ import org.openide.filesystems.FileObject;
 
 public abstract class CodeStyleOperation {
 
-  private static final Logger LOG = Logger.getLogger(IndentSizeOperation.class.getSimpleName());
+  private static final Logger LOG = Logger.getLogger(CodeStyleOperation.class.getSimpleName());
   protected FileObject file;
 
-  public CodeStyleOperation() {
+  static {
     LOG.setLevel(OPERATION_LOG_LEVEL);
   }
 
   public CodeStyleOperation(FileObject file) {
-    super();
     this.file = file;
   }
 

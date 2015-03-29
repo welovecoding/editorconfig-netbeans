@@ -1,6 +1,6 @@
 package com.welovecoding.nbeditorconfig.processor.operation;
 
-import static com.welovecoding.nbeditorconfig.processor.EditorConfigProcessor.OPERATION_LOG_LEVEL;
+import static com.welovecoding.nbeditorconfig.config.LoggerSettings.OPERATION_LOG_LEVEL;
 import com.welovecoding.nbeditorconfig.processor.FileInfo;
 import java.util.logging.Level;
 import java.util.logging.Logger;

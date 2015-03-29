@@ -5,10 +5,6 @@ import org.openide.filesystems.FileObject;
 
 public class TabWidthOperation extends CodeStyleOperation {
 
-  private TabWidthOperation() {
-    super();
-  }
-
   public TabWidthOperation(FileObject file) {
     super(file);
   }

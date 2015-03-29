@@ -1,8 +1,7 @@
 package com.welovecoding.nbeditorconfig.processor;
 
-import com.welovecoding.nbeditorconfig.io.exception.FileAccessException;
+import com.welovecoding.nbeditorconfig.config.LoggerSettings;
 import com.welovecoding.nbeditorconfig.io.model.MappedCharset;
-import com.welovecoding.nbeditorconfig.io.writer.StyledDocumentWriter;
 import com.welovecoding.nbeditorconfig.mapper.EditorConfigPropertyMapper;
 import com.welovecoding.nbeditorconfig.model.EditorConfigConstant;
 import com.welovecoding.nbeditorconfig.model.MappedEditorConfig;
@@ -24,6 +23,8 @@ import org.netbeans.api.project.Project;
 import org.netbeans.modules.editor.indent.spi.CodeStylePreferences;
 import org.openide.cookies.EditorCookie;
 import org.openide.filesystems.FileObject;
+import org.openide.filesystems.FileSystem.AtomicAction;
+import org.openide.filesystems.FileUtil;
 import org.openide.loaders.DataObject;
 import org.openide.text.NbDocument;
 import org.openide.util.Lookup;
@@ -32,10 +33,13 @@ import org.openide.util.Utilities;
 public class EditorConfigProcessor {
 
   private static final Logger LOG = Logger.getLogger(EditorConfigProcessor.class.getSimpleName());
-  public static final Level OPERATION_LOG_LEVEL = Level.INFO;
 
   private String filePath;
   private final String projectPath;
+
+  static {
+    LOG.setLevel(LoggerSettings.PROCESSOR_LOG_LEVEL);
+  }
 
   public EditorConfigProcessor() {
     // Project nbProject = OpenProjects.getDefault().getMainProject();
@@ -248,8 +252,8 @@ public class EditorConfigProcessor {
     Runnable runner = () -> {
       NbDocument.runAtomic(cookie.getDocument(), () -> {
         try {
-          StyledDocumentWriter.writeWithEditorKit(info);
-        } catch (FileAccessException ex) {
+          FileUtil.runAtomicAction((AtomicAction) new WriteEditorAction(info));
+        } catch (IOException ex) {
           LOG.log(Level.SEVERE, ex.getMessage());
         }
       });
@@ -270,7 +274,10 @@ public class EditorConfigProcessor {
     LOG.log(Level.INFO, "Write content (with all rules applied) to file: {0}",
             info.getFileObject().getPath());
 
-    WriteStringToFileTask task = new WriteStringToFileTask(info);
-    task.run();
+    try {
+      FileUtil.runAtomicAction((AtomicAction) new WriteStringToFileAction(info));
+    } catch (IOException ex) {
+      LOG.log(Level.SEVERE, ex.getMessage());
+    }
   }
 }

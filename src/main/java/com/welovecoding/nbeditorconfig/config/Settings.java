@@ -6,6 +6,7 @@ public final class Settings {
 
   public static final String MIME_TYPE = "text/x-editorconfig"; // NOI18N
   public static final String EXTENSION = "editorconfig"; // NOI18N
+  public static final String DEFAULT_FILE_NAME = ".editorconfig"; // NOI18N
   public static final String RESOURCE_PATH = "com/welovecoding/nbeditorconfig"; // NOI18N
 
   @StaticResource

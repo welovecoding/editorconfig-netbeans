@@ -5,10 +5,6 @@ import org.openide.filesystems.FileObject;
 
 public class IndentSizeOperation extends CodeStyleOperation {
 
-  private IndentSizeOperation() {
-    super();
-  }
-
   public IndentSizeOperation(FileObject file) {
     super(file);
   }

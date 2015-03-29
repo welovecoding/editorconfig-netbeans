@@ -1,9 +1,9 @@
 package com.welovecoding.nbeditorconfig.processor.operation.tobedone;
 
+import com.welovecoding.nbeditorconfig.config.LoggerSettings;
 import com.welovecoding.nbeditorconfig.io.model.MappedCharset;
 import com.welovecoding.nbeditorconfig.io.reader.FileInfoReader;
 import com.welovecoding.nbeditorconfig.io.reader.FileObjectReader;
-import static com.welovecoding.nbeditorconfig.processor.EditorConfigProcessor.OPERATION_LOG_LEVEL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.openide.filesystems.FileObject;
@@ -14,7 +14,7 @@ public class CharsetOperation {
   private static final Logger LOG = Logger.getLogger(CharsetOperation.class.getSimpleName());
 
   static {
-    LOG.setLevel(OPERATION_LOG_LEVEL);
+    LOG.setLevel(LoggerSettings.OPERATION_LOG_LEVEL);
   }
 
   /**
