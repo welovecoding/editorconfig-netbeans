@@ -11,6 +11,12 @@ import org.openide.util.lookup.Lookups;
 /**
  * Project types supported by NetBeans IDE:
  * https://platform.netbeans.org/tutorials/nbm-projectextension.html
+ * 
+ * Module overview:
+ * http://bits.netbeans.org/nexus/content/groups/netbeans/org/netbeans/modules/
+ * 
+ * The module type can be found in the "project.xml" file of a NetBeans project.
+ * Dots in the project type must be replaced with dashes.
  */
 @LookupProvider.Registration(projectType = {
   "org-netbeans-modules-ant-freeform",
@@ -22,7 +28,8 @@ import org.openide.util.lookup.Lookups;
   "org-netbeans-modules-j2ee-ejbjarproject",
   "org-netbeans-modules-java-j2seproject",
   "org-netbeans-modules-maven",
-  "org-netbeans-modules-web-clientproject", // HTML5 project
+  "org-netbeans-modules-php-project",
+  "org-netbeans-modules-web-clientproject",
   "org-netbeans-modules-web-project"
 })
 /**
