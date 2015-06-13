@@ -7,7 +7,18 @@ A NetBeans IDE plugin supporting the [EditorConfig][] standard.
 
 [![](https://travis-ci.org/welovecoding/editorconfig-netbeans.svg?branch=master)](https://travis-ci.org/welovecoding/editorconfig-netbeans)
 
-[**DOWNLOAD**](https://github.com/welovecoding/editorconfig-netbeans/releases)
+## Installation
+
+### Release package
+
+- Download the latest version of the plugin as package from our [releases page](https://github.com/welovecoding/editorconfig-netbeans/releases)
+
+### From source
+
+- clone this repo
+- make sure your netbeans has the maven plugin installed
+- just open the directory where you cloned this repo as a new project in netbeans
+- build
 
 ## Features
 
