@@ -10,7 +10,8 @@ public class SmartSkip {
     ".svn",
     "bower_components",
     "nbproject",
-    "node_modules"
+    "node_modules",
+    "vendor"
   };
 
   public static boolean skipDirectory(FileObject directory) {
