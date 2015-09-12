@@ -1,13 +1,18 @@
 package com.welovecoding.nbeditorconfig.listener;
 
 import static com.welovecoding.nbeditorconfig.config.LoggerSettings.LISTENER_LOG_LEVEL;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.netbeans.api.project.Project;
 import org.netbeans.spi.project.ui.ProjectOpenedHook;
+import org.openide.filesystems.FileChangeAdapter;
 import org.openide.filesystems.FileObject;
 
 public class ProjectOpenCloseListener extends ProjectOpenedHook {
+
+  public static final Map<FileObject, FileChangeAdapter> LISTENER_REGISTRY = new ConcurrentHashMap<>();
 
   private static final Logger LOG = Logger.getLogger(ProjectOpenCloseListener.class.getName());
   private Project project;
@@ -34,7 +39,9 @@ public class ProjectOpenCloseListener extends ProjectOpenedHook {
 
   @Override
   protected void projectClosed() {
+    FileObject projectFileObject = project.getProjectDirectory();
     LOG.log(Level.FINE, "Closed project: {0}", project.getProjectDirectory().getName());
+    ListenerAttacher.removeListeners(projectFileObject, project);
   }
 
 }
