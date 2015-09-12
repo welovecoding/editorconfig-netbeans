@@ -61,7 +61,7 @@ public class FileInfo {
   public int getCurrentCaretPosition() {
     int position = -1;
 
-    if (openedInEditor) {
+    if (openedInEditor && getCaret() != null) {
       position = getCaret().getDot();
     }
 
