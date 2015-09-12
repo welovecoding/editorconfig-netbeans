@@ -35,9 +35,6 @@ public class EditorConfigChangeListener extends FileChangeAdapter {
     LOG.log(Level.INFO, "Attached EditorConfigChangeListener to: {0}", editorConfigFileObject.getPath());
     this.subsequentFilesListener = new FileChangeListener(project, editorConfigFileObject);
     editorConfigFileObject.getParent().addRecursiveListener(subsequentFilesListener);
-
-    // immediately apply editorconfig
-    propagateChanges();
   }
 
   @Override
@@ -52,10 +49,12 @@ public class EditorConfigChangeListener extends FileChangeAdapter {
   public void fileChanged(FileEvent event) {
     super.fileChanged(event);
     LOG.log(Level.INFO, "EditorConfigs content changed: {0}", event.getFile().getPath());
-
-    propagateChanges();
   }
 
+  /**
+   * Propagates change on the editorconfig file to every observed file in this
+   * project
+   */
   private void propagateChanges() {
     for (FileObject fo : Collections.list(editorConfigFileObject.getParent().getChildren(true))) {
       LOG.log(Level.INFO, "Updating subsequent file: {0}", fo.getPath());
