@@ -25,6 +25,7 @@ public class FileChangeListener extends FileChangeAdapter {
   private static final Logger LOG = Logger.getLogger(FileChangeListener.class.getName());
   private final Project project;
   private final FileObject editorConfigFileObject;
+  private final EditorConfigProcessor editorConfigProcessor = new EditorConfigProcessor();
 
   static {
     LOG.setLevel(LISTENER_LOG_LEVEL);
@@ -53,7 +54,7 @@ public class FileChangeListener extends FileChangeAdapter {
     if (!event.firedFrom(new WriteEditorAction()) && !event.firedFrom(new WriteStringToFileAction())) {
       if (applyRulesToFile(event)) {
         try {
-          new EditorConfigProcessor().applyRulesToFile(DataObject.find(event.getFile()));
+          editorConfigProcessor.applyRulesToFile(DataObject.find(event.getFile()));
         } catch (DataObjectNotFoundException ex) {
           Exceptions.printStackTrace(ex);
         } catch (Exception ex) {
