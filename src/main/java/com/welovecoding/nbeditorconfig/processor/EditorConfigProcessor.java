@@ -95,10 +95,8 @@ public class EditorConfigProcessor {
     FileInfo info = excuteOperations(dataObject, config);
 
     // Apply EditorConfig operations
-    if (info.isStyleFlushNeeded()) {
-      LOG.log(Level.INFO, "Flush style changes for: {0}", filePath);
-      flushStyles(info);
-    }
+    LOG.log(Level.INFO, "Flush style changes for: {0}", filePath);
+    flushStyles(info);
 
     if (info.isFileChangeNeeded()) {
       LOG.log(Level.INFO, "Flush file changes for: {0}", filePath);
