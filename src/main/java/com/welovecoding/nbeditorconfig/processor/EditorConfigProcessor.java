@@ -18,7 +18,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
-import javax.swing.SwingUtilities;
 import org.netbeans.api.project.Project;
 import org.netbeans.modules.editor.indent.spi.CodeStylePreferences;
 import org.openide.cookies.EditorCookie;
@@ -26,7 +25,6 @@ import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileSystem.AtomicAction;
 import org.openide.filesystems.FileUtil;
 import org.openide.loaders.DataObject;
-import org.openide.text.NbDocument;
 import org.openide.util.Lookup;
 import org.openide.util.Utilities;
 
@@ -67,8 +65,10 @@ public class EditorConfigProcessor {
    * @param dataObject Object that represents the file which was recognized by
    * an EditorConfig rule
    */
-  public synchronized void applyRulesToFile(DataObject dataObject) {
+  public void applyRulesToFile(DataObject dataObject) {
+    LOG.log(Level.INFO, "Getting Primary File");
     FileObject primaryFile = dataObject.getPrimaryFile();
+    LOG.log(Level.INFO, "Getting Path");
     filePath = primaryFile.getPath();
 
     LOG.log(Level.INFO, "Apply rules to file: {0} (MIME type: {1})",
@@ -102,6 +102,8 @@ public class EditorConfigProcessor {
       LOG.log(Level.INFO, "Flush file changes for: {0}", filePath);
       flushFile(info);
     }
+    LOG.log(Level.INFO, "Flush style changes for: {0}", filePath);
+    flushStyles(info);
   }
 
   protected FileInfo excuteOperations(DataObject dataObject, MappedEditorConfig config) {
@@ -246,21 +248,11 @@ public class EditorConfigProcessor {
   private void updateChangesInEditorWindow(final FileInfo info) {
     LOG.log(Level.INFO, "Update changes in Editor window for: {0}", info.getPath());
 
-    final EditorCookie cookie = info.getCookie();
-    Runnable runner = () -> {
-      NbDocument.runAtomic(cookie.getDocument(), () -> {
         try {
           FileUtil.runAtomicAction((AtomicAction) new WriteEditorAction(info));
         } catch (IOException ex) {
           LOG.log(Level.SEVERE, ex.getMessage());
         }
-      });
-    };
-    if (SwingUtilities.isEventDispatchThread()) {
-      runner.run();
-    } else {
-      SwingUtilities.invokeLater(runner);
-    }
   }
 
   /**

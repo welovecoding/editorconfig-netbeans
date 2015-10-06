@@ -1,6 +1,5 @@
 package com.welovecoding.nbeditorconfig.processor;
 
-import com.welovecoding.nbeditorconfig.io.exception.FileAccessException;
 import com.welovecoding.nbeditorconfig.io.writer.StyledDocumentWriter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -24,7 +23,7 @@ public class WriteEditorAction implements FileSystem.AtomicAction, Runnable {
   public void run() {
     try {
       StyledDocumentWriter.writeWithEditorKit(info);
-    } catch (FileAccessException ex) {
+    } catch (Exception ex) {
       LOG.log(Level.SEVERE, ex.getMessage());
     }
   }

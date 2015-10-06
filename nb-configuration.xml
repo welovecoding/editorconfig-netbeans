@@ -17,5 +17,12 @@
         <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.wrapAnnotations>WRAP_IF_LONG</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.wrapAnnotations>
         <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.sortMembersInGroups>true</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.sortMembersInGroups>
         <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.keepGettersAndSettersTogether>true</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.keepGettersAndSettersTogether>
+        <de-markiewb-netbeans-plugins-eclipse-formatter.preserveBreakPoints>true</de-markiewb-netbeans-plugins-eclipse-formatter.preserveBreakPoints>
+        <de-markiewb-netbeans-plugins-eclipse-formatter.eclipseFormatterActiveProfile/>
+        <de-markiewb-netbeans-plugins-eclipse-formatter.eclipseFormatterLocation/>
+        <de-markiewb-netbeans-plugins-eclipse-formatter.showNotifications>false</de-markiewb-netbeans-plugins-eclipse-formatter.showNotifications>
+        <de-markiewb-netbeans-plugins-eclipse-formatter.eclipseFormatterEnabled>false</de-markiewb-netbeans-plugins-eclipse-formatter.eclipseFormatterEnabled>
+        <de-markiewb-netbeans-plugins-eclipse-formatter.enableFormatAsSaveAction>false</de-markiewb-netbeans-plugins-eclipse-formatter.enableFormatAsSaveAction>
+        <de-markiewb-netbeans-plugins-eclipse-formatter.useProjectSettings>true</de-markiewb-netbeans-plugins-eclipse-formatter.useProjectSettings>
     </properties>
 </project-shared-configuration>

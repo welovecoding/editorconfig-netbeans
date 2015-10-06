@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.Charset;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JEditorPane;
 import javax.swing.SwingUtilities;
 import javax.swing.text.Caret;
 import org.openide.cookies.EditorCookie;
@@ -43,7 +44,12 @@ public class FileInfo {
   public Caret getCaret() {
     Runnable runner = () -> {
       NbDocument.runAtomic(cookie.getDocument(), () -> {
-        currentCaret = cookie.getOpenedPanes()[0].getCaret();
+        JEditorPane pane = cookie.getOpenedPanes()[0];
+        if (pane != null) {
+          currentCaret = pane.getCaret();
+        } else {
+          LOG.log(Level.SEVERE, "Could not get JEditorPane for Document");
+        }
       });
     };
     if (SwingUtilities.isEventDispatchThread()) {

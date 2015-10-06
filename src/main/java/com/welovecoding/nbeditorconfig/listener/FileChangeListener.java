@@ -52,8 +52,9 @@ public class FileChangeListener extends FileChangeAdapter {
     LOG.log(Level.INFO, "[EC for {0}] File content changed: {1}", new Object[]{editorConfigFileObject.getPath(), path});
 
     if (!event.firedFrom(new WriteEditorAction()) && !event.firedFrom(new WriteStringToFileAction())) {
-      if (applyRulesToFile(event)) {
+      if (isCandidateForProcessing(event)) {
         try {
+          LOG.log(Level.INFO, "[EC for {0}] Applying rules");
           editorConfigProcessor.applyRulesToFile(DataObject.find(event.getFile()));
         } catch (DataObjectNotFoundException ex) {
           Exceptions.printStackTrace(ex);
@@ -69,7 +70,7 @@ public class FileChangeListener extends FileChangeAdapter {
 
   }
 
-  private boolean applyRulesToFile(FileEvent event) {
+  private boolean isCandidateForProcessing(FileEvent event) {
     FileObject file = event.getFile();
 
     boolean applyRules = false;
