@@ -118,7 +118,9 @@ public class EditorConfigProcessor {
     StringBuilder content;
 
     try {
-      content = new StringBuilder(primaryFile.asText());
+      MappedCharset mc = config.getCharset();
+      String charset = mc != null ? mc.getCharset().name() : StandardCharsets.UTF_8.name();
+      content = new StringBuilder(primaryFile.asText(charset));
     } catch (IOException ex) {
       LOG.log(Level.WARNING, "Failed to get the text of the file");
       content = new StringBuilder("");
