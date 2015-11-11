@@ -7,7 +7,11 @@ public class SmartSkip {
   public static final boolean IS_ON = true;
   static final String[] IGNORED_FILES = {
     ".git",
+    ".grunt",
+    ".idea",
+    ".sass-cache",
     ".svn",
+    ".tscache",
     "bower_components",
     "nbproject",
     "node_modules",
