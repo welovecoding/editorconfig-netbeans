@@ -13,12 +13,14 @@ import com.welovecoding.nbeditorconfig.processor.operation.TabWidthOperation;
 import com.welovecoding.nbeditorconfig.processor.operation.TrimTrailingWhiteSpaceOperation;
 import com.welovecoding.nbeditorconfig.processor.operation.tobedone.CharsetOperation;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import org.netbeans.api.project.Project;
+import org.netbeans.api.queries.FileEncodingQuery;
 import org.netbeans.modules.editor.indent.spi.CodeStylePreferences;
 import org.openide.cookies.EditorCookie;
 import org.openide.filesystems.FileObject;
@@ -117,9 +119,10 @@ public class EditorConfigProcessor {
     FileObject primaryFile = dataObject.getPrimaryFile();
     StringBuilder content;
 
+    MappedCharset mappedCharset = config.getCharset();
+    Charset defaultCharset = FileEncodingQuery.getEncoding(primaryFile);
     try {
-      MappedCharset mc = config.getCharset();
-      String charset = mc != null ? mc.getCharset().name() : StandardCharsets.UTF_8.name();
+      String charset = mappedCharset != null ? mappedCharset.getCharset().name() : defaultCharset.name();
       content = new StringBuilder(primaryFile.asText(charset));
     } catch (IOException ex) {
       LOG.log(Level.WARNING, "Failed to get the text of the file");
@@ -138,15 +141,13 @@ public class EditorConfigProcessor {
     info.setCookie(cookie);
 
     // 1. "charset"
-    MappedCharset mappedCharset = config.getCharset();
-
     if (mappedCharset != null) {
       logOperation(EditorConfigConstant.CHARSET, mappedCharset.getName());
       boolean changedCharset = new CharsetOperation().run(dataObject, mappedCharset);
       fileChangeNeeded = fileChangeNeeded || changedCharset;
       info.setCharset(mappedCharset.getCharset());
     } else {
-      info.setCharset(StandardCharsets.UTF_8);
+      info.setCharset(defaultCharset);
     }
 
     // 2. "end_of_line"
