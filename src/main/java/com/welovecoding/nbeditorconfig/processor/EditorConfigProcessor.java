@@ -194,11 +194,6 @@ public class EditorConfigProcessor {
       fileChangeNeeded = fileChangeNeeded || trimmedWhiteSpaces;
     }
 
-    if (mappedCharset != null) {
-    } else {
-      info.setCharset(StandardCharsets.UTF_8);
-    }
-
     info.setFileChangeNeeded(fileChangeNeeded);
     info.setStyleFlushNeeded(styleFlushNeeded);
 
