@@ -11,6 +11,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -135,7 +136,9 @@ public class StyledDocumentWriter {
               LOG.log(Level.INFO, "Write to \"document\": {0}", cookie.getDocument());
 
               // Read input stream into the document (which is a "write" operation)
-              kit.read(is, cookie.getDocument(), 0);
+              try (Reader reader = new InputStreamReader(is, info.getCharset())) {
+                kit.read(reader, cookie.getDocument(), 0);
+              }
               cookie.saveDocument();
 
               info.getFileObject().setAttribute(ENCODING_SETTING, info.getCharset().name());
