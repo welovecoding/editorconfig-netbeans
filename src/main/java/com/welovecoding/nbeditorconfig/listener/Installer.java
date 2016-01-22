@@ -16,12 +16,15 @@ public class Installer extends ModuleInstall {
   @Override
   public void restored() {
     if (detectOldJava()) {
-      String title = NbBundle.getMessage(Installer.class, "wlc-nbeditorconfig-version-error-title");
-      String message = NbBundle.getMessage(Installer.class, "wlc-nbeditorconfig-version-error-message");
-      int messageType = NotifyDescriptor.ERROR_MESSAGE;
+      final String title = NbBundle.getMessage(Installer.class, "wlc-nbeditorconfig-version-error-title");
+      final String message = NbBundle.getMessage(Installer.class, "wlc-nbeditorconfig-version-error-message");
+      final int messageType = NotifyDescriptor.ERROR_MESSAGE;
 
-      ActionListener actionListener = (ActionEvent e) -> {
-        DialogDisplayer.getDefault().notify(new NotifyDescriptor.Message(message, messageType));
+      ActionListener actionListener = new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          DialogDisplayer.getDefault().notify(new NotifyDescriptor.Message(message, messageType));
+        }
       };
       NotificationDisplayer.getDefault().notify(title, new MetalIconFactory.FileIcon16(), message, actionListener);
     }
@@ -51,11 +54,11 @@ public class Installer extends ModuleInstall {
         return 0;
       }
     }
-    
+
     /**
      * Example: Patch version is "0_31" in Java 1.8.0_31
-     * 
-     * @return 
+     *
+     * @return
      */
     public static String getPatch() {
       try {

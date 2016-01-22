@@ -14,8 +14,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Logger;
-import java.util.stream.Stream;
 import static junit.framework.Assert.assertEquals;
 import org.junit.Test;
 import org.openide.filesystems.FileObject;
@@ -545,7 +546,7 @@ public class FileInfoReaderTest {
 
   @Test
   public void trimTrailingLineEndingCR() {
-    Stream<String> stream = Stream.of("Hello\r", "World");
+    List<String> stream = Arrays.asList("Hello\r", "World");
     String actual = FileInfoReader.trimTrailingWhitespace(stream, "\r");
 
     assertEquals("Hello\rWorld", actual);
@@ -553,7 +554,7 @@ public class FileInfoReaderTest {
 
   @Test
   public void trimTrailingLineEndingCRLF() {
-    Stream<String> stream = Stream.of("Hello\r\n", "World");
+    List<String> stream = Arrays.asList("Hello\r\n", "World");
     String actual = FileInfoReader.trimTrailingWhitespace(stream, "\r\n");
 
     assertEquals("Hello\r\nWorld", actual);
@@ -561,7 +562,7 @@ public class FileInfoReaderTest {
 
   @Test
   public void trimTrailingLineEndingLF() {
-    Stream<String> stream = Stream.of("Hello\n", "World");
+    List<String> stream = Arrays.asList("Hello\n", "World");
     String actual = FileInfoReader.trimTrailingWhitespace(stream, "\n");
 
     assertEquals("Hello\nWorld", actual);
@@ -569,7 +570,7 @@ public class FileInfoReaderTest {
 
   @Test
   public void trimTrailingTab() {
-    Stream<String> stream = Stream.of("Hello\t", "World");
+    List<String> stream = Arrays.asList("Hello\t", "World");
     String actual = FileInfoReader.trimTrailingWhitespace(stream, System.lineSeparator());
 
     assertEquals("Hello" + System.lineSeparator() + "World", actual);
@@ -577,7 +578,7 @@ public class FileInfoReaderTest {
 
   @Test
   public void trimTrailingTabs() {
-    Stream<String> stream = Stream.of("Hello\t\t", "World");
+    List<String> stream = Arrays.asList("Hello\t\t", "World");
     String actual = FileInfoReader.trimTrailingWhitespace(stream, System.lineSeparator());
 
     assertEquals("Hello" + System.lineSeparator() + "World", actual);
@@ -585,7 +586,7 @@ public class FileInfoReaderTest {
 
   @Test
   public void trimTrailingWhitespace() {
-    Stream<String> stream = Stream.of("Hello ", "World");
+    List<String> stream = Arrays.asList("Hello ", "World");
     String actual = FileInfoReader.trimTrailingWhitespace(stream, System.lineSeparator());
 
     assertEquals("Hello" + System.lineSeparator() + "World", actual);

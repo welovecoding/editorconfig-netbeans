@@ -92,37 +92,40 @@ public class IndentSizeOperationTest {
     assertEquals(indentWidth, indentSizeAfter);
 
     // Save indent size
-    EditorCookie cookie = dataObject.getLookup().lookup(EditorCookie.class);
+    final EditorCookie cookie = dataObject.getLookup().lookup(EditorCookie.class);
     cookie.open();
 
-    StyledDocument document = cookie.openDocument();
+    final StyledDocument document = cookie.openDocument();
 
-    NbDocument.runAtomicAsUser(document, () -> {
-      try {
-        // Save test file
-        cookie.saveDocument();
-
-        // Reformat test file
-        Reformat reformat = Reformat.get(document);
-        reformat.lock();
-
+    NbDocument.runAtomicAsUser(document, new Runnable() {
+      @Override
+      public void run() {
         try {
-          reformat.reformat(0, document.getLength());
-        } catch (BadLocationException ex) {
-          Exceptions.printStackTrace(ex);
-        } finally {
-          reformat.unlock();
+          // Save test file
+          cookie.saveDocument();
+
+          // Reformat test file
+          Reformat reformat = Reformat.get(document);
+          reformat.lock();
+
           try {
-            // Save formatted document
-            cookie.saveDocument();
-            System.out.println("Content saved:");
-            System.out.println(document.getText(0, document.getLength()));
-          } catch (IOException | BadLocationException ex) {
+            reformat.reformat(0, document.getLength());
+          } catch (BadLocationException ex) {
             Exceptions.printStackTrace(ex);
+          } finally {
+            reformat.unlock();
+            try {
+              // Save formatted document
+              cookie.saveDocument();
+              System.out.println("Content saved:");
+              System.out.println(document.getText(0, document.getLength()));
+            } catch (IOException | BadLocationException ex) {
+              Exceptions.printStackTrace(ex);
+            }
           }
+        } catch (IOException ex) {
+          Exceptions.printStackTrace(ex);
         }
-      } catch (IOException ex) {
-        Exceptions.printStackTrace(ex);
       }
     });
 

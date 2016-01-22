@@ -111,12 +111,12 @@ public class StyledDocumentWriter {
     }
   }
 
-  public static void writeWithEditorKit(FileInfo info)
+  public static void writeWithEditorKit(final FileInfo info)
           throws FileAccessException, IOException {
 
-    EditorCookie cookie = info.getCookie();
-    StyledDocument openedDocument = cookie.openDocument();
-    EditorKit kit = getEditorKit(info.getDataObject());
+    final EditorCookie cookie = info.getCookie();
+    final StyledDocument openedDocument = cookie.openDocument();
+    final EditorKit kit = getEditorKit(info.getDataObject());
 
     try (InputStream is = new ByteArrayInputStream(info.getContentAsBytes())) {
       // Backup caret position
@@ -125,49 +125,55 @@ public class StyledDocumentWriter {
         LOG.log(Level.WARNING, "Could not get Caret");
         return;
       }
-      int caretPosition = info.getCurrentCaretPosition();
-      Runnable runner = () -> {
-        NbDocument.runAtomic(openedDocument, () -> {
-            try {
-              // Wipe document
-              cookie.getDocument().remove(0, cookie.getDocument().getLength());
-
-              LOG.log(Level.INFO, "Write to \"is\": {0}", is);
-              LOG.log(Level.INFO, "Write to \"document\": {0}", cookie.getDocument());
-
-              // Read input stream into the document (which is a "write" operation)
-              try (Reader reader = new InputStreamReader(is, info.getCharset())) {
-                kit.read(reader, cookie.getDocument(), 0);
-              }
-              cookie.saveDocument();
-
-              info.getFileObject().setAttribute(ENCODING_SETTING, info.getCharset().name());
-
-              // Reset caret positon
-//                    caretPosition -= info.getCaretOffset();
-              if (caretPosition < cookie.getDocument().getLength()) {
-                LOG.log(Level.INFO, "Moving caret position from {0} to: {1} / {2}",
-                        new Object[]{info.getCaretOffset(), caretPosition, cookie.getDocument().getLength()});
-                caret.setDot(caretPosition);
-              }
-
-              // Reformat code (to apply ident size & styles)
-              // TODO: Do this only if CodeStylePreferences have been changed
-              Reformat reformat = Reformat.get(cookie.getDocument());
-              reformat.lock();
+      final int caretPosition = info.getCurrentCaretPosition();
+      Runnable runner = new Runnable() {
+        @Override
+        public void run() {
+          NbDocument.runAtomic(openedDocument, new Runnable() {
+            @Override
+            public void run() {
               try {
-                reformat.reformat(0, cookie.getDocument().getLength());
-              } catch (BadLocationException ex) {
-                LOG.log(Level.SEVERE, "AutoFormat on document not possible: {0}", ex.getMessage());
-              } finally {
-                reformat.unlock();
-                // Save document after reformat
+                // Wipe document
+                cookie.getDocument().remove(0, cookie.getDocument().getLength());
+
+                LOG.log(Level.INFO, "Write to \"is\": {0}", is);
+                LOG.log(Level.INFO, "Write to \"document\": {0}", cookie.getDocument());
+
+                // Read input stream into the document (which is a "write" operation)
+                try (Reader reader = new InputStreamReader(is, info.getCharset())) {
+                  kit.read(reader, cookie.getDocument(), 0);
+                }
                 cookie.saveDocument();
+
+                info.getFileObject().setAttribute(ENCODING_SETTING, info.getCharset().name());
+
+                // Reset caret positon
+                // caretPosition -= info.getCaretOffset();
+                if (caretPosition < cookie.getDocument().getLength()) {
+                  LOG.log(Level.INFO, "Moving caret position from {0} to: {1} / {2}",
+                          new Object[]{info.getCaretOffset(), caretPosition, cookie.getDocument().getLength()});
+                  caret.setDot(caretPosition);
+                }
+
+                // Reformat code (to apply ident size & styles)
+                // TODO: Do this only if CodeStylePreferences have been changed
+                Reformat reformat = Reformat.get(cookie.getDocument());
+                reformat.lock();
+                try {
+                  reformat.reformat(0, cookie.getDocument().getLength());
+                } catch (BadLocationException ex) {
+                  LOG.log(Level.SEVERE, "AutoFormat on document not possible: {0}", ex.getMessage());
+                } finally {
+                  reformat.unlock();
+                  // Save document after reformat
+                  cookie.saveDocument();
+                }
+              } catch (BadLocationException | IOException ex) {
+                LOG.log(Level.SEVERE, "Document could not be saved: {0}", ex.getMessage());
               }
-            } catch (BadLocationException | IOException ex) {
-              LOG.log(Level.SEVERE, "Document could not be saved: {0}", ex.getMessage());
             }
           });
+        }
       };
 
       if (SwingUtilities.isEventDispatchThread()) {
