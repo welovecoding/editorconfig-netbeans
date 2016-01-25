@@ -174,18 +174,7 @@ public class FileInfoReader {
   }
 
   public static String trimTrailingWhitespace(String text, String lineEnding) {
-    List<String> lines = new ArrayList<>();
-    {
-      BufferedReader reader = new BufferedReader(new StringReader(text));
-      try {
-        for (String line = reader.readLine(); line != null; line = reader.readLine()) {
-          lines.add(line);
-        }
-        reader.close();
-      } catch (IOException ex) {
-        Exceptions.printStackTrace(ex);
-      }
-    }
+    List<String> lines = readLines(text);
     return trimTrailingWhitespace(lines, lineEnding);
   }
 
@@ -199,9 +188,14 @@ public class FileInfoReader {
   }
 
   public static String replaceLineEndings(String text, String lineEnding) {
+    List<String> lines = readLines(text);
+    return replaceLineEndings(lines, lineEnding);
+  }
+
+  public static List<String> readLines(String text) {
     List<String> lines = new ArrayList<>();
-    {
-      BufferedReader reader = new BufferedReader(new StringReader(text));
+    try (BufferedReader reader = new BufferedReader(new StringReader(text))) {
+
       try {
         for (String line = reader.readLine(); line != null; line = reader.readLine()) {
           lines.add(line);
@@ -210,7 +204,9 @@ public class FileInfoReader {
       } catch (IOException ex) {
         Exceptions.printStackTrace(ex);
       }
+    } catch (IOException ex) {
+      Exceptions.printStackTrace(ex);
     }
-    return replaceLineEndings(lines, lineEnding);
+    return lines;
   }
 }
