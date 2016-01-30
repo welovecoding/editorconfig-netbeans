@@ -1,12 +1,10 @@
 package com.welovecoding.nbeditorconfig.processor.operation;
 
 import com.welovecoding.nbeditorconfig.config.LoggerSettings;
+import com.welovecoding.nbeditorconfig.io.reader.FileInfoReader;
 import com.welovecoding.nbeditorconfig.processor.FileInfo;
-import java.io.BufferedReader;
-import java.io.StringReader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 public class LineEndingOperation {
 
@@ -34,10 +32,8 @@ public class LineEndingOperation {
   }
 
   private StringBuilder replaceLineEndings(StringBuilder content, String lineEnding) {
-    BufferedReader reader = new BufferedReader(new StringReader(content.toString()));
-
     // Note: As a side effect this will strip a final newline
-    String tempContent = reader.lines().collect(Collectors.joining(lineEnding));
+    String tempContent = FileInfoReader.replaceLineEndings(content.toString(), lineEnding);
 
     // Append line ending only if that was the case in the old content
     if (content.toString().endsWith("\n") || content.toString().endsWith("\r")) {

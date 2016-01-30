@@ -1,12 +1,10 @@
 package com.welovecoding.nbeditorconfig.processor.operation;
 
 import static com.welovecoding.nbeditorconfig.config.LoggerSettings.OPERATION_LOG_LEVEL;
+import com.welovecoding.nbeditorconfig.io.reader.FileInfoReader;
 import com.welovecoding.nbeditorconfig.processor.FileInfo;
-import java.io.BufferedReader;
-import java.io.StringReader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 public class TrimTrailingWhiteSpaceOperation {
 
@@ -53,11 +51,7 @@ public class TrimTrailingWhiteSpaceOperation {
       contentUntilCaret = contentCopy.substring(0, caretPosition);
     }
 
-    BufferedReader reader = new BufferedReader(new StringReader(contentUntilCaret));
-
-    String trimmedContent = reader.lines().map((String line) -> {
-      return line.replaceAll("\\s+$", "");
-    }).collect(Collectors.joining(info.getEndOfLine()));
+    String trimmedContent = FileInfoReader.trimTrailingWhitespace(contentUntilCaret, info.getEndOfLine());
 
     // Count the characters which have been trimmed until the caret positon
     // (this will be our caret offset)
@@ -78,12 +72,8 @@ public class TrimTrailingWhiteSpaceOperation {
     String lineEnding = info.getEndOfLine();
     String contentCopy = content.toString();
 
-    BufferedReader reader = new BufferedReader(new StringReader(contentCopy));
-
     // Note: As a side effect this will strip a final newline!
-    String trimmedContent = reader.lines().map((String line) -> {
-      return line.replaceAll("\\s+$", "");
-    }).collect(Collectors.joining(lineEnding));
+    String trimmedContent = FileInfoReader.trimTrailingWhitespace(contentCopy, lineEnding);
 
     // Exchange original content with trimmed content
     content.delete(0, content.length());

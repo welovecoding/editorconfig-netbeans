@@ -7,12 +7,13 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.logging.Level;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.mozilla.universalchardet.UniversalDetector;
 import org.openide.filesystems.FileObject;
 import org.openide.util.Exceptions;
@@ -163,9 +164,49 @@ public class FileInfoReader {
     return firstLine;
   }
 
-  public static String trimTrailingWhitespace(Stream<String> lines, String lineEnding) {
-    return lines.map((String content) -> {
-      return content.replaceAll("\\s+$", "");
-    }).collect(Collectors.joining(lineEnding));
+  public static String trimTrailingWhitespace(Collection<String> lines, String lineEnding) {
+    StringBuilder sb = new StringBuilder();
+    for (String content : lines) {
+      sb.append(content.replaceAll("\\s+$", ""));
+      sb.append(lineEnding);
+    }
+    return sb.toString().trim();
+  }
+
+  public static String trimTrailingWhitespace(String text, String lineEnding) {
+    List<String> lines = readLines(text);
+    return trimTrailingWhitespace(lines, lineEnding);
+  }
+
+  public static String replaceLineEndings(Collection<String> lines, String lineEnding) {
+    StringBuilder sb = new StringBuilder();
+    for (String content : lines) {
+      sb.append(content);
+      sb.append(lineEnding);
+    }
+    return sb.toString().trim();
+  }
+
+  public static String replaceLineEndings(String text, String lineEnding) {
+    List<String> lines = readLines(text);
+    return replaceLineEndings(lines, lineEnding);
+  }
+
+  public static List<String> readLines(String text) {
+    List<String> lines = new ArrayList<>();
+    try (BufferedReader reader = new BufferedReader(new StringReader(text))) {
+
+      try {
+        for (String line = reader.readLine(); line != null; line = reader.readLine()) {
+          lines.add(line);
+        }
+        reader.close();
+      } catch (IOException ex) {
+        Exceptions.printStackTrace(ex);
+      }
+    } catch (IOException ex) {
+      Exceptions.printStackTrace(ex);
+    }
+    return lines;
   }
 }

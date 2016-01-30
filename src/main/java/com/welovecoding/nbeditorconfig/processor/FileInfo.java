@@ -42,15 +42,21 @@ public class FileInfo {
   }
 
   public Caret getCaret() {
-    Runnable runner = () -> {
-      NbDocument.runAtomic(cookie.getDocument(), () -> {
-        JEditorPane pane = cookie.getOpenedPanes()[0];
-        if (pane != null) {
-          currentCaret = pane.getCaret();
-        } else {
-          LOG.log(Level.SEVERE, "Could not get JEditorPane for Document");
-        }
-      });
+    Runnable runner = new Runnable() {
+      @Override
+      public void run() {
+        NbDocument.runAtomic(cookie.getDocument(), new Runnable() {
+          @Override
+          public void run() {
+            JEditorPane pane = cookie.getOpenedPanes()[0];
+            if (pane != null) {
+              currentCaret = pane.getCaret();
+            } else {
+              LOG.log(Level.SEVERE, "Could not get JEditorPane for Document");
+            }
+          }
+        });
+      }
     };
     if (SwingUtilities.isEventDispatchThread()) {
       runner.run();

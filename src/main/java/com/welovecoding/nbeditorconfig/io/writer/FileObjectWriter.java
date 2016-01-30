@@ -25,16 +25,19 @@ public class FileObjectWriter {
 
   private static final Logger LOG = Logger.getLogger(FileObjectWriter.class.getName());
 
-  public static synchronized void writeWithAtomicAction(DataObject dataObject, Charset cs, String content) {
+  public static synchronized void writeWithAtomicAction(final DataObject dataObject, final Charset cs, final String content) {
     try {
-      FileObject fo = dataObject.getPrimaryFile();
-      EditorCookie cookie = dataObject.getLookup().lookup(EditorCookie.class);
-      NbDocument.runAtomicAsUser(cookie.openDocument(), () -> {
-        try (Writer out = new OutputStreamWriter(fo.getOutputStream(), cs)) {
-          LOG.log(Level.INFO, "\u00ac Writing file");
-          out.write(content);
-        } catch (IOException ex) {
-          Exceptions.printStackTrace(ex);
+      final FileObject fo = dataObject.getPrimaryFile();
+      final EditorCookie cookie = dataObject.getLookup().lookup(EditorCookie.class);
+      NbDocument.runAtomicAsUser(cookie.openDocument(), new Runnable() {
+        @Override
+        public void run() {
+          try (Writer out = new OutputStreamWriter(fo.getOutputStream(), cs)) {
+            LOG.log(Level.INFO, "\u00ac Writing file");
+            out.write(content);
+          } catch (IOException ex) {
+            Exceptions.printStackTrace(ex);
+          }
         }
       });
     } catch (BadLocationException ex) {
