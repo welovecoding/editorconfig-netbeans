@@ -17,6 +17,7 @@ import java.util.logging.Logger;
 import org.mozilla.universalchardet.UniversalDetector;
 import org.openide.filesystems.FileObject;
 import org.openide.util.Exceptions;
+import org.apache.commons.io.IOUtils;
 
 /**
  * @see
@@ -194,19 +195,13 @@ public class FileInfoReader {
 
   public static List<String> readLines(String text) {
     List<String> lines = new ArrayList<>();
-    try (BufferedReader reader = new BufferedReader(new StringReader(text))) {
 
-      try {
-        for (String line = reader.readLine(); line != null; line = reader.readLine()) {
-          lines.add(line);
-        }
-        reader.close();
-      } catch (IOException ex) {
-        Exceptions.printStackTrace(ex);
-      }
+    try {
+      lines = IOUtils.readLines(new StringReader(text));
     } catch (IOException ex) {
       Exceptions.printStackTrace(ex);
     }
+
     return lines;
   }
 }
