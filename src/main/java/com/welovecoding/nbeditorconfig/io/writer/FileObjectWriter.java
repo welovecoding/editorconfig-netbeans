@@ -1,16 +1,13 @@
 package com.welovecoding.nbeditorconfig.io.writer;
 
-import com.welovecoding.nbeditorconfig.io.exception.FileAccessException;
 import com.welovecoding.nbeditorconfig.io.exception.FileObjectLockException;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
-import java.text.MessageFormat;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.text.BadLocationException;
-import javax.swing.text.StyledDocument;
 import org.openide.cookies.EditorCookie;
 import org.openide.cookies.OpenCookie;
 import org.openide.filesystems.FileAlreadyLockedException;
