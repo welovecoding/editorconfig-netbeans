@@ -72,13 +72,13 @@ indent_size = 2
 Indent_size can be set to `tab` if `indent_size` is unspecified and `indent_style` is set to `tab`.
 When set to `tab`, the value of `tab_width` (if specified) will be used.
 
-Read our notes on [Indentation](https://github.com/welovecoding/editorconfig-netbeans/wiki/Indentation).
+Read our notes on [Indentation](https://github.com/welovecoding/editorconfig-netbeans/wiki/EditorConfig---Rule-Evaluation#indentation).
 
 ### :white_check_mark: 4. indent_style
 
 *Values:* `space`, `tab`
 
-Read our notes on [Indentation](https://github.com/welovecoding/editorconfig-netbeans/wiki/Indentation).
+Read our notes on [Indentation](https://github.com/welovecoding/editorconfig-netbeans/wiki/EditorConfig---Rule-Evaluation#indentation).
 
 ### :white_check_mark: 5. insert_final_newline
 
@@ -91,7 +91,7 @@ Read our notes on [Indentation](https://github.com/welovecoding/editorconfig-net
 *Special case:*
 Defaults to the value of `indent_size` and doesn't usually need to be specified.
 
-Read our notes on [Indentation](https://github.com/welovecoding/editorconfig-netbeans/wiki/Indentation).
+Read our notes on [Indentation](https://github.com/welovecoding/editorconfig-netbeans/wiki/EditorConfig---Rule-Evaluation#indentation).
 
 ### :white_check_mark: 7. trim_trailing_whitespace
 
