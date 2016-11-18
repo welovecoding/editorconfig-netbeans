@@ -245,7 +245,7 @@
           <author>welovecoding</author>
           <homePageUrl>https://github.com/welovecoding/editorconfig-netbeans</homePageUrl>
           <licenseName>BETA DISCLAIMER</licenseName>
-          <licenseFile>LICENSE.txt</licenseFile>          
+          <licenseFile>LICENSE.txt</licenseFile>
           <publicPackages>
             <publicPackage>com.welovecoding.netbeans.plugin.editorconfig</publicPackage>
           </publicPackages>
