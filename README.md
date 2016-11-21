@@ -3,7 +3,7 @@
 A NetBeans IDE plugin supporting the [EditorConfig][] standard.
 
 - Supports NetBeans 8 and above
-- Requires Java 8
+- Requires Java 7+
 
 [![](https://travis-ci.org/welovecoding/editorconfig-netbeans.svg?branch=master)](https://travis-ci.org/welovecoding/editorconfig-netbeans)
 

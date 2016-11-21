@@ -1,5 +1,7 @@
 package com.welovecoding.nbeditorconfig.options;
 
+import javax.swing.ComboBoxModel;
+
 final class EditorConfigOptionsPanel extends javax.swing.JPanel {
 
   private static final long serialVersionUID = 6812836508405537948L;
@@ -23,7 +25,7 @@ final class EditorConfigOptionsPanel extends javax.swing.JPanel {
     lineCommentPrefixComboBox = new javax.swing.JComboBox<String>();
     lineCommnetPrefixLabel = new javax.swing.JLabel();
 
-    lineCommentPrefixComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "#", ";" }));
+    lineCommentPrefixComboBox.setModel(new javax.swing.DefaultComboBoxModel<String>(new String[] { "#", ";" }));
 
     org.openide.awt.Mnemonics.setLocalizedText(lineCommnetPrefixLabel, org.openide.util.NbBundle.getMessage(EditorConfigOptionsPanel.class, "EditorConfigOptionsPanel.lineCommnetPrefixLabel.text")); // NOI18N
 

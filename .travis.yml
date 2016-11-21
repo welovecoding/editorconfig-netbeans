@@ -7,6 +7,11 @@ language: java
 jdk:
   - oraclejdk8
   
+#Cache downloaded Maven artifacts between builds
+cache:
+  directories:
+      - "${HOME}/.m2"
+  
 notifications:
   email: false
   slack: wlc:Kinf3gdySndcFTBtjcci3rJN
