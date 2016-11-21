@@ -5,9 +5,9 @@ A NetBeans IDE plugin supporting the [EditorConfig][] standard.
 - Supports NetBeans 8 and above
 - Requires Java 7+
 
-[![](https://travis-ci.org/welovecoding/editorconfig-netbeans.svg?branch=master)](https://travis-ci.org/welovecoding/editorconfig-netbeans)
 
-[**DOWNLOAD**](https://github.com/welovecoding/editorconfig-netbeans/releases)
+
+
 
 ## Features
 
@@ -99,10 +99,26 @@ Read our notes on [Indentation](https://github.com/welovecoding/editorconfig-net
 
 [EditorConfig]: http://editorconfig.org
 
-## Info
+## How to use
 
 - A project must be closed and opened after the plugin is installed, to setup hooks for `.editorconfig` files
 - Rules are applied when a file (which is matched by a rule) is saved
+
+## Build
+
+### Instructions 
+
+```bash
+mvn clean install
+```
+
+### Releases
+
+- [Release Versions](https://github.com/welovecoding/editorconfig-netbeans/releases)
+
+### Status
+
+[![](https://travis-ci.org/welovecoding/editorconfig-netbeans.svg?branch=master)](https://travis-ci.org/welovecoding/editorconfig-netbeans)
 
 ## Disclaimer
 

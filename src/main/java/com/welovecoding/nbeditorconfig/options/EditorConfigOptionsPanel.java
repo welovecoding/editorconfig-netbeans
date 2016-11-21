@@ -1,7 +1,5 @@
 package com.welovecoding.nbeditorconfig.options;
 
-import javax.swing.ComboBoxModel;
-
 final class EditorConfigOptionsPanel extends javax.swing.JPanel {
 
   private static final long serialVersionUID = 6812836508405537948L;
