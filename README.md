@@ -1,13 +1,9 @@
 # EditorConfig NetBeans Plugin
 
-A NetBeans IDE plugin supporting the [EditorConfig][] standard.
+A NetBeans IDE plugin supporting the [EditorConfig][editorconfig] standard.
 
 - Supports NetBeans 8 and above
 - Requires Java 7+
-
-
-
-
 
 ## Features
 
@@ -19,7 +15,7 @@ A NetBeans IDE plugin supporting the [EditorConfig][] standard.
 
 ## EditorConfig Project
 
-EditorConfig makes it easy to maintain the correct coding style when switching between different text editors and between different projects.  The EditorConfig project maintains a file format and plugins for various text editors which allow this file format to be read and used by those editors. For information on the file format and supported text editors, see the [EditorConfig website][EditorConfig].
+EditorConfig makes it easy to maintain the correct coding style when switching between different text editors and between different projects.  The EditorConfig project maintains a file format and plugins for various text editors which allow this file format to be read and used by those editors. For information on the file format and supported text editors, see the [EditorConfig website][editorconfig].
 
 ## Example file
 
@@ -97,8 +93,6 @@ Read our notes on [Indentation](https://github.com/welovecoding/editorconfig-net
 
 *Values:* `false`, `true`
 
-[EditorConfig]: http://editorconfig.org
-
 ## How to use
 
 - A project must be closed and opened after the plugin is installed, to setup hooks for `.editorconfig` files
@@ -126,9 +120,15 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 ## Contributors
 
-[![Benny Neugebauer](https://avatars1.githubusercontent.com/u/469989?v=3&s=100)](http://www.bennyn.de/) | [![Michael Koppen](https://avatars1.githubusercontent.com/u/1138344?v=3&s=100)](http://beanbelt.blogspot.de/) | [![Junichi Yamamoto](https://avatars1.githubusercontent.com/u/738383?v=3&s=100)](http://junichi11.com/)
-:---:|:---:|:---:
-[**Benny Neugebauer**](http://www.bennyn.de/) | [**Michael Koppen**](http://beanbelt.blogspot.de/) | [**Junichi Yamamoto**](http://junichi11.com/)
+[![](https://avatars1.githubusercontent.com/u/469989?v=3&s=100)][benny_neugebauer] | [![](https://avatars1.githubusercontent.com/u/1138344?v=3&s=100)][michael_koppen] | [![](https://avatars1.githubusercontent.com/u/738383?v=3&s=100)][junichi_yamamoto] | [![](https://avatars1.githubusercontent.com/u/3370875?v=3&s=100)][emily_mabrey]
+:---:|:---:|:---:|:---:
+[**Benny Neugebauer**][benny_neugebauer] | [**Michael Koppen**][michael_koppen] | [**Junichi Yamamoto**][junichi_yamamoto] | [**Emily Mabrey**][emily_mabrey]
 
 ### Special Credits
 - [Geertjan Wielenga](https://blogs.oracle.com/geertjan) for his posts on [EditorConfig and NetBeans IDE](https://blogs.oracle.com/geertjan/entry/editorconfig_and_netbeans_ide)
+
+[benny_neugebauer]: http://www.bennyn.de/ "Benny Neugebauer"
+[editorconfig]: http://editorconfig.org/ "EditorConfig"
+[emily_mabrey]: https://www.openhub.net/accounts/emabrey "Emily Mabrey"
+[junichi_yamamoto]: http://junichi11.com/ "Junichi Yamamoto"
+[michael_koppen]: https://beanbelt.blogspot.de/ "Michael Koppen"
