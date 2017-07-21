@@ -45,12 +45,18 @@ public class ProjectHookLookup implements LookupProvider {
 
   @Override
   public Lookup createAdditionalLookup(Lookup lookup) {
-    final Project project = lookup.lookup(Project.class);
-    String projectName = project.getProjectDirectory().getName();
+    final ClassLoader cl = Thread.currentThread().getContextClassLoader();
+    try {
+      Thread.currentThread().setContextClassLoader(ProjectHookLookup.class.getClassLoader());
+      final Project project = lookup.lookup(Project.class);
+      String projectName = project.getProjectDirectory().getName();
 
-    LOG.log(Level.INFO, "Setup hooks for: {0}", projectName);
-
-    return Lookups.fixed(new ProjectOpenCloseListener(project));
+      LOG.log(Level.INFO, "Setup hooks for: {0}", projectName);
+      final ProjectOpenCloseListener listener = new ProjectOpenCloseListener(project);
+      return Lookups.fixed(listener);
+    } finally {
+      Thread.currentThread().setContextClassLoader(cl);
+    }
   }
 
 }
