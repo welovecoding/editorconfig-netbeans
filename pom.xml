@@ -251,6 +251,11 @@
       <version>2.5</version>
       <type>jar</type>
     </dependency>
+    <dependency>
+      <groupId>org.netbeans.api</groupId>
+      <artifactId>org-netbeans-modules-editor-util</artifactId>
+      <version>RELEASE82</version>
+    </dependency>
   </dependencies>
 
   <build>
