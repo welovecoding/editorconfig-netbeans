@@ -12,7 +12,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <netbeans.api.version>RELEASE802</netbeans.api.version>
+    <netbeans.api.version>RELEASE82</netbeans.api.version>
     <nbm.signing.keystore></nbm.signing.keystore>
     <nbm.signing.keystorealias></nbm.signing.keystorealias>
     <nbm.signing.keystorepassword></nbm.signing.keystorepassword>
@@ -124,6 +124,30 @@
     <dependency>
       <groupId>org.netbeans.api</groupId>
       <artifactId>org-openide-util-lookup</artifactId>
+      <type>jar</type>
+      <version>${netbeans.api.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.netbeans.api</groupId>
+      <artifactId>org-openide-util-ui</artifactId>
+      <type>jar</type>
+      <version>${netbeans.api.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.netbeans.api</groupId>
+      <artifactId>org-netbeans-modules-projectuiapi-base</artifactId>
+      <type>jar</type>
+      <version>${netbeans.api.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.netbeans.api</groupId>
+      <artifactId>org-netbeans-modules-csl-types</artifactId>
+      <type>jar</type>
+      <version>${netbeans.api.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.netbeans.modules</groupId>
+      <artifactId>org-netbeans-modules-projectapi-nb</artifactId>
       <type>jar</type>
       <version>${netbeans.api.version}</version>
     </dependency>
