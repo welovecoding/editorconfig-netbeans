@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.prefs.Preferences;
 import javax.swing.SwingUtilities;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Caret;
@@ -26,6 +27,8 @@ import javax.swing.text.EditorKit;
 import javax.swing.text.StyledDocument;
 import org.netbeans.api.editor.mimelookup.MimeLookup;
 import org.netbeans.api.editor.mimelookup.MimePath;
+import org.netbeans.api.editor.settings.SimpleValueNames;
+import org.netbeans.lib.editor.util.swing.DocumentUtilities;
 import org.netbeans.modules.editor.indent.api.Reformat;
 import org.openide.cookies.EditorCookie;
 import org.openide.filesystems.FileLock;
@@ -157,16 +160,28 @@ public class StyledDocumentWriter {
 
                 // Reformat code (to apply ident size & styles)
                 // TODO: Do this only if CodeStylePreferences have been changed
-                Reformat reformat = Reformat.get(cookie.getDocument());
-                reformat.lock();
-                try {
-                  reformat.reformat(0, cookie.getDocument().getLength());
-                } catch (BadLocationException ex) {
-                  LOG.log(Level.SEVERE, "AutoFormat on document not possible: {0}", ex.getMessage());
-                } finally {
-                  reformat.unlock();
-                  // Save document after reformat
-                  cookie.saveDocument();
+
+                Preferences prefs = MimeLookup.getLookup(DocumentUtilities.getMimeType(cookie.getDocument())).lookup(Preferences.class);
+
+                if (prefs.getBoolean(SimpleValueNames.ON_SAVE_USE_GLOBAL_SETTINGS, true)) {
+                    prefs = MimeLookup.getLookup(MimePath.EMPTY).lookup(Preferences.class);
+                }
+
+                String policy = prefs.get(SimpleValueNames.ON_SAVE_REFORMAT, null);
+
+                if (!"never".equals(policy)) {
+                  Reformat reformat = Reformat.get(cookie.getDocument());
+                  reformat.lock();
+
+                  try {
+                    reformat.reformat(0, cookie.getDocument().getLength());
+                  } catch (BadLocationException ex) {
+                    LOG.log(Level.SEVERE, "AutoFormat on document not possible: {0}", ex.getMessage());
+                  } finally {
+                    reformat.unlock();
+                    // Save document after reformat
+                    cookie.saveDocument();
+                  }
                 }
               } catch (BadLocationException | IOException ex) {
                 LOG.log(Level.SEVERE, "Document could not be saved: {0}", ex.getMessage());
