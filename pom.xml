@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.welovecoding.netbeans.plugin</groupId>
   <artifactId>editorconfig</artifactId>
-  <version>0.10.2</version>
+  <version>0.10.3-SNAPSHOT</version>
   <packaging>nbm</packaging>
 
   <name>welovecoding | EditorConfig Plugin</name>
