@@ -8,7 +8,8 @@ jdk:
   - openjdk8
   - oraclejdk8
   - oraclejdk9
-  - oraclejdk11
+#  - oraclejdk10
+#  - oraclejdk11
 
 #Cache downloaded Maven artifacts between builds
 cache:
