@@ -2,79 +2,105 @@ package com.welovecoding.nbeditorconfig.listener;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.Icon;
 import javax.swing.plaf.metal.MetalIconFactory;
+import org.netbeans.api.java.platform.JavaPlatform;
+import org.netbeans.api.java.platform.JavaPlatformManager;
+import org.netbeans.api.java.platform.Specification;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.awt.NotificationDisplayer;
 import org.openide.modules.ModuleInstall;
+import org.openide.modules.SpecificationVersion;
 import org.openide.util.NbBundle;
 
 public class Installer extends ModuleInstall {
+  
+  /**
+   * Class Logger
+   */
+  private static final Logger INSTALLER_LOGGER = Logger.getLogger(Installer.class.getName());
 
-  private static final int MIN_JAVA_VERSION = 8;
+  /**
+   * A representation of the minimum required version of Java as a
+   * {@link SpecificationVersion} compatible "Dewey-decimal version".
+   */
+  private static final String MIN_JAVA_VERSION = "1.7.0";
 
   @Override
-  public void restored() {
-    if (detectOldJava()) {
-      final String title = NbBundle.getMessage(Installer.class, "wlc-nbeditorconfig-version-error-title");
-      final String message = NbBundle.getMessage(Installer.class, "wlc-nbeditorconfig-version-error-message");
-      final int messageType = NotifyDescriptor.ERROR_MESSAGE;
-
-      ActionListener actionListener = new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          DialogDisplayer.getDefault().notify(new NotifyDescriptor.Message(message, messageType));
-        }
-      };
-      NotificationDisplayer.getDefault().notify(title, new MetalIconFactory.FileIcon16(), message, actionListener);
+  public void restored() {    
+    if (isJavaVersionIncompatiable()) {
+      registerIncompatabilityNotification();
     }
   }
 
-  private boolean detectOldJava() {
-    return JavaVersion.getMinor() < MIN_JAVA_VERSION;
+  /**
+   * Displays a notification in the default notification UI containing
+   * information on the plugin's incompatibility with the current IDE's version
+   * of the JVM
+   */
+  private static void registerIncompatabilityNotification() {
+
+    //These are the title, message and icon displayed in the notification area and within popup if user interacts with notification
+    final String incompatTitle = NbBundle.getMessage(Installer.class, "wlc-nbeditorconfig-version-error-title");
+    final String incompatMessage = NbBundle.getMessage(Installer.class, "wlc-nbeditorconfig-version-error-message");
+    final Icon incompatIcon = new MetalIconFactory.FileIcon16();
+    
+    INSTALLER_LOGGER.log(Level.SEVERE, incompatMessage);
+
+    final ActionListener notificationInteractionListener = new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        NotifyDescriptor.Message pluginIncompatiableMessage = new NotifyDescriptor.Message(incompatMessage, NotifyDescriptor.ERROR_MESSAGE);
+        DialogDisplayer.getDefault().notify(pluginIncompatiableMessage);
+      }
+    };
+
+    NotificationDisplayer.getDefault().notify(incompatTitle, incompatIcon, incompatMessage, notificationInteractionListener);
+
   }
 
-  private static class JavaVersion {
+  /**
+   * Evaluates the compatibility of the current JVM running the IDE against
+   * {@link #MIN_JAVA_VERSION}.
+   *
+   * @return True if the JVM running the IDE is not compatible with this
+   * plugin.
+   */
+  private boolean isJavaVersionIncompatiable() {
+    SpecificationVersion javaVersion = getJavaPlatformVersion();
+    
+    INSTALLER_LOGGER.log(Level.FINE, "Found Java version: " + javaVersion);
+    INSTALLER_LOGGER.log(Level.FINE, "Expected Java version: " + MIN_JAVA_VERSION);
+    
+    return javaVersion.compareTo(getMinimumRequiredJavaVersion()) < 0;
+  }
 
-    private JavaVersion() {
-    }
+  /**
+   * Convenience/readability method for generating a
+   * {@link SpecificationVersion} containing the version information equivalent
+   * to {@link #MIN_JAVA_VERSION}.
+   *
+   * @return
+   */
+  private static SpecificationVersion getMinimumRequiredJavaVersion() {
+    return new SpecificationVersion(MIN_JAVA_VERSION);
+  }
 
-    public int getMajor() {
-      try {
-        return Integer.parseInt(getMappedVersion()[0]);
-      } catch (Exception ex) {
-        return 0;
-      }
-    }
+  /**
+   * Determines the version of the Java environment the IDE is running within
+   * utilizing {@link JavaPlatform}.
+   *
+   * @return A {@link SpecificationVersion} instance containing the version
+   * information of the IDE JVM using a "Dewey-decimal format".
+   */
+  private static SpecificationVersion getJavaPlatformVersion() {
+    JavaPlatformManager idePlatformManager = JavaPlatformManager.getDefault();
+    JavaPlatform idePlatform = idePlatformManager.getDefaultPlatform();
+    Specification idePlatformSpec = idePlatform.getSpecification();
 
-    public static int getMinor() {
-      try {
-        return Integer.parseInt(getMappedVersion()[1]);
-      } catch (Exception ex) {
-        return 0;
-      }
-    }
-
-    /**
-     * Example: Patch version is "0_31" in Java 1.8.0_31
-     *
-     * @return
-     */
-    public static String getPatch() {
-      try {
-        return getMappedVersion()[2];
-      } catch (Exception ex) {
-        return "";
-      }
-    }
-
-    private static String[] getMappedVersion() throws Exception {
-      String[] splittedVersion = System.getProperty("java.version").split("\\."); // NOI18N
-      if (splittedVersion.length >= 3) {
-        return splittedVersion;
-      } else {
-        throw new RuntimeException("Could not determine Java version");
-      }
-    }
+    return idePlatformSpec.getVersion();
   }
 }
