@@ -16,10 +16,6 @@ matrix:
       - jdk: openjdk-ea
       - jdk: oraclejdk-ea
 
-before_install:
-      - rm "${JAVA_HOME}/lib/security/cacerts"
-      - ln -s /etc/ssl/certs/java/cacerts "${JAVA_HOME}/lib/security/cacerts"
-  
 #Cache downloaded Maven artifacts between builds
 cache:
   directories:
