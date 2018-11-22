@@ -5,11 +5,16 @@ sudo: false
 language: java
 
 jdk:
+  - openjdk7
   - openjdk8
+  - openjdk9
+  - openjdk10
+  - openjdk11
+  - oraclejdk7
   - oraclejdk8
-  - oraclejdk9
-#  - oraclejdk10
-#  - oraclejdk11
+  - oraclejdk9 
+  - oraclejdk10
+  - oraclejdk11
 
 #Cache downloaded Maven artifacts between builds
 cache:
