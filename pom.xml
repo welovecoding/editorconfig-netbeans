@@ -17,6 +17,9 @@
     <nbm.signing.keystorealias></nbm.signing.keystorealias>
     <nbm.signing.keystorepassword></nbm.signing.keystorepassword>
     <nbm.skip>false</nbm.skip>
+    
+    <!-- Set to a custom path of some local JDK to use it to execite nbm:run-ide -->
+    <nbm.jdkHome>${env.JAVA_HOME}</nbm.jdkHome>
   </properties>
 
   <repositories>
@@ -57,6 +60,12 @@
     <dependency>
       <groupId>org.netbeans.api</groupId>
       <artifactId>org-netbeans-api-annotations-common</artifactId>
+      <version>${netbeans.api.version}</version>
+    </dependency>
+        
+    <dependency>
+      <groupId>org.netbeans.api</groupId>
+      <artifactId>org-netbeans-modules-java-platform</artifactId>
       <version>${netbeans.api.version}</version>
     </dependency>
 
@@ -254,7 +263,7 @@
     <dependency>
       <groupId>org.netbeans.api</groupId>
       <artifactId>org-netbeans-modules-editor-util</artifactId>
-      <version>RELEASE82</version>
+      <version>${netbeans.api.version}</version>
     </dependency>
   </dependencies>
 
@@ -278,6 +287,8 @@
           <publicPackages>
             <publicPackage>com.welovecoding.netbeans.plugin.editorconfig</publicPackage>
           </publicPackages>
+          <additionalArguments>--jdkhome ${nbm.jdkHome}</additionalArguments>
+          <debugAdditionalArguments></debugAdditionalArguments>
         </configuration>
       </plugin>
       <plugin>
@@ -300,6 +311,7 @@
           </execution>
         </executions>
       </plugin>
+       
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -309,6 +321,7 @@
           <target>1.7</target>
           <showWarnings>true</showWarnings>
           <optimize>true</optimize>
+          <showDeprecation>true</showDeprecation>
         </configuration>
       </plugin>
       <plugin>
