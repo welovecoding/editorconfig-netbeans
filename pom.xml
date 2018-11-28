@@ -12,6 +12,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <javac.bootClassPath.directory>${project.basedir}/src/main/javac</javac.bootClassPath.directory>
     <netbeans.api.version>RELEASE82</netbeans.api.version>
     <nbm.signing.keystore></nbm.signing.keystore>
     <nbm.signing.keystorealias></nbm.signing.keystorealias>
@@ -51,10 +52,6 @@
       <url>file://${project.basedir}/maven-repo/</url>
     </repository>
   </distributionManagement>
-  
-  <prerequisites>
-    <maven>3.0.5</maven>
-  </prerequisites>
   
   <dependencies>
     <dependency>
@@ -285,6 +282,25 @@
 
   <build>    
     <plugins>
+      
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <version>3.0.0-M2</version>
+        <configuration>
+          <rules>
+            <requireJavaVersion>
+              <version>[1.7.0,)</version>
+              <message>A minimum Java version 7 JDK is required to build this project</message>
+            </requireJavaVersion>
+            <requireMavenVersion>
+              <version>[3.0.5,)</version>
+              <message>A minimum Maven version of 3.0.5 is required to build this project</message>
+            </requireMavenVersion>
+          </rules>
+        </configuration>
+      </plugin>
+      
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -292,9 +308,14 @@
         <configuration>
           <source>1.7</source>
           <target>1.7</target>
+          <compilerArgs>
+            <arg>-Xbootclasspath:${javac.bootClassPath.directory}/openjdk7/rt.jar</arg>
+          </compilerArgs>
           <showWarnings>true</showWarnings>
           <optimize>true</optimize>
           <showDeprecation>true</showDeprecation>
+          <fork>true</fork>
+          <forceJavacCompilerUse>true</forceJavacCompilerUse>
         </configuration>
       </plugin>
       <plugin>
