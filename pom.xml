@@ -12,15 +12,27 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <javac.bootClassPath.directory>${project.basedir}/src/main/javac</javac.bootClassPath.directory>
+    
+    <!-- The directory to place and read rt.jar for boot classpath verification -->
+    <javac.bootClassPath.directory>${project.build.directory}/openjdk7-javac/</javac.bootClassPath.directory>
+    <!-- The openjdk7-rt commit and SHA-1 hash to use when getting rt.jar-->   
+    <openjdk-rt.commit>b3b6e4c95f9f990fd0ee438757a198653f57377d</openjdk-rt.commit>
+    <openjdk-rt.sha1>59f6ed680f50308255fdae2f421ef34c92e36789</openjdk-rt.sha1>
+    
+    <!-- The version of the Netbeans and openIDE maven dependencies we use -->
     <netbeans.api.version>RELEASE82</netbeans.api.version>
+    
+    <!-- Whether to skip generation of the NetBeans Module (NBM) file -->
+    <nbm.skip>false</nbm.skip>
+    <!-- Set to a custom path of some local JDK to use it to execute nbm:run-ide -->
+    <nbm.jdkHome>${env.JAVA_HOME}</nbm.jdkHome>
+    <!-- The Java Keystore information used to generate a signed NBM -->
     <nbm.signing.keystore></nbm.signing.keystore>
     <nbm.signing.keystorealias></nbm.signing.keystorealias>
     <nbm.signing.keystorepassword></nbm.signing.keystorepassword>
-    <nbm.skip>false</nbm.skip>
     
-    <!-- Set to a custom path of some local JDK to use it to execite nbm:run-ide -->
-    <nbm.jdkHome>${env.JAVA_HOME}</nbm.jdkHome>
+    <!-- Used to generate a tag by the maven-scm-plugin and the maven-release-plugin -->
+    <tag>${project.artifactId}-${project.version}</tag>
   </properties>
 
   <repositories>
@@ -40,10 +52,16 @@
     <url>https://github.com/welovecoding/editorconfig-netbeans</url>
     <tag>HEAD</tag>
   </scm>
+  
   <issueManagement>
-    <system>GitHub Issue Management</system>
+    <!-- The "GitHub" system is the format recognized by the
+         maven-changes-plugin for including GitHub issues info in site
+         generation.
+    -->
+    <system>GitHub</system>
     <url>https://github.com/welovecoding/editorconfig-netbeans/issues</url>
   </issueManagement>
+  
   <distributionManagement>
     <repository>
       <id>maven-own-repo</id>
@@ -265,6 +283,12 @@
   </dependencies>
 
   <profiles>
+    
+    <!-- This profile adds a dependency which is only needed for a JDK using
+         Jigsaw. Jigsaw enabled JDKs create the dependency graph differently
+         due to modules and as a result we must manually provide certain
+         packages in the javax package to the compilation process.
+    -->
     <profile>
       <id>jigsaw-annotation-fix</id>
       <activation>
@@ -278,15 +302,128 @@
         </dependency>
       </dependencies>
     </profile>
+    
+    <!-- This profile is auto-activated by the maven-release-plugin when
+         generating a release. Controlled by the useReleaseProfile and 
+         releaseProfiles properties of the maven-release-plugin.
+    -->
+    <profile>
+      <id>custom-release-profile</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <properties>
+        <!-- Make the release execution aware of the keystore properties -->
+        <arguments>-Dnbm.signing.keystorepassword=${nbm.signing.keystorepassword}</arguments>
+      </properties>
+      <build>
+        <plugins>          
+          
+          <!-- If we are deploying an artifact then we attach the source code
+               of the project within a source JAR as expected for Maven artifacts.
+          -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-source-plugin</artifactId>
+            <version>3.0.1</version>
+            <executions>
+              <execution>
+                <id>attach-sources</id>
+                <phase>deploy</phase>
+                <goals>
+                  <goal>jar-no-fork</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+      
+          <!-- If we are deploying an artifact then we attach the Javadocs generated
+               from the project within a javadoc JAR as expected for Maven
+               artifacts.
+          -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <version>2.10.4</version>
+            <executions>
+              <execution>
+                <id>attach-javadocs</id>
+                <phase>deploy</phase>
+                <goals>
+                  <goal>javadoc-no-fork</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          
+          <!-- After generating the source and javadoc JARs we deploy them using
+               the standard Maven mechanism for deployment.
+          -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-deploy-plugin</artifactId>
+            <version>2.8.2</version>
+            <executions>
+              <execution>
+                <phase>deploy</phase>
+                <goals>
+                  <goal>deploy</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          
+        </plugins>
+      </build>
+    </profile>
+    
   </profiles>
 
   <build>    
+    
+    <!-- These are the plugins which we don't execute automatically but which
+         we consider important to version lock.
+    -->
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>versions-maven-plugin</artifactId>
+          <version>2.3</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-scm-plugin</artifactId>
+          <version>1.9.5</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+    
+    <!-- These are the plugins with configurations or executions which
+         are not configurable via property or which will be executed
+         automatically as part of the build lifecycle without manually
+         executing the plugin artifact goals.
+       
+         Note that Maven executes plugin declarations sharing a common phase
+         using the order of their declaration.
+    -->
     <plugins>
       
+      <!-- Validates the build environment has a JDK version and Maven version
+           compatiable with this project.
+      -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
         <version>3.0.0-M2</version>
+        <executions>
+          <execution>
+            <phase>validate</phase>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+          </execution>
+        </executions>
         <configuration>
           <rules>
             <requireJavaVersion>
@@ -300,7 +437,39 @@
           </rules>
         </configuration>
       </plugin>
+            
+      <!-- Downloads the GPLv2 licensed rt.jar file using the user's machine
+           and thus we are no longer redistributing it via the 
+           welovecoding/editorconfig-netbeans project. Relies on the
+           welovecoding/openjdk7-rt project however is under the GPLv2. Making
+           a seperate repo both allows us to version things by refering to
+           specific commits as well as prevent license violations.
+      -->
+      <plugin>
+        <groupId>com.googlecode.maven-download-plugin</groupId>
+        <artifactId>download-maven-plugin</artifactId>
+        <version>1.4.1</version>
+        <executions>
+          <execution>
+            <id>download-openjdk-rt</id>
+            <phase>initialize</phase>
+            <goals>
+              <goal>wget</goal>
+            </goals>
+            <configuration>
+              <uri>https://github.com/welovecoding/openjdk7-rt/raw/${openjdk-rt.commit}/rt.jar</uri>        
+              <outputDirectory>${javac.bootClassPath.directory}</outputDirectory>
+              <sha1>${openjdk-rt.sha1}</sha1>
+              <overwrite>false</overwrite>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>     
       
+      <!-- Compiles the Java source code of the project using a Java 1.7
+           compatiable boot classpath as provided by the rt.jar downloaded
+           earlier.
+      -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -308,45 +477,39 @@
         <configuration>
           <source>1.7</source>
           <target>1.7</target>
-          <compilerArgs>
-            <arg>-Xbootclasspath:${javac.bootClassPath.directory}/openjdk7/rt.jar</arg>
+          <compilerId>javac</compilerId>
+          <compilerArgs>            
+            <arg>-Xbootclasspath:${javac.bootClassPath.directory}/rt.jar</arg> //this was downloaded by download-maven-plugin
+            <arg>-implicit:class</arg>//we acknowledge the risks of implicit class generation WRT annotation processors
           </compilerArgs>
-          <showWarnings>true</showWarnings>
-          <optimize>true</optimize>
-          <showDeprecation>true</showDeprecation>
-          <fork>true</fork>
           <forceJavacCompilerUse>true</forceJavacCompilerUse>
+          <showWarnings>true</showWarnings>
+          <showDeprecation>true</showDeprecation>
+          <optimize>true</optimize>
+          <useIncrementalCompilation>true</useIncrementalCompilation>
         </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-compiler-javac</artifactId>
+            <version>2.8.4</version>
+          </dependency>
+        </dependencies>
       </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>nbm-maven-plugin</artifactId>
-        <version>4.1</version>
-        <extensions>true</extensions>
-        <configuration>
-          <skipNbm>${nbm.skip}</skipNbm>
-          <requiresRestart>true</requiresRestart>
-          <keystore>${nbm.signing.keystore}</keystore>
-          <keystorealias>${nbm.signing.keystorealias}</keystorealias>
-          <keystorepassword>${nbm.signing.keystorepassword}</keystorepassword>
-          <author>welovecoding</author>
-          <homePageUrl>https://github.com/welovecoding/editorconfig-netbeans</homePageUrl>
-          <licenseName>BETA DISCLAIMER</licenseName>
-          <licenseFile>LICENSE.txt</licenseFile>
-          <publicPackages>
-            <publicPackage>com.welovecoding.netbeans.plugin.editorconfig</publicPackage>
-          </publicPackages>
-          <additionalArguments>--jdkhome ${nbm.jdkHome}</additionalArguments>
-          <debugAdditionalArguments></debugAdditionalArguments>
-        </configuration>
-      </plugin>
+      
+      <!-- Does a static code analysis to verify that all code being compiled
+           is Java version 1.7.0 compatiable. Must run AFTER compilation or it
+           will not be able to see the generated classes that are generated
+           using Netbeans classes. For example, Bundles generate classes that
+           will cause this verification to fail if run prematurely.
+      -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>animal-sniffer-maven-plugin</artifactId>
         <version>1.15</version>
         <executions>
           <execution>
-            <phase>compile</phase>
+            <phase>process-classes</phase>
             <goals>
               <goal>check</goal>
             </goals>
@@ -360,8 +523,10 @@
           </execution>
         </executions>
       </plugin>
-       
-
+      
+      <!-- Packages the compiled class files into a JAR and generates the 
+           Java archive manifest used by the NBM generation.
+      -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
@@ -369,74 +534,59 @@
         <configuration>
           <archive>
             <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
-          </archive>
+          </archive>          
+          <useDefaultManifestEntries>true</useDefaultManifestEntries>
         </configuration>
       </plugin>
+      
+      <!-- Generates the NetBeans Module (NBM) for this plugin.
+      -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>nbm-maven-plugin</artifactId>
+        <version>4.1</version>
+        <extensions>true</extensions>
+        <configuration>
+          <skipNbm>${nbm.skip}</skipNbm>
+          <requiresRestart>true</requiresRestart>
+          <keystore>${nbm.signing.keystore}</keystore>
+          <keystorealias>${nbm.signing.keystorealias}</keystorealias>
+          <keystorepassword>${nbm.signing.keystorepassword}</keystorepassword>
+          <author>welovecoding</author>
+          <homePageUrl>https://github.com/welovecoding/editorconfig-netbeans</homePageUrl>
+          <licenseName>The MIT License (MIT)</licenseName>
+          <licenseFile>LICENSE.txt</licenseFile>
+          <publicPackages>
+            <publicPackage>com.welovecoding.netbeans.plugin.editorconfig</publicPackage>
+          </publicPackages>
+          <additionalArguments>--jdkhome ${nbm.jdkHome}</additionalArguments>
+          <debugAdditionalArguments></debugAdditionalArguments>
+        </configuration>
+      </plugin>       
+      
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-release-plugin</artifactId>
-        <version>2.5.3</version>
+        <version>2.5.3</version>        
+        <executions>
+          <execution>
+            <id>generate-release-during-deploy</id>
+            <phase>deploy</phase>
+            <goals>
+              <goal>prepare</goal>
+              <goal>perform</goal>
+            </goals>
+          </execution>
+        </executions>
         <configuration>
-          <arguments>-Dnbm.signing.keystorepassword=${nbm.signing.keystorepassword}</arguments>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-source-plugin</artifactId>
-        <version>3.0.1</version>
-        <executions>
-          <!-- add sources.jar to (snapshot) release -->
-          <execution>
-            <id>attach-sources</id>
-            <phase>deploy</phase>
-            <goals>
-              <goal>jar-no-fork</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.10.4</version>
-        <executions>
-          <!-- add javadoc.jar to (snapshot) release -->
-          <execution>
-            <id>attach-javadocs</id>
-            <phase>deploy</phase>
-            <goals>
-              <goal>jar</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-deploy-plugin</artifactId>
-        <version>2.8.2</version>
-        <executions>
-          <!-- http://stackoverflow.com/questions/4725668/how-to-deploy-snapshot-with-sources-and-javadoc -->
-          <!-- explicitly define maven-deploy-plugin after others to force exec order -->
-          <execution>
-            <id>deploy</id>
-            <phase>deploy</phase>
-            <goals>
-              <goal>deploy</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>versions-maven-plugin</artifactId>
-        <version>2.3</version>
-      </plugin>
-      <plugin>
-        <artifactId>maven-scm-plugin</artifactId>
-        <version>1.9.5</version>
-        <configuration>
-          <tag>${project.artifactId}-${project.version}</tag>
-        </configuration>
+          <!-- Makes releases require explict disable of dryRuns to prevent
+               accidentally running the deploy phase.
+          -->
+          <dryRun>true</dryRun>
+          <!-- Activates the listed release profiles during a release -->
+          <useReleaseProfiles>true</useReleaseProfiles>
+          <releaseProfiles>release-profile,custom-release-profile</releaseProfiles>
+        </configuration>        
       </plugin>
     </plugins>
   </build>
