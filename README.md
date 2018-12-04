@@ -7,11 +7,11 @@ A NetBeans IDE plugin supporting the [EditorConfig][editorconfig] standard.
 
 ## Features
 
-![Plugin Screenshot](https://dl.dropboxusercontent.com/u/74217418/screenshots/github/editorconfig-plugin/screen-1.png)
+![Plugin Screenshot](https://user-images.githubusercontent.com/469989/49339217-fee2b900-f62e-11e8-9677-ed25191bb7fd.png)
 
 - Reads EditorConfig files
-- [Syntax highlighting](https://dl.dropboxusercontent.com/u/74217418/screenshots/github/editorconfig-plugin/syntax-highlighting.png)
-- [Navigation in EditorConfig files](https://dl.dropboxusercontent.com/u/74217418/screenshots/github/editorconfig-plugin/navigator-with-go-to-source.png)
+- [Syntax highlighting](https://user-images.githubusercontent.com/469989/49339218-fee2b900-f62e-11e8-8d57-070313add68b.png)
+- [Navigation in EditorConfig files](https://user-images.githubusercontent.com/469989/49339216-fee2b900-f62e-11e8-9a8b-7bd5bd08ff20.png)
 
 ## EditorConfig Project
 
