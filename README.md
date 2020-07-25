@@ -1,3 +1,5 @@
+⚠️ **This repository is deprecated and unmaintained.** Please follow the "[First class EditorConfig support](https://issues.apache.org/jira/browse/NETBEANS-1287)" thread on the Apache's JIRA issue tracker to be informed about updates.
+
 # EditorConfig NetBeans Plugin
 
 A NetBeans IDE plugin supporting the [EditorConfig][editorconfig] standard.
